@@ -307,9 +307,9 @@
 						<TransformationSelector />
 					{/if}
 				</div>
-			{:else if settings.value['recording.mode'] === 'upload'}
+			<!-- {:else if settings.value['recording.mode'] === 'upload'} -->
 				<!-- Full width spanning all columns -->
-				<div class="col-span-3 flex flex-col items-center gap-4 w-full">
+				<!-- <div class="col-span-3 flex flex-col items-center gap-4 w-full">
 					<FileDropZone
 						accept="{ACCEPT_AUDIO}, {ACCEPT_VIDEO}"
 						maxFiles={10}
@@ -331,7 +331,7 @@
 						<TranscriptionSelector />
 						<TransformationSelector />
 					</div>
-				</div>
+				</div> -->
 			{/if}
 		</div>
 
@@ -366,7 +366,7 @@
 				</CopyToClipboardButton>
 			</div>
 
-			{#if blobUrl}
+			<!-- {#if blobUrl}
 				<audio
 					style="view-transition-name: {getRecordingTransitionId({
 						propertyName: 'blob',
@@ -376,7 +376,7 @@
 					controls
 					class="h-8 w-full"
 				></audio>
-			{/if}
+			{/if} -->
 		</div>
 
 		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
@@ -416,7 +416,7 @@
 					to start recording anywhere.
 				</p>
 			{/if}
-			<p class="text-muted-foreground text-center text-sm font-light">
+			<!-- <p class="text-muted-foreground text-center text-sm font-light">
 				Check out the {' '}<NoteFluxButton
 					tooltipContent="Check out the Chrome Extension"
 					href="https://chromewebstore.google.com/detail/noteflux/oilbfihknpdbpfkcncojikmooipnlglo"
@@ -439,7 +439,7 @@
 						app
 					</NoteFluxButton>{' '}
 				{/if} for more integrations!
-			</p>
+			</p> -->
 		</div>
 	</div>
 </main>
