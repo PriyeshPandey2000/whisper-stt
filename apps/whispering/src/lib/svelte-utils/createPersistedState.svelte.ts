@@ -1,25 +1,26 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec';
+
 import { on } from 'svelte/events';
 import { createSubscriber } from 'svelte/reactivity';
 import { createTaggedError } from 'wellcrafted/error';
 import { trySync } from 'wellcrafted/result';
 
 type ParseErrorReason<TSchema extends StandardSchemaV1> =
-	| { type: 'storage_empty'; key: string }
-	| { type: 'json_parse_error'; key: string; rawValue: string; error: unknown }
+	| { error: unknown; key: string; rawValue: string; type: 'json_parse_error'; }
 	| {
-			type: 'schema_validation_async_during_sync';
+			issues: ReadonlyArray<StandardSchemaV1.Issue>;
 			key: string;
-			value: unknown;
 			schema: TSchema;
+			type: 'schema_validation_failed';
+			value: unknown;
 	  }
 	| {
-			type: 'schema_validation_failed';
 			key: string;
-			value: unknown;
 			schema: TSchema;
-			issues: ReadonlyArray<StandardSchemaV1.Issue>;
-	  };
+			type: 'schema_validation_async_during_sync';
+			value: unknown;
+	  }
+	| { key: string; type: 'storage_empty'; };
 
 /**
  * Creates a persisted state object tied to local storage, accessible through `.value`
@@ -53,18 +54,14 @@ type ParseErrorReason<TSchema extends StandardSchemaV1> =
  */
 export function createPersistedState<TSchema extends StandardSchemaV1>({
 	key,
-	schema,
 	onParseError,
-	onUpdateSuccess,
 	onUpdateError,
 	onUpdateSettled,
+	onUpdateSuccess,
+	schema,
 }: {
 	/** The key used to store the value in local storage. */
 	key: string;
-	/**
-	 * The schema used to validate the value from local storage.
-	 * */
-	schema: TSchema;
 	/**
 	 * Handler called when the value from storage cannot be parsed or validated.
 	 * This function can perform side effects and must return a valid value.
@@ -92,10 +89,6 @@ export function createPersistedState<TSchema extends StandardSchemaV1>({
 		error: ParseErrorReason<TSchema>,
 	) => StandardSchemaV1.InferOutput<TSchema>;
 	/**
-	 * Handler for when the value from storage is successfully updated.
-	 */
-	onUpdateSuccess?: (newValue: StandardSchemaV1.InferOutput<TSchema>) => void;
-	/**
 	 * Handler for when the value from storage fails to update.
 	 */
 	onUpdateError?: (error: unknown) => void;
@@ -103,39 +96,47 @@ export function createPersistedState<TSchema extends StandardSchemaV1>({
 	 * Handler for when the value from storage update is settled.
 	 */
 	onUpdateSettled?: () => void;
+	/**
+	 * Handler for when the value from storage is successfully updated.
+	 */
+	onUpdateSuccess?: (newValue: StandardSchemaV1.InferOutput<TSchema>) => void;
+	/**
+	 * The schema used to validate the value from local storage.
+	 * */
+	schema: TSchema;
 }) {
 	const parseValueFromStorage = (
-		rawValue: string | null,
+		rawValue: null | string,
 	): StandardSchemaV1.InferOutput<TSchema> => {
-		if (rawValue === null) return onParseError({ type: 'storage_empty', key });
+		if (rawValue === null) return onParseError({ key, type: 'storage_empty' });
 
 		const { data: parsedValue, error: parseError } = parseJson(rawValue);
 		if (parseError) {
 			return onParseError({
-				type: 'json_parse_error',
+				error: parseError,
 				key,
 				rawValue,
-				error: parseError,
+				type: 'json_parse_error',
 			});
 		}
 
 		const result = schema['~standard'].validate(parsedValue);
 		if (result instanceof Promise) {
 			return onParseError({
-				type: 'schema_validation_async_during_sync',
 				key,
-				value: parsedValue,
 				schema,
+				type: 'schema_validation_async_during_sync',
+				value: parsedValue,
 			});
 		}
 
 		if (result.issues) {
 			return onParseError({
-				type: 'schema_validation_failed',
-				key,
-				value: parsedValue,
-				schema,
 				issues: result.issues,
+				key,
+				schema,
+				type: 'schema_validation_failed',
+				value: parsedValue,
 			});
 		}
 
@@ -187,12 +188,12 @@ const { ParseJsonErr } = createTaggedError('ParseJsonError');
 
 function parseJson(value: string) {
 	return trySync({
-		try: () => JSON.parse(value) as unknown,
 		mapErr: (error) =>
 			ParseJsonErr({
-				message: 'Failed to parse JSON',
-				context: { value },
 				cause: error,
+				context: { value },
+				message: 'Failed to parse JSON',
 			}),
+		try: () => JSON.parse(value) as unknown,
 	});
 }

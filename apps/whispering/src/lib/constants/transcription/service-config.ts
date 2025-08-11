@@ -2,7 +2,11 @@
  * Transcription service configurations
  */
 import type { Settings } from '$lib/settings';
-import { CloudIcon, HexagonIcon, PauseIcon, ServerIcon } from '@lucide/svelte';
+
+import {
+	DEEPGRAM_TRANSCRIPTION_MODELS,
+	type DeepgramModel,
+} from '$lib/services/transcription/deepgram';
 import {
 	ELEVENLABS_TRANSCRIPTION_MODELS,
 	type ElevenLabsModel,
@@ -12,12 +16,9 @@ import {
 	OPENAI_TRANSCRIPTION_MODELS,
 	type OpenAIModel,
 } from '$lib/services/transcription/openai';
-import {
-	DEEPGRAM_TRANSCRIPTION_MODELS,
-	type DeepgramModel,
-} from '$lib/services/transcription/deepgram';
+import { CloudIcon, HexagonIcon, PauseIcon, ServerIcon } from '@lucide/svelte';
 
-type TranscriptionModel = OpenAIModel | GroqModel | ElevenLabsModel | DeepgramModel;
+type TranscriptionModel = DeepgramModel | ElevenLabsModel | GroqModel | OpenAIModel;
 
 export const TRANSCRIPTION_SERVICE_IDS = [
 	'OpenAI',
@@ -27,77 +28,77 @@ export const TRANSCRIPTION_SERVICE_IDS = [
 	'Deepgram',
 ] as const;
 
-type TranscriptionServiceId = (typeof TRANSCRIPTION_SERVICE_IDS)[number];
+type ApiTranscriptionService = BaseTranscriptionService & {
+	apiKeyField: keyof Settings;
+	defaultModel: TranscriptionModel;
+	models: readonly TranscriptionModel[];
+	modelSettingKey: string;
+	type: 'api';
+};
 
 type BaseTranscriptionService = {
+	icon: unknown;
 	id: TranscriptionServiceId;
 	name: string;
-	icon: unknown;
-};
-
-type ApiTranscriptionService = BaseTranscriptionService & {
-	type: 'api';
-	models: readonly TranscriptionModel[];
-	defaultModel: TranscriptionModel;
-	modelSettingKey: string;
-	apiKeyField: keyof Settings;
-};
-
-type ServerTranscriptionService = BaseTranscriptionService & {
-	type: 'server';
-	serverUrlField: keyof Settings;
 };
 
 type SatisfiedTranscriptionService =
 	| ApiTranscriptionService
 	| ServerTranscriptionService;
 
+type ServerTranscriptionService = BaseTranscriptionService & {
+	serverUrlField: keyof Settings;
+	type: 'server';
+};
+
+type TranscriptionServiceId = (typeof TRANSCRIPTION_SERVICE_IDS)[number];
+
 export const TRANSCRIPTION_SERVICES = [
 	{
-		id: 'Groq',
-		name: 'Groq Whisper',
-		icon: CloudIcon,
-		models: GROQ_MODELS,
-		defaultModel: GROQ_MODELS[2],
-		modelSettingKey: 'transcription.groq.model',
 		apiKeyField: 'apiKeys.groq',
+		defaultModel: GROQ_MODELS[2],
+		icon: CloudIcon,
+		id: 'Groq',
+		models: GROQ_MODELS,
+		modelSettingKey: 'transcription.groq.model',
+		name: 'Groq Whisper',
 		type: 'api',
 	},
 	{
-		id: 'OpenAI',
-		name: 'OpenAI Whisper',
-		icon: HexagonIcon,
-		models: OPENAI_TRANSCRIPTION_MODELS,
-		defaultModel: OPENAI_TRANSCRIPTION_MODELS[0],
-		modelSettingKey: 'transcription.openai.model',
 		apiKeyField: 'apiKeys.openai',
+		defaultModel: OPENAI_TRANSCRIPTION_MODELS[0],
+		icon: HexagonIcon,
+		id: 'OpenAI',
+		models: OPENAI_TRANSCRIPTION_MODELS,
+		modelSettingKey: 'transcription.openai.model',
+		name: 'OpenAI Whisper',
 		type: 'api',
 	},
 	{
-		id: 'ElevenLabs',
-		name: 'ElevenLabs',
-		icon: PauseIcon,
-		models: ELEVENLABS_TRANSCRIPTION_MODELS,
-		defaultModel: ELEVENLABS_TRANSCRIPTION_MODELS[0],
-		modelSettingKey: 'transcription.elevenlabs.model',
 		apiKeyField: 'apiKeys.elevenlabs',
+		defaultModel: ELEVENLABS_TRANSCRIPTION_MODELS[0],
+		icon: PauseIcon,
+		id: 'ElevenLabs',
+		models: ELEVENLABS_TRANSCRIPTION_MODELS,
+		modelSettingKey: 'transcription.elevenlabs.model',
+		name: 'ElevenLabs',
 		type: 'api',
 	},
 	{
+		icon: ServerIcon,
 		id: 'speaches',
 		name: 'Speaches',
-		icon: ServerIcon,
 		serverUrlField: 'transcription.speaches.baseUrl',
 		type: 'server',
 	},
 	{
-		id: 'Deepgram',
-		name: 'Deepgram',
-		icon: ServerIcon,
-		models: DEEPGRAM_TRANSCRIPTION_MODELS,
-		defaultModel: DEEPGRAM_TRANSCRIPTION_MODELS[0],
-		modelSettingKey: 'transcription.deepgram.model',
 		apiKeyField: 'apiKeys.deepgram',
+		defaultModel: DEEPGRAM_TRANSCRIPTION_MODELS[0],
+		icon: ServerIcon,
+		id: 'Deepgram',
+		models: DEEPGRAM_TRANSCRIPTION_MODELS,
+		modelSettingKey: 'transcription.deepgram.model',
+		name: 'Deepgram',
 		type: 'api',
 	},
 ] as const satisfies SatisfiedTranscriptionService[];

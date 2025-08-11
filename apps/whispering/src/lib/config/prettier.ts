@@ -1,8 +1,9 @@
 import type { Config } from 'prettier';
+
 import svelte from 'prettier-plugin-svelte';
 
 /**
- * Shared Prettier configuration for Svelte applications in the Whispering monorepo.
+ * Shared Prettier configuration for Svelte applications in the NoteFlux monorepo.
  *
  * This config complements the root-level Biome formatting by providing
  * Svelte-specific formatting rules that Biome doesn't support.
@@ -12,11 +13,6 @@ import svelte from 'prettier-plugin-svelte';
  * Svelte components require specialized formatting through the prettier-plugin-svelte.
  */
 export const prettierConfig = {
-	useTabs: true,
-	singleQuote: true,
-	trailingComma: 'all',
-	printWidth: 80,
-	plugins: [svelte],
 	overrides: [
 		{
 			files: '*.svelte',
@@ -25,4 +21,9 @@ export const prettierConfig = {
 			},
 		},
 	],
+	plugins: [svelte],
+	printWidth: 80,
+	singleQuote: true,
+	trailingComma: 'all',
+	useTabs: true,
 } satisfies Config;

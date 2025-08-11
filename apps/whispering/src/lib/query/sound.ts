@@ -1,8 +1,10 @@
-import type { WhisperingSoundNames } from '$lib/constants/sounds';
-import * as services from '$lib/services';
+import type { NoteFluxSoundNames } from '$lib/constants/sounds';
 import type { PlaySoundServiceError } from '$lib/services/sound';
+
+import * as services from '$lib/services';
 import { settings } from '$lib/stores/settings.svelte';
 import { Ok, type Result } from 'wellcrafted/result';
+
 import { defineMutation } from './_client';
 
 const soundKeys = {
@@ -14,7 +16,7 @@ export const sound = {
 	playSoundIfEnabled: defineMutation({
 		mutationKey: soundKeys.playSoundIfEnabled,
 		resultMutationFn: async (
-			soundName: WhisperingSoundNames,
+			soundName: NoteFluxSoundNames,
 		): Promise<Result<void, PlaySoundServiceError>> => {
 			if (!settings.value[`sound.playOn.${soundName}`]) {
 				return Ok(undefined);

@@ -1,10 +1,12 @@
+import type { NoteFluxError } from '$lib/result';
+import type { ClipboardServiceError } from '$lib/services/clipboard';
+
 import { WHISPERING_RECORDINGS_PATHNAME } from '$lib/constants/app';
 import { settings } from '$lib/stores/settings.svelte';
 import { Ok } from 'wellcrafted/result';
+
 import { defineMutation } from './_client';
 import { rpc } from './index';
-import type { ClipboardServiceError } from '$lib/services/clipboard';
-import type { WhisperingError } from '$lib/result';
 
 export const delivery = {
 	/**
@@ -45,11 +47,9 @@ export const delivery = {
 			// Shows transcription result and offers manual copy action
 			const offerManualCopy = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '📝 Recording transcribed!',
 					description: text,
 					action: {
-						type: 'button',
 						label: 'Copy to clipboard',
 						onClick: async () => {
 							const { error } = await rpc.clipboard.copyToClipboard.execute({
@@ -60,18 +60,20 @@ export const delivery = {
 								rpc.notify.error.execute({
 									title: 'Error copying transcribed text to clipboard',
 									description: error.message,
-									action: { type: 'more-details', error },
+									action: { error, type: 'more-details' },
 								});
 								return;
 							}
 							// Confirm manual copy succeeded
 							rpc.notify.success.execute({
-								id: toastId,
 								title: 'Copied transcribed text to clipboard!',
 								description: text,
+								id: toastId,
 							});
 						},
+						type: 'button',
 					},
+					id: toastId,
 				});
 
 			// Warns that automatic copy failed and falls back to manual option
@@ -79,36 +81,36 @@ export const delivery = {
 				rpc.notify.warning.execute({
 					title: "Couldn't copy to clipboard",
 					description: error.message,
-					action: { type: 'more-details', error },
+					action: { error, type: 'more-details' },
 				});
 			};
 
 			// Confirms text is in clipboard (when paste is not attempted)
 			const confirmTextInClipboard = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '📝 Recording transcribed and copied to clipboard!',
 					description: text,
 					action: {
-						type: 'link',
-						label: 'Go to recordings',
 						href: WHISPERING_RECORDINGS_PATHNAME,
+						label: 'Go to recordings',
+						type: 'link',
 					},
+					id: toastId,
 				});
 
 			// Warns that paste failed but confirms copy succeeded
 			const warnPasteFailedButCopied = (
-				error: ClipboardServiceError | WhisperingError,
+				error: ClipboardServiceError | NoteFluxError,
 			) => {
 				if (error.name === 'ClipboardServiceError') {
 					rpc.notify.warning.execute({
 						title: 'Unable to paste automatically',
 						description: error.message,
-						action: { type: 'more-details', error },
+						action: { error, type: 'more-details' },
 					});
 					return;
 				}
-				if (error.name === 'WhisperingError') {
+				if (error.name === 'NoteFluxError') {
 					rpc.notify[error.severity].execute(error);
 					return;
 				}
@@ -117,14 +119,14 @@ export const delivery = {
 			// Confirms complete delivery (both copy and paste succeeded)
 			const confirmFullDelivery = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '📝 Recording transcribed, copied to clipboard, and pasted!',
 					description: text,
 					action: {
-						type: 'link',
-						label: 'Go to recordings',
 						href: WHISPERING_RECORDINGS_PATHNAME,
+						label: 'Go to recordings',
+						type: 'link',
 					},
+					id: toastId,
 				});
 
 			// Main delivery flow
@@ -206,11 +208,9 @@ export const delivery = {
 			// Shows transformation result and offers manual copy action
 			const offerManualCopy = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '🔄 Transformation complete!',
 					description: text,
 					action: {
-						type: 'button',
 						label: 'Copy to clipboard',
 						onClick: async () => {
 							const { error } = await rpc.clipboard.copyToClipboard.execute({
@@ -221,18 +221,20 @@ export const delivery = {
 								rpc.notify.error.execute({
 									title: 'Error copying transformed text to clipboard',
 									description: error.message,
-									action: { type: 'more-details', error },
+									action: { error, type: 'more-details' },
 								});
 								return;
 							}
 							// Confirm manual copy succeeded
 							rpc.notify.success.execute({
-								id: toastId,
 								title: 'Copied transformed text to clipboard!',
 								description: text,
+								id: toastId,
 							});
 						},
+						type: 'button',
 					},
+					id: toastId,
 				});
 
 			// Warns that automatic copy failed and falls back to manual option
@@ -240,36 +242,36 @@ export const delivery = {
 				rpc.notify.warning.execute({
 					title: "Couldn't copy to clipboard",
 					description: error.message,
-					action: { type: 'more-details', error },
+					action: { error, type: 'more-details' },
 				});
 			};
 
 			// Confirms text is in clipboard (when paste is not attempted)
 			const confirmTextInClipboard = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '🔄 Transformation complete and copied to clipboard!',
 					description: text,
 					action: {
-						type: 'link',
-						label: 'Go to recordings',
 						href: WHISPERING_RECORDINGS_PATHNAME,
+						label: 'Go to recordings',
+						type: 'link',
 					},
+					id: toastId,
 				});
 
 			// Warns that paste failed but confirms copy succeeded
 			const warnPasteFailedButCopied = (
-				error: ClipboardServiceError | WhisperingError,
+				error: ClipboardServiceError | NoteFluxError,
 			) => {
 				if (error.name === 'ClipboardServiceError') {
 					rpc.notify.error.execute({
 						title: 'Error pasting transformed text to cursor',
 						description: error.message,
-						action: { type: 'more-details', error },
+						action: { error, type: 'more-details' },
 					});
 					return;
 				}
-				if (error.name === 'WhisperingError') {
+				if (error.name === 'NoteFluxError') {
 					rpc.notify[error.severity].execute(error);
 					return;
 				}
@@ -278,14 +280,14 @@ export const delivery = {
 			// Confirms complete delivery (both copy and paste succeeded)
 			const confirmFullDelivery = () =>
 				rpc.notify.success.execute({
-					id: toastId,
 					title: '🔄 Transformation complete, copied to clipboard, and pasted!',
 					description: text,
 					action: {
-						type: 'link',
-						label: 'Go to recordings',
 						href: WHISPERING_RECORDINGS_PATHNAME,
+						label: 'Go to recordings',
+						type: 'link',
 					},
+					id: toastId,
 				});
 
 			// Main delivery flow

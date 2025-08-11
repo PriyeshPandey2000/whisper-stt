@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
+	import { rpc } from '$lib/query';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
-	import { rpc } from '$lib/query';
 	import { RotateCcw } from '@lucide/svelte';
+
 	import SidebarNav from './SidebarNav.svelte';
-	import { settings } from '$lib/stores/settings.svelte';
 
 	let { children } = $props();
 
@@ -28,10 +29,10 @@
 			return { isOutdated: false, version: currentVersion } as const;
 		}
 		return {
-			isOutdated: true,
-			latestVersion,
 			currentVersion,
+			isOutdated: true,
 			latestReleaseUrl,
+			latestVersion,
 		} as const;
 	})();
 </script>
@@ -44,11 +45,11 @@
 			<h2 class="text-2xl font-bold tracking-tight">Settings</h2>
 			<p class="text-muted-foreground">
 				{#await versionPromise}
-					Customize your Whispering experience.
+					Customize your NoteFlux experience.
 				{:then v}
 					{#if v.isOutdated}
-						{@const { latestVersion, currentVersion, latestReleaseUrl } = v}
-						Customize your experience for Whispering {currentVersion} (latest
+						{@const { currentVersion, latestReleaseUrl, latestVersion } = v}
+						Customize your experience for NoteFlux {currentVersion} (latest
 						<Button
 							class="px-0"
 							variant="link"
@@ -61,10 +62,10 @@
 						</Button>).
 					{:else}
 						{@const { version } = v}
-						Customize your experience for Whispering {version}.
+						Customize your experience for NoteFlux {version}.
 					{/if}
 				{:catch error}
-					Customize your Whispering experience.
+					Customize your NoteFlux experience.
 				{/await}
 			</p>
 		</div>
@@ -74,8 +75,6 @@
 			onclick={() => {
 				confirmationDialog.open({
 					title: 'Reset All Settings',
-					subtitle:
-						'This will reset all settings to their default values. This action cannot be undone.',
 					confirmText: 'Reset Settings',
 					onConfirm: () => {
 						settings.reset();
@@ -84,6 +83,8 @@
 							description: 'All settings have been reset to defaults.',
 						});
 					},
+					subtitle:
+						'This will reset all settings to their default values. This action cannot be undone.',
 				});
 			}}
 			class="shrink-0"

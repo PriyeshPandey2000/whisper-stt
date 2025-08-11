@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CopyableTextareaExpandsToDialog from '$lib/components/copyable/CopyableTextareaExpandsToDialog.svelte';
-	import { Skeleton } from '$lib/ui/skeleton';
 	import { rpc } from '$lib/query';
+	import { Skeleton } from '$lib/ui/skeleton';
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
 	import { createQuery } from '@tanstack/svelte-query';
 
@@ -18,8 +18,8 @@
 	);
 
 	const id = getRecordingTransitionId({
-		recordingId,
 		propertyName: 'latestTransformationRunOutput',
+		recordingId,
 	});
 </script>
 

@@ -1,31 +1,32 @@
 <script lang="ts">
-  import DesktopOutputFolder from './DesktopOutputFolder.svelte';
-	import { LabeledSelect } from '$lib/components/labeled/index.js';
-	import { Separator } from '$lib/ui/separator';
+  import { LabeledSelect } from '$lib/components/labeled/index.js';
 	import {
 		BITRATE_OPTIONS,
 		RECORDING_MODE_OPTIONS,
 	} from '$lib/constants/audio';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { Separator } from '$lib/ui/separator';
+
+	import DesktopOutputFolder from './DesktopOutputFolder.svelte';
 	import SelectRecordingDevice from './SelectRecordingDevice.svelte';
 
 	const SAMPLE_RATE_OPTIONS = [
-		{ value: '16000', label: 'Voice Quality (16kHz): Optimized for speech' },
-		{ value: '44100', label: 'Standard Quality (44.1kHz): CD quality' },
-		{ value: '48000', label: 'High Quality (48kHz): Professional audio' },
+		{ label: 'Voice Quality (16kHz): Optimized for speech', value: '16000' },
+		{ label: 'Standard Quality (44.1kHz): CD quality', value: '44100' },
+		{ label: 'High Quality (48kHz): Professional audio', value: '48000' },
 	] as const;
 
 </script>
 
 <svelte:head>
-	<title>Recording Settings - Whispering</title>
+	<title>Recording Settings - NoteFlux</title>
 </svelte:head>
 
 <div class="space-y-6">
 	<div>
 		<h3 class="text-lg font-medium">Recording</h3>
 		<p class="text-muted-foreground text-sm">
-			Configure your Whispering recording preferences.
+			Configure your NoteFlux recording preferences.
 		</p>
 	</div>
 	<Separator />
@@ -58,8 +59,8 @@
 				id="bit-rate"
 				label="Bitrate"
 				items={BITRATE_OPTIONS.map((option) => ({
-					value: option.value,
 					label: option.label,
+					value: option.value,
 				}))}
 				selected={settings.value['recording.navigator.bitrateKbps']}
 				onSelectedChange={(selected) => {

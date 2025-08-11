@@ -1,7 +1,9 @@
-import type { WhisperingRecordingState } from '$lib/constants/audio';
-import { fromTaggedErr, type WhisperingError } from '$lib/result';
+import type { NoteFluxRecordingState } from '$lib/constants/audio';
+
+import { fromTaggedErr, type NoteFluxError } from '$lib/result';
 import * as services from '$lib/services';
 import { Ok, type Result } from 'wellcrafted/result';
+
 import { defineMutation } from './_client';
 
 const setTrayIconKeys = {
@@ -14,14 +16,14 @@ export const tray = {
 		resultMutationFn: async ({
 			icon,
 		}: {
-			icon: WhisperingRecordingState;
-		}): Promise<Result<void, WhisperingError>> => {
+			icon: NoteFluxRecordingState;
+		}): Promise<Result<void, NoteFluxError>> => {
 			const { data, error } = await services.tray.setTrayIcon(icon);
 
 			if (error) {
 				return fromTaggedErr(error, {
 					title: '⚠️ Failed to set tray icon',
-					action: { type: 'more-details', error },
+					action: { error, type: 'more-details' },
 				});
 			}
 

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import * as Command from '$lib/ui/command';
-	import * as Popover from '$lib/ui/popover';
-	import { useCombobox } from '$lib/ui/hooks';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
+	import * as Command from '$lib/ui/command';
+	import { useCombobox } from '$lib/ui/hooks';
+	import * as Popover from '$lib/ui/popover';
 	import { cn } from '$lib/ui/utils';
-	import { createQuery } from '@tanstack/svelte-query';
 	import { CheckIcon, MicIcon, RefreshCwIcon } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 
 	const combobox = useCombobox();
 	
@@ -33,7 +33,7 @@
 <Popover.Root bind:open={combobox.open}>
 	<Popover.Trigger bind:ref={combobox.triggerRef}>
 		{#snippet child({ props })}
-			<WhisperingButton
+			<NoteFluxButton
 				{...props}
 				tooltipContent={isDeviceSelected
 					? 'Change recording device'
@@ -48,7 +48,7 @@
 				{:else}
 					<MicIcon class="size-4 text-amber-500" />
 				{/if}
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-80 max-w-xl p-0">

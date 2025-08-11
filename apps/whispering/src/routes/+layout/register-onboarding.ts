@@ -13,12 +13,12 @@ export function registerOnboarding() {
 
 	if (!selectedService) {
 		rpc.notify.info.execute({
-			title: 'Welcome to Whispering!',
+			title: 'Welcome to NoteFlux!',
 			description: 'Please select a transcription service to get started.',
 			action: {
-				type: 'link',
-				label: 'Configure',
 				href: '/settings/transcription',
+				label: 'Configure',
+				type: 'link',
 			},
 			persist: true,
 		});
@@ -32,12 +32,12 @@ export function registerOnboarding() {
 				: `${selectedService.name} server URL`;
 
 		rpc.notify.info.execute({
-			title: 'Welcome to Whispering!',
+			title: 'Welcome to NoteFlux!',
 			description: `Please configure your ${missingConfig} to get started.`,
 			action: {
-				type: 'link',
-				label: 'Configure',
 				href: '/settings/transcription',
+				label: 'Configure',
+				type: 'link',
 			},
 			persist: true,
 		});

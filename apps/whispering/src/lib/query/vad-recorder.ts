@@ -1,8 +1,10 @@
 import type { VadState } from '$lib/constants/audio';
+
 import { fromTaggedErr } from '$lib/result';
 import * as services from '$lib/services';
 import { settings } from '$lib/stores/settings.svelte';
 import { Ok } from 'wellcrafted/result';
+
 import { defineMutation, defineQuery, queryClient } from './_client';
 import { rpc } from './index';
 
@@ -16,22 +18,22 @@ const invalidateVadState = () =>
 
 export const vadRecorder = {
 	getVadState: defineQuery({
+		initialData: 'IDLE' as VadState,
 		queryKey: vadRecorderKeys.state,
 		resultQueryFn: () => {
 			const vadState = services.vad.getVadState();
 			return Ok(vadState);
 		},
-		initialData: 'IDLE' as VadState,
 	}),
 
 	startActiveListening: defineMutation({
 		mutationKey: ['vadRecorder', 'startActiveListening'] as const,
 		resultMutationFn: async ({
-			onSpeechStart,
 			onSpeechEnd,
+			onSpeechStart,
 		}: {
-			onSpeechStart: () => void;
 			onSpeechEnd: (blob: Blob) => void;
+			onSpeechStart: () => void;
 		}) => {
 			// Switch to VAD mode (handles stopping other recordings)
 			await rpc.settings.switchRecordingMode.execute('vad');
@@ -39,18 +41,18 @@ export const vadRecorder = {
 			const { data: deviceOutcome, error: startListeningError } =
 				await services.vad.startActiveListening({
 					deviceId: settings.value['recording.selectedDeviceId'],
-					onSpeechStart: () => {
-						invalidateVadState();
-						onSpeechStart();
-					},
 					onSpeechEnd: (blob) => {
 						invalidateVadState();
 						onSpeechEnd(blob);
 					},
-					onVADMisfire: () => {
+					onSpeechRealStart: () => {
 						invalidateVadState();
 					},
-					onSpeechRealStart: () => {
+					onSpeechStart: () => {
+						invalidateVadState();
+						onSpeechStart();
+					},
+					onVADMisfire: () => {
 						invalidateVadState();
 					},
 				});
@@ -58,7 +60,7 @@ export const vadRecorder = {
 			if (startListeningError) {
 				return fromTaggedErr(startListeningError, {
 					title: '❌ Failed to start voice activity detection',
-					action: { type: 'more-details', error: startListeningError },
+					action: { error: startListeningError, type: 'more-details' },
 				});
 			}
 
@@ -76,7 +78,7 @@ export const vadRecorder = {
 			if (stopListeningError) {
 				return fromTaggedErr(stopListeningError, {
 					title: '❌ Failed to stop voice activity detection',
-					action: { type: 'more-details', error: stopListeningError },
+					action: { error: stopListeningError, type: 'more-details' },
 				});
 			}
 

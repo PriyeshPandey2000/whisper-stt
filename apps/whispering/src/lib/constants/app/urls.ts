@@ -1,7 +1,7 @@
 import { APPS } from '$lib/constants/vite';
 
 /**
- * URL and pathname constants for the Whispering application
+ * URL and pathname constants for the NoteFlux application
  */
 export const WHISPERING_URL = APPS.AUDIO.URL;
 

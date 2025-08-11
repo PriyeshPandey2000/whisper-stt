@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { TransformationRun } from '$lib/services/db';
+
 	import CopyablePre from '$lib/components/copyable/CopyablePre.svelte';
 	import CopyableTextareaExpandsToDialog from '$lib/components/copyable/CopyableTextareaExpandsToDialog.svelte';
 	import { Badge } from '$lib/ui/badge';
@@ -6,14 +8,13 @@
 	import * as Card from '$lib/ui/card';
 	import { Label } from '$lib/ui/label';
 	import * as Table from '$lib/ui/table';
-	import type { TransformationRun } from '$lib/services/db';
 	import { getTransformationStepRunTransitionId } from '$lib/utils/getRecordingTransitionId';
-	import { format } from 'date-fns';
 	import { ChevronDown, ChevronRight } from '@lucide/svelte';
+	import { format } from 'date-fns';
 
 	let { runs }: { runs: TransformationRun[] } = $props();
 
-	let expandedRunId = $state<string | null>(null);
+	let expandedRunId = $state<null | string>(null);
 
 	function toggleRunExpanded(runId: string) {
 		expandedRunId = expandedRunId === runId ? null : runId;
@@ -125,8 +126,8 @@
 															<Table.Cell>
 																<CopyableTextareaExpandsToDialog
 																	id={getTransformationStepRunTransitionId({
-																		stepRunId: stepRun.id,
 																		propertyName: 'input',
+																		stepRunId: stepRun.id,
 																	})}
 																	title="Step Input"
 																	label="step input"
@@ -137,8 +138,8 @@
 																{#if stepRun.status === 'completed'}
 																	<CopyableTextareaExpandsToDialog
 																		id={getTransformationStepRunTransitionId({
-																			stepRunId: stepRun.id,
 																			propertyName: 'output',
+																			stepRunId: stepRun.id,
 																		})}
 																		title="Step Output"
 																		label="step output"
@@ -147,8 +148,8 @@
 																{:else if stepRun.status === 'failed'}
 																	<CopyableTextareaExpandsToDialog
 																		id={getTransformationStepRunTransitionId({
-																			stepRunId: stepRun.id,
 																			propertyName: 'error',
+																			stepRunId: stepRun.id,
 																		})}
 																		title="Step Error"
 																		label="step error"

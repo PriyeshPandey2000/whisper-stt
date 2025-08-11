@@ -1,13 +1,11 @@
-import type { MaybePromise, WhisperingError } from '$lib/result';
-import { createTaggedError } from 'wellcrafted/error';
+import type { MaybePromise, NoteFluxError } from '$lib/result';
 import type { Result } from 'wellcrafted/result';
 
-const { ClipboardServiceError, ClipboardServiceErr } = createTaggedError(
+import { createTaggedError } from 'wellcrafted/error';
+
+const { ClipboardServiceErr, ClipboardServiceError } = createTaggedError(
 	'ClipboardServiceError',
 );
-type ClipboardServiceError = ReturnType<typeof ClipboardServiceError>;
-export { ClipboardServiceErr, ClipboardServiceError };
-
 export type ClipboardService = {
 	/**
 	 * Copies text to the system clipboard.
@@ -29,6 +27,9 @@ export type ClipboardService = {
 	 * - Mobile: Triggers native paste action
 	 */
 	pasteFromClipboard: () => MaybePromise<
-		Result<void, ClipboardServiceError | WhisperingError>
+		Result<void, ClipboardServiceError | NoteFluxError>
 	>;
 };
+export { ClipboardServiceErr, ClipboardServiceError };
+
+type ClipboardServiceError = ReturnType<typeof ClipboardServiceError>;

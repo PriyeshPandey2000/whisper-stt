@@ -1,25 +1,25 @@
 <script lang="ts">
+	import type { Recording } from '$lib/services/db';
+	import type { UnlistenFn } from '@tauri-apps/api/event';
+
 	import { commandCallbacks } from '$lib/commands';
-	import NavItems from '$lib/components/NavItems.svelte';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import { ClipboardIcon } from '$lib/components/icons';
+	import NavItems from '$lib/components/NavItems.svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		DeviceSelector,
 		TranscriptionSelector,
 		TransformationSelector,
 	} from '$lib/components/settings';
 	import {
+		recorderStateToIcons,
 		RECORDING_MODE_OPTIONS,
 		type RecordingMode,
-		recorderStateToIcons,
 		vadStateToIcons,
 	} from '$lib/constants/audio';
 	import { rpc } from '$lib/query';
-	import type { Recording } from '$lib/services/db';
 	import { settings } from '$lib/stores/settings.svelte';
-	import { createBlobUrlManager } from '$lib/utils/blobUrlManager';
-	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
 	import {
 		ACCEPT_AUDIO,
 		ACCEPT_VIDEO,
@@ -27,10 +27,12 @@
 		MEGABYTE,
 	} from '$lib/ui/file-drop-zone';
 	import * as ToggleGroup from '$lib/ui/toggle-group';
-	import { createQuery } from '@tanstack/svelte-query';
-	import type { UnlistenFn } from '@tauri-apps/api/event';
+	import { createBlobUrlManager } from '$lib/utils/blobUrlManager';
+	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
 	import { Loader2Icon } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { onDestroy, onMount } from 'svelte';
+
 	import TranscribedTextDialog from './(config)/recordings/TranscribedTextDialog.svelte';
 
 	const getRecorderStateQuery = createQuery(
@@ -43,15 +45,15 @@
 
 	const latestRecording = $derived<Recording>(
 		latestRecordingQuery.data ?? {
-			id: '',
 			title: '',
-			subtitle: '',
-			createdAt: '',
-			updatedAt: '',
-			timestamp: '',
 			blob: new Blob(),
+			createdAt: '',
+			id: '',
+			subtitle: '',
+			timestamp: '',
 			transcribedText: '',
 			transcriptionStatus: 'UNPROCESSED',
+			updatedAt: '',
 		},
 	);
 
@@ -93,28 +95,28 @@
 	] as const;
 
 	const MIME_TYPE_MAP = {
+		aac: 'audio/aac',
+		avi: 'video/x-msvideo',
+		flac: 'audio/flac',
+		flv: 'video/x-flv',
+		m4a: 'audio/mp4',
+		m4v: 'video/mp4',
+		mkv: 'video/x-matroska',
+		mov: 'video/quicktime',
 		// Audio
 		mp3: 'audio/mpeg',
-		wav: 'audio/wav',
-		m4a: 'audio/mp4',
-		aac: 'audio/aac',
-		ogg: 'audio/ogg',
-		flac: 'audio/flac',
-		wma: 'audio/x-ms-wma',
-		opus: 'audio/opus',
 		// Video
 		mp4: 'video/mp4',
-		avi: 'video/x-msvideo',
-		mov: 'video/quicktime',
-		wmv: 'video/x-ms-wmv',
-		flv: 'video/x-flv',
-		mkv: 'video/x-matroska',
+		ogg: 'audio/ogg',
+		opus: 'audio/opus',
+		wav: 'audio/wav',
 		webm: 'video/webm',
-		m4v: 'video/mp4',
+		wma: 'audio/x-ms-wma',
+		wmv: 'video/x-ms-wmv',
 	} as const;
 
 	// Store unlisten function for drag drop events
-	let unlistenDragDrop: UnlistenFn | undefined;
+	let unlistenDragDrop: undefined | UnlistenFn;
 
 	// Set up desktop drag and drop listener
 	onMount(async () => {
@@ -150,8 +152,8 @@
 					// Filter for audio/video files based on extension
 					const pathResults = await Promise.all(
 						event.payload.paths.map(async (path) => ({
-							path,
 							isValid: (await isAudio(path)) || (await isVideo(path)),
+							path,
 						})),
 					);
 					const validPaths = pathResults
@@ -207,7 +209,7 @@
 </script>
 
 <svelte:head>
-	<title>Whispering</title>
+	<title>NoteFlux</title>
 </svelte:head>
 
 <main class="flex flex-1 flex-col items-center justify-center gap-4">
@@ -215,7 +217,7 @@
 	<div class="w-full max-w-2xl px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden flex-col items-center gap-4">
 			<h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
-				Whispering
+				NoteFlux
 			</h1>
 			<p class="text-muted-foreground text-center">
 				Press shortcut → speak → get text. Free and open source ❤️
@@ -247,7 +249,7 @@
 			<div></div>
 			{#if settings.value['recording.mode'] === 'manual'}
 				<!-- Center column: Recording button -->
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent={getRecorderStateQuery.data === 'IDLE'
 						? 'Start recording'
 						: 'Stop recording'}
@@ -261,11 +263,11 @@
 					>
 						{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
 					</span>
-				</WhisperingButton>
+				</NoteFluxButton>
 				<!-- Right column: Selectors -->
 				<div class="flex justify-end items-center gap-1.5 mb-2">
 					{#if getRecorderStateQuery.data === 'RECORDING'}
-						<WhisperingButton
+						<NoteFluxButton
 							tooltipContent="Cancel recording"
 							onclick={commandCallbacks.cancelManualRecording}
 							variant="ghost"
@@ -273,7 +275,7 @@
 							style="view-transition-name: cancel-icon;"
 						>
 							🚫
-						</WhisperingButton>
+						</NoteFluxButton>
 					{:else}
 						<DeviceSelector />
 						<TranscriptionSelector />
@@ -282,7 +284,7 @@
 				</div>
 			{:else if settings.value['recording.mode'] === 'vad'}
 				<!-- Center column: Recording button -->
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent={getVadStateQuery.data === 'IDLE'
 						? 'Start voice activated session'
 						: 'Stop voice activated session'}
@@ -296,7 +298,7 @@
 					>
 						{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
 					</span>
-				</WhisperingButton>
+				</NoteFluxButton>
 				<!-- Right column: Selectors -->
 				<div class="flex justify-end items-center gap-1.5 mb-2">
 					{#if getVadStateQuery.data === 'IDLE'}
@@ -349,8 +351,8 @@
 					contentDescription="transcribed text"
 					textToCopy={latestRecording.transcribedText}
 					viewTransitionName={getRecordingTransitionId({
-						recordingId: latestRecording.id,
 						propertyName: 'transcribedText',
+						recordingId: latestRecording.id,
 					})}
 					size="default"
 					variant="secondary"
@@ -367,8 +369,8 @@
 			{#if blobUrl}
 				<audio
 					style="view-transition-name: {getRecordingTransitionId({
-						recordingId: latestRecording.id,
 						propertyName: 'blob',
+						recordingId: latestRecording.id,
 					})}"
 					src={blobUrl}
 					controls
@@ -382,7 +384,7 @@
 		<div class="xs:flex hidden flex-col items-center gap-3">
 			<p class="text-foreground/75 text-center text-sm">
 				Click the microphone or press
-				{' '}<WhisperingButton
+				{' '}<NoteFluxButton
 					tooltipContent="Go to local shortcut in settings"
 					href="/settings/shortcuts/local"
 					variant="link"
@@ -393,13 +395,13 @@
 					>
 						{settings.value['shortcuts.local.toggleManualRecording']}
 					</kbd>
-				</WhisperingButton>{' '}
+				</NoteFluxButton>{' '}
 				to start recording here.
 			</p>
 			{#if window.__TAURI_INTERNALS__}
 				<p class="text-foreground/75 text-sm">
 					Press
-					{' '}<WhisperingButton
+					{' '}<NoteFluxButton
 						tooltipContent="Go to global shortcut in settings"
 						href="/settings/shortcuts/global"
 						variant="link"
@@ -410,23 +412,23 @@
 						>
 							{settings.value['shortcuts.global.toggleManualRecording']}
 						</kbd>
-					</WhisperingButton>{' '}
+					</NoteFluxButton>{' '}
 					to start recording anywhere.
 				</p>
 			{/if}
 			<p class="text-muted-foreground text-center text-sm font-light">
-				Check out the {' '}<WhisperingButton
+				Check out the {' '}<NoteFluxButton
 					tooltipContent="Check out the Chrome Extension"
-					href="https://chromewebstore.google.com/detail/whispering/oilbfihknpdbpfkcncojikmooipnlglo"
+					href="https://chromewebstore.google.com/detail/noteflux/oilbfihknpdbpfkcncojikmooipnlglo"
 					target="_blank"
 					rel="noopener noreferrer"
 					variant="link"
 					size="inline"
 				>
 					extension
-				</WhisperingButton>{' '}
+				</NoteFluxButton>{' '}
 				{#if !window.__TAURI_INTERNALS__}
-					and {' '}<WhisperingButton
+					and {' '}<NoteFluxButton
 						tooltipContent="Check out the desktop app"
 						href="https://github.com/epicenter-so/epicenter/releases"
 						target="_blank"
@@ -435,7 +437,7 @@
 						size="inline"
 					>
 						app
-					</WhisperingButton>{' '}
+					</NoteFluxButton>{' '}
 				{/if} for more integrations!
 			</p>
 		</div>

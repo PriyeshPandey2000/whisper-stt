@@ -1,17 +1,17 @@
 <script lang="ts">
-	import * as Card from '$lib/ui/card';
-	import { Badge } from '$lib/ui/badge';
-	import { Label } from '$lib/ui/label';
-	import { Switch } from '$lib/ui/switch';
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { Badge } from '$lib/ui/badge';
+	import * as Card from '$lib/ui/card';
+	import { Label } from '$lib/ui/label';
+	import { Switch } from '$lib/ui/switch';
 
 	function handleAnalyticsToggle(checked: boolean) {
 		settings.updateKey('analytics.enabled', checked);
 		
 		// Log the change (will only send if analytics is now enabled)
 		if (checked) {
-			rpc.analytics.logEvent.execute({ type: 'settings_changed', section: 'analytics' });
+			rpc.analytics.logEvent.execute({ section: 'analytics', type: 'settings_changed' });
 		}
 	}
 </script>
@@ -32,7 +32,7 @@
 			{/if}
 		</div>
 		<p class="text-sm text-muted-foreground max-w-2xl">
-			Help us understand which features are used most. We use anonymized event logging to improve Whispering.
+			Help us understand which features are used most. We use anonymized event logging to improve NoteFlux.
 		</p>
 	</div>
 
@@ -122,7 +122,7 @@
 		<Card.Content class="space-y-3">
 			<div class="grid gap-2 text-sm">
 				<a
-					href="https://github.com/epicenter-so/epicenter/tree/main/apps/whispering/src/lib/services/analytics.ts"
+					href="https://github.com/epicenter-so/epicenter/tree/main/apps/noteflux/src/lib/services/analytics.ts"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="group flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"

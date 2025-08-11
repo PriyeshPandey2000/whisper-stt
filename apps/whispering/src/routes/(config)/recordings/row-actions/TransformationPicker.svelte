@@ -1,14 +1,15 @@
 <script lang="ts">
+	import type { Transformation } from '$lib/services/db';
+
 	import { goto } from '$app/navigation';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
+	import { rpc } from '$lib/query';
 	import { Badge } from '$lib/ui/badge';
 	import * as Command from '$lib/ui/command';
-	import * as Popover from '$lib/ui/popover';
 	import { useCombobox } from '$lib/ui/hooks';
-	import { rpc } from '$lib/query';
-	import type { Transformation } from '$lib/services/db';
-	import { createQuery } from '@tanstack/svelte-query';
+	import * as Popover from '$lib/ui/popover';
 	import { LayersIcon } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 
 	const transformationsQuery = createQuery(
 		rpc.transformations.queries.getAllTransformations.options,
@@ -41,7 +42,7 @@
 <Popover.Root bind:open={combobox.open}>
 	<Popover.Trigger bind:ref={combobox.triggerRef}>
 		{#snippet child({ props })}
-			<WhisperingButton
+			<NoteFluxButton
 				{...props}
 				class={className}
 				tooltipContent="Run a post-processing transformation to run on your recording"
@@ -51,7 +52,7 @@
 				size="icon"
 			>
 				<LayersIcon class="size-4" />
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-80 max-w-xl p-0">

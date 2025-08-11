@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
 	import { Editor } from '$lib/components/transformations-editor';
+	import { rpc } from '$lib/query';
+	import { generateDefaultTransformation } from '$lib/services/db';
 	import { Button } from '$lib/ui/button';
 	import * as Dialog from '$lib/ui/dialog';
 	import { Separator } from '$lib/ui/separator';
-	import { rpc } from '$lib/query';
-	import { generateDefaultTransformation } from '$lib/services/db';
-	import { createMutation } from '@tanstack/svelte-query';
 	import { PlusIcon } from '@lucide/svelte';
+	import { createMutation } from '@tanstack/svelte-query';
 
 	const createTransformation = createMutation(
 		rpc.transformations.mutations.createTransformation.options,
@@ -19,11 +19,11 @@
 	function promptUserConfirmLeave() {
 		confirmationDialog.open({
 			title: 'Unsaved changes',
-			subtitle: 'You have unsaved changes. Are you sure you want to leave?',
 			confirmText: 'Leave',
 			onConfirm: () => {
 				isDialogOpen = false;
 			},
+			subtitle: 'You have unsaved changes. Are you sure you want to leave?',
 		});
 	}
 </script>
@@ -68,6 +68,13 @@
 				type="submit"
 				onclick={() =>
 					createTransformation.mutate($state.snapshot(transformation), {
+						onError: (error) => {
+							rpc.notify.error.execute({
+								title: 'Failed to create transformation!',
+								description: 'Your transformation could not be created.',
+								action: { error, type: 'more-details' },
+							});
+						},
 						onSuccess: () => {
 							isDialogOpen = false;
 							transformation = generateDefaultTransformation();
@@ -75,13 +82,6 @@
 								title: 'Created transformation!',
 								description:
 									'Your transformation has been created successfully.',
-							});
-						},
-						onError: (error) => {
-							rpc.notify.error.execute({
-								title: 'Failed to create transformation!',
-								description: 'Your transformation could not be created.',
-								action: { type: 'more-details', error },
 							});
 						},
 					})}

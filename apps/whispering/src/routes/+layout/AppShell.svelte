@@ -10,9 +10,10 @@
 	import { settings } from '$lib/stores/settings.svelte';
 	// import { extension } from '@repo/extension';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { ModeWatcher, mode } from 'mode-watcher';
+	import { mode, ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { Toaster, type ToasterProps } from 'svelte-sonner';
+
 	import { syncWindowAlwaysOnTopWithRecorderState } from './alwaysOnTop.svelte';
 	import { checkForUpdates } from './check-for-updates';
 	import {
@@ -39,8 +40,8 @@
 			resetGlobalShortcutsToDefaultIfDuplicates();
 			await checkForUpdates();
 		} else {
-			// const _notifyWhisperingTabReadyResult =
-			// await extension.notifyWhisperingTabReady(undefined);
+			// const _notifyNoteFluxTabReadyResult =
+			// await extension.notifyNoteFluxTabReady(undefined);
 		}
 		registerOnboarding();
 	});
@@ -54,25 +55,25 @@
 		getRecorderStateQuery.data;
 		getVadStateQuery.data;
 		services.db.cleanupExpiredRecordings({
+			maxRecordingCount: settings.value['database.maxRecordingCount'],
 			recordingRetentionStrategy:
 				settings.value['database.recordingRetentionStrategy'],
-			maxRecordingCount: settings.value['database.maxRecordingCount'],
 		});
 	});
 
 	const TOASTER_SETTINGS = {
+		duration: 5000,
 		position: 'bottom-right',
 		richColors: true,
-		duration: 5000,
-		visibleToasts: 5,
 		toastOptions: {
 			classes: {
-				toast: 'flex flex-wrap *:data-content:flex-1',
-				icon: 'shrink-0',
 				actionButton: 'w-full mt-3 inline-flex justify-center',
 				closeButton: 'w-full mt-3 inline-flex justify-center',
+				icon: 'shrink-0',
+				toast: 'flex flex-wrap *:data-content:flex-1',
 			},
 		},
+		visibleToasts: 5,
 	} satisfies ToasterProps;
 
 	let { children } = $props();

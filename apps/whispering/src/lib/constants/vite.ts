@@ -1,4 +1,5 @@
 import { type } from 'arktype';
+
 import { createApps, createAppUrls } from './apps.js';
 
 /**
@@ -11,13 +12,13 @@ const viteEnvSchema = type({
 	MODE: "'development' | 'production'",
 });
 
+export type ViteEnv = typeof viteEnvSchema.infer;
+
 export function validateViteEnv(env: unknown): ViteEnv {
 	const result = viteEnvSchema(env);
 	if (result instanceof type.errors) throw new Error(result.summary);
 	return result;
 }
-
-export type ViteEnv = typeof viteEnvSchema.infer;
 
 /**
  * Vite build-time URLs.

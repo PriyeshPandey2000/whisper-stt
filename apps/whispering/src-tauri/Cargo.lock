@@ -2663,6 +2663,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "noteflux"
+version = "7.1.1"
+dependencies = [
+ "accessibility-sys",
+ "core-foundation-sys",
+ "cpal",
+ "dotenvy_macro",
+ "enigo",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-aptabase",
+ "tauri-plugin-clipboard-manager",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-http",
+ "tauri-plugin-notification",
+ "tauri-plugin-opener",
+ "tauri-plugin-os",
+ "tauri-plugin-process",
+ "tauri-plugin-shell",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-updater",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "notify-rust"
 version = "4.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6030,37 +6061,6 @@ name = "weezl"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a751b3277700db47d3e574514de2eced5e54dc8a5436a3bf7a0b248b2cee16f3"
-
-[[package]]
-name = "whispering"
-version = "7.1.1"
-dependencies = [
- "accessibility-sys",
- "core-foundation-sys",
- "cpal",
- "dotenvy_macro",
- "enigo",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-aptabase",
- "tauri-plugin-clipboard-manager",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-http",
- "tauri-plugin-notification",
- "tauri-plugin-opener",
- "tauri-plugin-os",
- "tauri-plugin-process",
- "tauri-plugin-shell",
- "tauri-plugin-single-instance",
- "tauri-plugin-updater",
- "thiserror 2.0.12",
- "tokio",
- "tracing",
-]
 
 [[package]]
 name = "winapi"

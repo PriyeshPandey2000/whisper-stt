@@ -1,35 +1,37 @@
-import { WhisperingWarningErr } from '$lib/result';
+import { NoteFluxWarningErr } from '$lib/result';
 import { invoke } from '@tauri-apps/api/core';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { type } from '@tauri-apps/plugin-os';
 import { Err, Ok, tryAsync } from 'wellcrafted/result';
+
 import type { ClipboardService } from '.';
+
 import { ClipboardServiceErr } from './types';
 
 export function createClipboardServiceDesktop(): ClipboardService {
 	return {
 		copyToClipboard: (text) =>
 			tryAsync({
-				try: () => writeText(text),
 				mapErr: (error) =>
 					ClipboardServiceErr({
+						cause: error,
+						context: { text },
 						message:
 							'There was an error copying to the clipboard using the Tauri Clipboard Manager API. Please try again.',
-						context: { text },
-						cause: error,
 					}),
+				try: () => writeText(text),
 			}),
 
 		pasteFromClipboard: async () => {
 			// Try to paste using keyboard shortcut
 			const { error: pasteError } = await tryAsync({
-				try: () => invoke<void>('paste'),
 				mapErr: (error) =>
 					ClipboardServiceErr({
+						cause: error,
 						message:
 							'There was an error simulating the paste keyboard shortcut. Please try pasting manually with Cmd/Ctrl+V.',
-						cause: error,
 					}),
+				try: () => invoke<void>('paste'),
 			});
 
 			// If paste succeeded, we're done
@@ -44,31 +46,31 @@ export function createClipboardServiceDesktop(): ClipboardService {
 				data: isAccessibilityEnabled,
 				error: isAccessibilityEnabledError,
 			} = await tryAsync({
+				mapErr: (error) =>
+					ClipboardServiceErr({
+						cause: error,
+						message:
+							'There was an error checking if accessibility is enabled. Please try again.',
+					}),
 				try: () =>
 					invoke<boolean>('is_macos_accessibility_enabled', {
 						askIfNotAllowed: false,
-					}),
-				mapErr: (error) =>
-					ClipboardServiceErr({
-						message:
-							'There was an error checking if accessibility is enabled. Please try again.',
-						cause: error,
 					}),
 			});
 
 			if (isAccessibilityEnabledError) return Err(isAccessibilityEnabledError);
 
-			// If accessibility is not enabled, return WhisperingWarning
+			// If accessibility is not enabled, return NoteFluxWarning
 			if (!isAccessibilityEnabled) {
-				return WhisperingWarningErr({
+				return NoteFluxWarningErr({
 					title:
 						'Please enable or re-enable accessibility to paste transcriptions!',
 					description:
-						'Accessibility must be enabled or re-enabled for Whispering after install or update. Follow the link below for instructions.',
+						'Accessibility must be enabled or re-enabled for NoteFlux after install or update. Follow the link below for instructions.',
 					action: {
-						type: 'link',
-						label: 'Open Directions',
 						href: '/macos-enable-accessibility',
+						label: 'Open Directions',
+						type: 'link',
 					},
 				});
 			}

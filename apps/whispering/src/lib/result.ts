@@ -1,60 +1,53 @@
 import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
 import type { TaggedError } from 'wellcrafted/error';
+
 import { Err, type Ok } from 'wellcrafted/result';
 
 /**
- * Custom error type for the Whispering application that combines error information
+ * Custom error type for the NoteFlux application that combines error information
  * with notification display options. This error type is designed to be user-facing,
  * providing both error details and UI presentation information.
  */
-export type WhisperingError = Omit<
-	TaggedError<'WhisperingError'>,
-	'message' | 'cause' | 'context'
+export type NoteFluxError = Omit<
+	TaggedError<'NoteFluxError'>,
+	'cause' | 'context' | 'message'
 > &
 	Omit<UnifiedNotificationOptions, 'variant'> & {
 		severity: 'error' | 'warning';
 	};
 
 /**
- * Creates a WhisperingError with 'error' severity.
+ * Creates a NoteFluxError with 'error' severity.
  * This is the primary factory function for creating error objects in the application.
  */
-const WhisperingError = (
-	args: Omit<WhisperingError, 'name' | 'severity'>,
-): WhisperingError => ({ name: 'WhisperingError', severity: 'error', ...args });
+const NoteFluxError = (
+	args: Omit<NoteFluxError, 'name' | 'severity'>,
+): NoteFluxError => ({ name: 'NoteFluxError', severity: 'error', ...args });
 
 /**
- * Creates a Err wrapping a WhisperingError.
+ * Creates a Err wrapping a NoteFluxError.
  */
-export const WhisperingErr = (
-	args: Omit<WhisperingError, 'name' | 'severity'>,
-) => Err(WhisperingError(args));
+export const NoteFluxErr = (
+	args: Omit<NoteFluxError, 'name' | 'severity'>,
+) => Err(NoteFluxError(args));
 
 /**
- * Creates a WhisperingError with 'warning' severity.
+ * Creates a NoteFluxError with 'warning' severity.
  */
-const WhisperingWarning = (
-	args: Omit<WhisperingError, 'name' | 'severity'>,
-): WhisperingError => ({
-	name: 'WhisperingError',
+const NoteFluxWarning = (
+	args: Omit<NoteFluxError, 'name' | 'severity'>,
+): NoteFluxError => ({
+	name: 'NoteFluxError',
 	severity: 'warning',
 	...args,
 });
 
 /**
- * Creates a Err wrapping a WhisperingError with 'warning' severity.
+ * Creates a Err wrapping a NoteFluxError with 'warning' severity.
  */
-export const WhisperingWarningErr = (
-	args: Omit<WhisperingError, 'name' | 'severity'>,
-) => Err(WhisperingWarning(args));
-
-/**
- * Result type for Whispering operations that can fail.
- * Follows the Result pattern where operations return either Ok<T> or Err<WhisperingError>.
- *
- * @template T - The type of the success value
- */
-export type WhisperingResult<T> = Ok<T> | Err<WhisperingError>;
+export const NoteFluxWarningErr = (
+	args: Omit<NoteFluxError, 'name' | 'severity'>,
+) => Err(NoteFluxWarning(args));
 
 /**
  * Utility type for values that may or may not be wrapped in a Promise.
@@ -62,17 +55,25 @@ export type WhisperingResult<T> = Ok<T> | Err<WhisperingError>;
  *
  * @template T - The type that may or may not be wrapped in a Promise
  */
-export type MaybePromise<T> = T | Promise<T>;
+export type MaybePromise<T> = Promise<T> | T;
 
 /**
- * Adapts a TaggedError from lower-level libraries into a WhisperingError for user-facing notifications.
+ * Result type for NoteFlux operations that can fail.
+ * Follows the Result pattern where operations return either Ok<T> or Err<NoteFluxError>.
+ *
+ * @template T - The type of the success value
+ */
+export type NoteFluxResult<T> = Err<NoteFluxError> | Ok<T>;
+
+/**
+ * Adapts a TaggedError from lower-level libraries into a NoteFluxError for user-facing notifications.
  * The error's message becomes the description, while you provide the title and display options.
  *
  * Commonly used with notify.error.execute() to show errors in the UI.
  *
  * @param error - The TaggedError to adapt (from services or libraries)
  * @param opts - Display options (title, action, etc.)
- * @returns A WhisperingError ready for notification display
+ * @returns A NoteFluxError ready for notification display
  *
  * @example
  * ```typescript
@@ -90,18 +91,18 @@ export type MaybePromise<T> = T | Promise<T>;
  */
 export const fromTaggedError = (
 	error: TaggedError<string>,
-	opts: Omit<Parameters<typeof WhisperingError>[0], 'description'>,
-): WhisperingError => WhisperingError({ ...opts, description: error.message });
+	opts: Omit<Parameters<typeof NoteFluxError>[0], 'description'>,
+): NoteFluxError => NoteFluxError({ ...opts, description: error.message });
 
 /**
- * Adapts a TaggedError into an Err Result containing a WhisperingError.
+ * Adapts a TaggedError into an Err Result containing a NoteFluxError.
  * Convenience wrapper that combines adaptTaggedError with Err wrapping.
  *
  * Use in query layer functions to transform service errors into user-facing errors.
  *
  * @param error - The TaggedError to adapt (from services or libraries)
  * @param opts - Display options (title, action, etc.)
- * @returns An Err Result containing the adapted WhisperingError
+ * @returns An Err Result containing the adapted NoteFluxError
  *
  * @example
  * ```typescript
@@ -118,5 +119,5 @@ export const fromTaggedError = (
  */
 export const fromTaggedErr = (
 	error: TaggedError<string>,
-	opts: Omit<Parameters<typeof WhisperingError>[0], 'description'>,
+	opts: Omit<Parameters<typeof NoteFluxError>[0], 'description'>,
 ) => Err(fromTaggedError(error, opts));

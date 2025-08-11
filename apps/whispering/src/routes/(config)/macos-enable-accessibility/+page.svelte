@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/ui/button';
 	import * as Card from '$lib/ui/card';
-	import { invoke } from '@tauri-apps/api/core';
 	import { SettingsIcon } from '@lucide/svelte';
+	import { invoke } from '@tauri-apps/api/core';
 </script>
 
 <svelte:head>
@@ -14,9 +14,9 @@
 		<Card.Header>
 			<Card.Title class="text-xl">MacOS Accessibility</Card.Title>
 			<Card.Description class="leading-7">
-				Follow the steps below to re-enable Whispering in your MacOS
+				Follow the steps below to re-enable NoteFlux in your MacOS
 				Accessibility settings. This often is needed after installing a new
-				version of Whispering to get pasting to work, as detailed in this
+				version of NoteFlux to get pasting to work, as detailed in this
 				<Button
 					variant="link"
 					size="inline"
@@ -51,13 +51,13 @@
 
 					<li>
 						Click on <span class="text-primary font-semibold tracking-tight"
-							>🎙️ Whispering</span
+							>🎙️ NoteFlux</span
 						> and remove it using the minus icon (-).
 					</li>
 					<li>
-						Re-add Whispering by pressing the plus icon (+) and selecting <span
+						Re-add NoteFlux by pressing the plus icon (+) and selecting <span
 							class="text-primary font-semibold tracking-tight"
-							>🎙️ Whispering.app</span
+							>🎙️ NoteFlux.app</span
 						>
 					</li>
 				</ol>

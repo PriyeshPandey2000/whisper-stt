@@ -1,10 +1,11 @@
-import globals from 'globals';
-import prettier from 'eslint-config-prettier';
-import svelte from 'eslint-plugin-svelte';
-import perfectionist from 'eslint-plugin-perfectionist';
 import type { Linter } from 'eslint';
-import ts from 'typescript-eslint';
+
 import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import perfectionist from 'eslint-plugin-perfectionist';
+import svelte from 'eslint-plugin-svelte';
+import globals from 'globals';
+import ts from 'typescript-eslint';
 
 /**
  * Base ESLint configuration that includes Prettier integration and ignore patterns.
@@ -18,41 +19,41 @@ export const base = [
 			'perfectionist/sort-objects': [
 				'error',
 				{
-					type: 'natural',
-					order: 'asc',
-					groups: ['children', 'title', 'description', 'cause', 'context', 'message', 'unknown'],
 					customGroups: [
 						{
+							elementNamePattern: '^children$',
 							groupName: 'children',
 							selector: 'property',
-							elementNamePattern: '^children$',
 						},
 						{
+							elementNamePattern: '^title$',
 							groupName: 'title',
 							selector: 'property',
-							elementNamePattern: '^title$',
 						},
 						{
+							elementNamePattern: '^description$',
 							groupName: 'description',
 							selector: 'property',
-							elementNamePattern: '^description$',
 						},
 						{
+							elementNamePattern: '^cause$',
 							groupName: 'cause',
 							selector: 'property',
-							elementNamePattern: '^cause$',
 						},
 						{
+							elementNamePattern: '^context$',
 							groupName: 'context',
 							selector: 'property',
-							elementNamePattern: '^context$',
 						},
 						{
+							elementNamePattern: '^message$',
 							groupName: 'message',
 							selector: 'property',
-							elementNamePattern: '^message$',
 						},
 					],
+					groups: ['children', 'title', 'description', 'cause', 'context', 'message', 'unknown'],
+					order: 'asc',
+					type: 'natural',
 				},
 			],
 		},
@@ -118,9 +119,9 @@ export const svelteConfig = ts.config(
 		// See more details at: https://typescript-eslint.io/packages/parser/
 		languageOptions: {
 			parserOptions: {
-				projectService: true,
 				extraFileExtensions: ['.svelte'], // Add support for additional file extensions, such as .svelte
 				parser: ts.parser,
+				projectService: true,
 			},
 		},
 	},

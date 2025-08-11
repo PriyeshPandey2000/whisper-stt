@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { commandCallbacks } from '$lib/commands';
 	import NavItems from '$lib/components/NavItems.svelte';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		DeviceSelector,
 		TranscriptionSelector,
@@ -35,18 +35,18 @@
 	style="view-transition-name: header"
 >
 	<div class="mr-auto flex gap-2">
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Go home"
 			href="/"
 			variant="ghost"
 			class="-ml-4"
 		>
-			<span class="text-lg font-bold">whispering</span>
-		</WhisperingButton>
+			<span class="text-lg font-bold">noteflux</span>
+		</NoteFluxButton>
 	</div>
 	{#if settings.value['recording.mode'] === 'manual'}
 		{#if getRecorderStateQuery.data === 'RECORDING'}
-			<WhisperingButton
+			<NoteFluxButton
 				tooltipContent="Cancel recording"
 				onclick={commandCallbacks.cancelManualRecording}
 				variant="ghost"
@@ -54,13 +54,13 @@
 				style="view-transition-name: cancel-icon;"
 			>
 				🚫
-			</WhisperingButton>
+			</NoteFluxButton>
 		{:else}
 			<DeviceSelector />
 			<TranscriptionSelector />
 			<TransformationSelector />
 		{/if}
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent={getRecorderStateQuery.data === 'RECORDING'
 				? 'Stop recording'
 				: 'Start recording'}
@@ -70,14 +70,14 @@
 			style="view-transition-name: microphone-icon"
 		>
 			{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
-		</WhisperingButton>
+		</NoteFluxButton>
 	{:else if settings.value['recording.mode'] === 'vad'}
 		{#if getVadStateQuery.data === 'IDLE'}
 			<DeviceSelector />
 			<TranscriptionSelector />
 			<TransformationSelector />
 		{/if}
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Toggle voice activated recording"
 			onclick={commandCallbacks.toggleVadRecording}
 			variant="ghost"
@@ -85,14 +85,14 @@
 			style="view-transition-name: microphone-icon"
 		>
 			{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
-		</WhisperingButton>
+		</NoteFluxButton>
 	{:else if settings.value['recording.mode'] === 'live'}
 		{#if true}
 			<DeviceSelector />
 			<TranscriptionSelector />
 			<TransformationSelector />
 		{/if}
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Toggle live recording"
 			onclick={() => {
 				// TODO: Implement live recording toggle
@@ -103,7 +103,7 @@
 			style="view-transition-name: microphone-icon"
 		>
 			🎬
-		</WhisperingButton>
+		</NoteFluxButton>
 	{/if}
 
 	<NavItems class="-mr-4" collapsed={isMobile.current} />

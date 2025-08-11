@@ -121,21 +121,21 @@ The query layer co-locates three key things in one place: (1) the service call, 
 
 ## Error Transformation Pattern
 
-A critical responsibility of the query layer is transforming service-specific errors into `WhisperingError` types that work seamlessly with our toast notification system. This transformation happens inside `resultMutationFn` or `resultQueryFn`, creating a clean boundary between business logic errors and UI presentation.
+A critical responsibility of the query layer is transforming service-specific errors into `NoteFluxError` types that work seamlessly with our toast notification system. This transformation happens inside `resultMutationFn` or `resultQueryFn`, creating a clean boundary between business logic errors and UI presentation.
 
 ### Error Handling Architecture
 
 The error handling follows a clear pattern across three layers:
 
 1. **Service Layer**: Returns domain-specific tagged errors (e.g., `RecorderServiceError`)
-2. **Query Layer**: Wraps service errors into `WhisperingError` objects
-3. **UI Layer**: Uses `WhisperingError` directly without re-wrapping
+2. **Query Layer**: Wraps service errors into `NoteFluxError` objects
+3. **UI Layer**: Uses `NoteFluxError` directly without re-wrapping
 
 This pattern ensures consistent error handling and avoids double-wrapping errors.
 
 ### How It Works
 
-Services return their own specific error types (e.g., `RecorderServiceError`, `CpalRecorderServiceError`), which contain detailed error information. The query layer transforms these into `WhisperingError` with UI-friendly formatting:
+Services return their own specific error types (e.g., `RecorderServiceError`, `CpalRecorderServiceError`), which contain detailed error information. The query layer transforms these into `NoteFluxError` with UI-friendly formatting:
 
 ```typescript
 // From manualRecorder.ts - Error transformation in resultMutationFn
@@ -147,10 +147,10 @@ startRecording: defineMutation({
 					notify.loading.execute({ id: toastId, ...options }),
 			});
 
-		// Transform service error to WhisperingError
+		// Transform service error to NoteFluxError
 		if (startRecordingError) {
 			return Err(
-				WhisperingError({
+				NoteFluxError({
 					title: '❌ Failed to start recording',
 					description: startRecordingError.message, // Use service error message
 					action: { type: 'more-details', error: startRecordingError },
@@ -159,9 +159,9 @@ startRecording: defineMutation({
 		}
 		return Ok(deviceAcquisitionOutcome);
 	},
-	// WhisperingError is now available in onError hook
+	// NoteFluxError is now available in onError hook
 	onError: (error) => {
-		// error is WhisperingError, ready for toast display
+		// error is NoteFluxError, ready for toast display
 		notify.error.execute(error);
 	},
 });
@@ -176,12 +176,12 @@ startRecording: defineMutation({
    type RecorderServiceError = TaggedError<'RecorderServiceError'>;
    ```
 
-2. **Query Layer**: Transforms to `WhisperingError` in `resultMutationFn`/`resultQueryFn`
+2. **Query Layer**: Transforms to `NoteFluxError` in `resultMutationFn`/`resultQueryFn`
 
    ```typescript
    if (serviceError) {
    	return Err(
-   		WhisperingError({
+   		NoteFluxError({
    			title: '❌ User-friendly title',
    			description: serviceError.message, // Preserve detailed message
    			action: { type: 'more-details', error: serviceError },
@@ -190,9 +190,9 @@ startRecording: defineMutation({
    }
    ```
 
-3. **UI Layer**: Receives `WhisperingError` in hooks, perfect for toasts
+3. **UI Layer**: Receives `NoteFluxError` in hooks, perfect for toasts
    ```typescript
-   onError: (error) => notify.error.execute(error); // error is WhisperingError
+   onError: (error) => notify.error.execute(error); // error is NoteFluxError
    ```
 
 ### Why This Pattern?
@@ -213,9 +213,9 @@ getRecorderState: defineQuery({
 			await services.cpalRecorder.getRecorderState();
 
 		if (getRecorderStateError) {
-			// Transform CpalRecorderServiceError → WhisperingError
+			// Transform CpalRecorderServiceError → NoteFluxError
 			return Err(
-				WhisperingError({
+				NoteFluxError({
 					title: '❌ Failed to get recorder state',
 					description: getRecorderStateError.message,
 					action: { type: 'more-details', error: getRecorderStateError },
@@ -232,15 +232,15 @@ getRecorderState: defineQuery({
 #### ❌ Double Wrapping
 
 ```typescript
-// BAD: Don't wrap an already-wrapped WhisperingError
+// BAD: Don't wrap an already-wrapped NoteFluxError
 if (getRecorderStateError) {
-	const whisperingError = WhisperingErr({
+	const notefluxError = NoteFluxErr({
 		title: '❌ Failed to get recorder state',
 		description: getRecorderStateError.message,
 		action: { type: 'more-details', error: getRecorderStateError },
 	});
-	notify.error.execute({ id: nanoid(), ...whisperingError.error });
-	return whisperingError;
+	notify.error.execute({ id: nanoid(), ...notefluxError.error });
+	return notefluxError;
 }
 ```
 
@@ -251,7 +251,7 @@ if (getRecorderStateError) {
 getRecorderState: defineQuery({
 	queryKey: recorderKeys.state,
 	resultQueryFn: () => services.recorder.getRecorderState(), // Missing error wrapping!
-	initialData: 'IDLE' as WhisperingRecordingState,
+	initialData: 'IDLE' as NoteFluxRecordingState,
 });
 ```
 
@@ -264,7 +264,7 @@ getRecorderState: defineQuery({
 		const { data, error } = await services.recorder.getRecorderState();
 		if (error) {
 			return Err(
-				WhisperingError({
+				NoteFluxError({
 					title: '❌ Failed to get recorder state',
 					description: error.message,
 					action: { type: 'more-details', error },
@@ -275,7 +275,7 @@ getRecorderState: defineQuery({
 	},
 });
 
-// In UI/command layer - use WhisperingError directly
+// In UI/command layer - use NoteFluxError directly
 if (error) {
 	notify.error.execute(error); // No re-wrapping!
 }
@@ -285,7 +285,7 @@ This pattern ensures that:
 
 - Services remain pure and testable with their own error types
 - The query layer handles all UI-specific error formatting
-- Toast notifications receive properly formatted `WhisperingError` objects
+- Toast notifications receive properly formatted `NoteFluxError` objects
 - Original error context is preserved for debugging
 - Errors are wrapped exactly once, avoiding redundant object creation
 

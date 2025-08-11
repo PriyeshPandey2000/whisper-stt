@@ -1,9 +1,8 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { GithubIcon } from '$lib/components/icons';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import * as DropdownMenu from '$lib/ui/dropdown-menu';
 	import { cn } from '$lib/ui/utils';
-	import { LogicalSize, getCurrentWindow } from '@tauri-apps/api/window';
 	import {
 		LayersIcon,
 		ListIcon,
@@ -13,6 +12,7 @@
 		SettingsIcon,
 		SunIcon,
 	} from '@lucide/svelte';
+	import { getCurrentWindow, LogicalSize } from '@tauri-apps/api/window';
 	import { toggleMode } from 'mode-watcher';
 
 	let {
@@ -22,67 +22,67 @@
 
 	const navItems = [
 		{
-			label: 'Recordings',
-			icon: ListIcon,
-			type: 'anchor',
 			href: '/recordings',
+			icon: ListIcon,
+			label: 'Recordings',
+			type: 'anchor',
 		},
 		{
-			label: 'Transformations',
-			icon: LayersIcon,
-			type: 'anchor',
 			href: '/transformations',
+			icon: LayersIcon,
+			label: 'Transformations',
+			type: 'anchor',
 		},
 		{
-			label: 'Settings',
-			icon: SettingsIcon,
-			type: 'anchor',
 			href: '/settings',
-		},
-		{
-			label: 'View project on GitHub',
-			icon: GithubIcon,
-			href: 'https://github.com/epicenter-so/epicenter',
+			icon: SettingsIcon,
+			label: 'Settings',
 			type: 'anchor',
-			external: true,
 		},
 		{
-			label: 'Toggle dark mode',
-			icon: SunIcon,
-			type: 'theme',
+			external: true,
+			href: 'https://github.com/epicenter-so/epicenter',
+			icon: GithubIcon,
+			label: 'View project on GitHub',
+			type: 'anchor',
+		},
+		{
 			action: toggleMode,
+			icon: SunIcon,
+			label: 'Toggle dark mode',
+			type: 'theme',
 		},
 		...(window.__TAURI_INTERNALS__
 			? ([
 					{
-						label: 'Minimize',
-						icon: Minimize2Icon,
-						type: 'button',
 						action: () => getCurrentWindow().setSize(new LogicalSize(72, 84)),
+						icon: Minimize2Icon,
+						label: 'Minimize',
+						type: 'button',
 					},
 				] as const)
 			: []),
 	] satisfies NavItem[];
 
 	type BaseNavItem = {
-		label: string;
 		icon: unknown;
+		label: string;
 	};
 
 	type AnchorItem = BaseNavItem & {
-		type: 'anchor';
-		href: string;
 		external?: boolean;
+		href: string;
+		type: 'anchor';
 	};
 
 	type ButtonItem = BaseNavItem & {
-		type: 'button';
 		action: () => void;
+		type: 'button';
 	};
 
 	type ThemeItem = BaseNavItem & {
-		type: 'theme';
 		action: () => void;
+		type: 'theme';
 	};
 
 	type NavItem = AnchorItem | ButtonItem | ThemeItem;
@@ -92,7 +92,7 @@
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent="Menu"
 					variant="ghost"
 					size="icon"
@@ -100,7 +100,7 @@
 					{...props}
 				>
 					<MoreVerticalIcon class="size-4" aria-hidden="true" />
-				</WhisperingButton>
+				</NoteFluxButton>
 			{/snippet}
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content align="end" class="w-56">
@@ -156,7 +156,7 @@
 		{#each navItems as item}
 			{@const Icon = item.icon}
 			{#if item.type === 'anchor'}
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent={item.label}
 					href={item.href}
 					target={item.external ? '_blank' : undefined}
@@ -165,18 +165,18 @@
 					size="icon"
 				>
 					<Icon class="size-4" aria-hidden="true" />
-				</WhisperingButton>
+				</NoteFluxButton>
 			{:else if item.type === 'button'}
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent={item.label}
 					onclick={item.action}
 					variant="ghost"
 					size="icon"
 				>
 					<Icon class="size-4" aria-hidden="true" />
-				</WhisperingButton>
+				</NoteFluxButton>
 			{:else if item.type === 'theme'}
-				<WhisperingButton
+				<NoteFluxButton
 					tooltipContent={item.label}
 					onclick={item.action}
 					variant="ghost"
@@ -188,7 +188,7 @@
 					<MoonIcon
 						class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
 					/>
-				</WhisperingButton>
+				</NoteFluxButton>
 			{/if}
 		{/each}
 	</nav>

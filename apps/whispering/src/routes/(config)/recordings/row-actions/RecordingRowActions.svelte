@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import WhisperingTooltip from '$lib/components/WhisperingTooltip.svelte';
 	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import { ClipboardIcon, TrashIcon } from '$lib/components/icons';
-	import { Skeleton } from '$lib/ui/skeleton';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
+	import NoteFluxTooltip from '$lib/components/NoteFluxTooltip.svelte';
 	import { rpc } from '$lib/query';
+	import { Skeleton } from '$lib/ui/skeleton';
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
-	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import {
 		AlertCircleIcon,
 		DownloadIcon,
@@ -17,7 +16,9 @@
 		PlayIcon,
 		RepeatIcon,
 	} from '@lucide/svelte';
+	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import { nanoid } from 'nanoid/non-secure';
+
 	import EditRecordingModal from './EditRecordingModal.svelte';
 	import TransformationPicker from './TransformationPicker.svelte';
 	import ViewTransformationRunsDialog from './ViewTransformationRunsDialog.svelte';
@@ -61,7 +62,7 @@
 		<Skeleton class="size-8" />
 		<Skeleton class="size-8" />
 	{:else}
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent={recording.transcriptionStatus === 'UNPROCESSED'
 				? 'Start transcribing this recording'
 				: recording.transcriptionStatus === 'TRANSCRIBING'
@@ -72,21 +73,21 @@
 			onclick={() => {
 				const toastId = nanoid();
 				rpc.notify.loading.execute({
-					id: toastId,
 					title: '📋 Transcribing...',
 					description: 'Your recording is being transcribed...',
+					id: toastId,
 				});
 				transcribeRecording.mutate(recording, {
 					onError: (error) => {
-						if (error.name === 'WhisperingError') {
+						if (error.name === 'NoteFluxError') {
 							rpc.notify.error.execute({ id: toastId, ...error });
 							return;
 						}
 						rpc.notify.error.execute({
-							id: toastId,
 							title: '❌ Failed to transcribe recording',
 							description: 'Your recording could not be transcribed.',
-							action: { type: 'more-details', error: error },
+							action: { error: error, type: 'more-details' },
+							id: toastId,
 						});
 					},
 					onSuccess: (transcribedText) => {
@@ -111,16 +112,16 @@
 			{:else if recording.transcriptionStatus === 'FAILED'}
 				<AlertCircleIcon class="size-4 text-red-500" />
 			{/if}
-		</WhisperingButton>
+		</NoteFluxButton>
 
 		<TransformationPicker
 			onSelect={(transformation) => {
 				const toastId = nanoid();
 				rpc.notify.loading.execute({
-					id: toastId,
 					title: '🔄 Running transformation...',
 					description:
 						'Applying your selected transformation to the transcribed text...',
+					id: toastId,
 				});
 				transformRecording.mutate(
 					{ recordingId: recording.id, transformation },
@@ -132,8 +133,8 @@
 									title: '⚠️ Transformation error',
 									description: transformationRun.error,
 									action: {
-										type: 'more-details',
 										error: transformationRun.error,
+										type: 'more-details',
 									},
 								});
 								return;
@@ -157,8 +158,8 @@
 			contentDescription="transcribed text"
 			textToCopy={recording.transcribedText}
 			viewTransitionName={getRecordingTransitionId({
-				recordingId,
 				propertyName: 'transcribedText',
+				recordingId,
 			})}
 		>
 			<ClipboardIcon class="size-4" />
@@ -167,10 +168,10 @@
 		{#if latestTransformationRunByRecordingIdQuery.isPending}
 			<Loader2Icon class="size-4 animate-spin" />
 		{:else if latestTransformationRunByRecordingIdQuery.isError}
-			<WhisperingTooltip
+			<NoteFluxTooltip
 				id={getRecordingTransitionId({
-					recordingId,
 					propertyName: 'latestTransformationRunOutput',
+					recordingId,
 				})}
 				tooltipContent="Error fetching latest transformation run output"
 			>
@@ -180,7 +181,7 @@
 						{@render tooltip()}
 					</span>
 				{/snippet}
-			</WhisperingTooltip>
+			</NoteFluxTooltip>
 		{:else}
 			<CopyToClipboardButton
 				contentDescription="latest transformation run output"
@@ -189,8 +190,8 @@
 					? latestTransformationRunByRecordingIdQuery.data.output
 					: ''}
 				viewTransitionName={getRecordingTransitionId({
-					recordingId,
 					propertyName: 'latestTransformationRunOutput',
+					recordingId,
 				})}
 			>
 				<FileStackIcon class="size-4" />
@@ -199,19 +200,19 @@
 
 		<ViewTransformationRunsDialog {recordingId} />
 
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Download recording"
 			onclick={() =>
 				downloadRecording.mutate(recording, {
 					onError: (error) => {
-						if (error.name === 'WhisperingError') {
+						if (error.name === 'NoteFluxError') {
 							rpc.notify.error.execute(error);
 							return;
 						}
 						rpc.notify.error.execute({
 							title: 'Failed to download recording!',
 							description: 'Your recording could not be downloaded.',
-							action: { type: 'more-details', error },
+							action: { error, type: 'more-details' },
 						});
 					},
 					onSuccess: () => {
@@ -229,37 +230,37 @@
 			{:else}
 				<DownloadIcon class="size-4" />
 			{/if}
-		</WhisperingButton>
+		</NoteFluxButton>
 
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Delete recording"
 			onclick={() => {
 				confirmationDialog.open({
 					title: 'Delete recording',
-					subtitle: 'Are you sure you want to delete this recording?',
 					confirmText: 'Delete',
 					onConfirm: () =>
 						deleteRecording.mutate(recording, {
+							onError: (error) => {
+								rpc.notify.error.execute({
+									title: 'Failed to delete recording!',
+									description: 'Your recording could not be deleted.',
+									action: { error, type: 'more-details' },
+								});
+							},
 							onSuccess: () => {
 								rpc.notify.success.execute({
 									title: 'Deleted recording!',
 									description: 'Your recording has been deleted.',
 								});
 							},
-							onError: (error) => {
-								rpc.notify.error.execute({
-									title: 'Failed to delete recording!',
-									description: 'Your recording could not be deleted.',
-									action: { type: 'more-details', error },
-								});
-							},
 						}),
+					subtitle: 'Are you sure you want to delete this recording?',
 				});
 			}}
 			variant="ghost"
 			size="icon"
 		>
 			<TrashIcon class="size-4" />
-		</WhisperingButton>
+		</NoteFluxButton>
 	{/if}
 </div>

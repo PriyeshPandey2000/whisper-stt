@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { ClipboardIcon } from '$lib/components/icons';
+	import { rpc } from '$lib/query';
 	import { Button } from '$lib/ui/button';
 	import * as Card from '$lib/ui/card';
 	import * as Dialog from '$lib/ui/dialog';
 	import { Textarea } from '$lib/ui/textarea';
-	import { rpc } from '$lib/query';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { mergeProps } from 'bits-ui';
-	import WhisperingTooltip from '../WhisperingTooltip.svelte';
+
+	import NoteFluxTooltip from '../NoteFluxTooltip.svelte';
 
 	/**
 	 * Props for the CopyableTextDialog component.
@@ -34,22 +35,22 @@
 	 * ```
 	 */
 	let {
-		/** Unique identifier for the dialog trigger element */
-		id,
 		/** The title displayed in the dialog header (capitalized) */
 		title,
-		/** The text content to display and copy */
-		text,
+		/** Unique identifier for the dialog trigger element */
+		id,
 		/** Label used for tooltips and accessibility (lowercase) */
 		label,
 		/** Number of rows for the preview textarea */
 		rows = 2,
+		/** The text content to display and copy */
+		text,
 	}: {
 		id: string;
-		title: string;
-		text: string;
 		label: string;
 		rows?: number;
+		text: string;
+		title: string;
 	} = $props();
 
 	let isDialogOpen = $state(false);
@@ -60,8 +61,8 @@
 <Dialog.Root bind:open={isDialogOpen}>
 	<Dialog.Trigger {id}>
 		{#snippet child({ props: dialogTriggerProps })}
-			<WhisperingTooltip {id} tooltipContent="View {label}">
-				{#snippet trigger({ tooltipProps, tooltip })}
+			<NoteFluxTooltip {id} tooltipContent="View {label}">
+				{#snippet trigger({ tooltip, tooltipProps })}
 					<Textarea
 						{...mergeProps(tooltipProps, dialogTriggerProps)}
 						class="min-h-0 max-h-24 h-full resize-none text-wrap text-left text-sm leading-snug hover:cursor-pointer hover:bg-accent hover:text-accent-foreground w-full"
@@ -74,7 +75,7 @@
 						{@render tooltip()}
 					</span>
 				{/snippet}
-			</WhisperingTooltip>
+			</NoteFluxTooltip>
 		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Content class="max-w-4xl">
@@ -90,18 +91,18 @@
 					copyToClipboard.mutate(
 						{ text },
 						{
+							onError: (error) => {
+								rpc.notify.error.execute({
+									title: `Error copying ${title.toLowerCase()} to clipboard`,
+									description: error.message,
+									action: { error, type: 'more-details' },
+								});
+							},
 							onSuccess: () => {
 								isDialogOpen = false;
 								rpc.notify.success.execute({
 									title: `Copied ${title.toLowerCase()} to clipboard!`,
 									description: text,
-								});
-							},
-							onError: (error) => {
-								rpc.notify.error.execute({
-									title: `Error copying ${title.toLowerCase()} to clipboard`,
-									description: error.message,
-									action: { type: 'more-details', error },
 								});
 							},
 						},

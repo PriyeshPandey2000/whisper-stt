@@ -1,29 +1,36 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import type { Props } from '$lib/ui/button';
-	import { rpc } from '$lib/query';
-	import { createMutation } from '@tanstack/svelte-query';
-	import { CheckIcon } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
+
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
+	import { rpc } from '$lib/query';
+	import { CheckIcon } from '@lucide/svelte';
+	import { createMutation } from '@tanstack/svelte-query';
 
 	const copyToClipboard = createMutation(rpc.clipboard.copyToClipboard.options);
 
 	let {
 		children,
-		copiedContent,
-		textToCopy,
-		contentDescription,
-		viewTransitionName,
 		class: className,
-		size = 'icon',
-		variant = 'ghost',
+		contentDescription,
+		copiedContent,
 		disabled,
-	}: {
+		size = 'icon',
+		textToCopy,
+		variant = 'ghost',
+		viewTransitionName,
+	}: Pick<Props, 'disabled' | 'size' | 'variant'> & {
 		/**
 		 * The content to display in the button's default state.
 		 * This is mandatory and can contain any combination of text, icons, or other elements.
 		 */
 		children: Snippet;
+		class?: string;
+		/**
+		 * A description of the content being copied (e.g., "transcribed text", "API key").
+		 * Used in tooltips and toast messages to provide context to the user.
+		 */
+		contentDescription: string;
 		/**
 		 * The content to display when the copy operation succeeds.
 		 * Defaults to a check icon if not provided.
@@ -34,24 +41,25 @@
 		 * The text that will be copied to the clipboard when the button is clicked.
 		 */
 		textToCopy: string;
-		/**
-		 * A description of the content being copied (e.g., "transcribed text", "API key").
-		 * Used in tooltips and toast messages to provide context to the user.
-		 */
-		contentDescription: string;
 		viewTransitionName?: string;
-		class?: string;
-	} & Pick<Props, 'disabled' | 'variant' | 'size'> = $props();
+	} = $props();
 
 	let hasCopied = $state(false);
 </script>
 
-<WhisperingButton
+<NoteFluxButton
 	tooltipContent="Copy {contentDescription} to clipboard"
 	onclick={() =>
 		copyToClipboard.mutate(
 			{ text: textToCopy },
 			{
+				onError: (error) => {
+					rpc.notify.error.execute({
+						title: `Error copying ${contentDescription} to clipboard`,
+						description: error.message,
+						action: { error, type: 'more-details' },
+					});
+				},
 				onSuccess: () => {
 					hasCopied = true;
 					setTimeout(() => {
@@ -60,13 +68,6 @@
 					rpc.notify.success.execute({
 						title: `Copied ${contentDescription} to clipboard!`,
 						description: textToCopy,
-					});
-				},
-				onError: (error) => {
-					rpc.notify.error.execute({
-						title: `Error copying ${contentDescription} to clipboard`,
-						description: error.message,
-						action: { type: 'more-details', error },
 					});
 				},
 			},
@@ -89,4 +90,4 @@
 	{:else}
 		{@render children()}
 	{/if}
-</WhisperingButton>
+</NoteFluxButton>

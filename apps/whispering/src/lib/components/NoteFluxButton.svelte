@@ -1,20 +1,22 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	import { Button, type Props } from '$lib/ui/button';
 	import { mergeProps } from 'bits-ui';
 	import { nanoid } from 'nanoid/non-secure';
-	import type { Snippet } from 'svelte';
-	import WhisperingTooltip from './WhisperingTooltip.svelte';
+
+	import NoteFluxTooltip from './NoteFluxTooltip.svelte';
 
 	let {
-		id = nanoid(),
 		children,
+		id = nanoid(),
 		tooltipContent,
 		...buttonProps
-	}: Props & { id?: string; tooltipContent: string | Snippet } = $props();
+	}: Props & { id?: string; tooltipContent: Snippet | string } = $props();
 </script>
 
-<WhisperingTooltip {id} {tooltipContent}>
-	{#snippet trigger({ tooltipProps, tooltip })}
+<NoteFluxTooltip {id} {tooltipContent}>
+	{#snippet trigger({ tooltip, tooltipProps })}
 		<Button {...mergeProps(tooltipProps, buttonProps)}>
 			{@render children?.()}
 			<span class="sr-only">
@@ -22,4 +24,4 @@
 			</span>
 		</Button>
 	{/snippet}
-</WhisperingTooltip>
+</NoteFluxTooltip>

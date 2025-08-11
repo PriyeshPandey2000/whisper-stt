@@ -1,1 +1,1 @@
-export type { WhisperingSoundNames } from './sound-names';
+export type { NoteFluxSoundNames } from './sound-names';

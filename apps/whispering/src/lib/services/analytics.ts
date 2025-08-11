@@ -1,17 +1,6 @@
 import type { TRANSCRIPTION_SERVICE_IDS } from '$lib/constants/transcription';
+
 import { invoke } from '@tauri-apps/api/core';
-
-// Use the TranscriptionServiceId type directly
-type TranscriptionServiceId = (typeof TRANSCRIPTION_SERVICE_IDS)[number];
-
-// Settings sections that can be logged
-type SettingsSection =
-	| 'transcription'
-	| 'shortcuts'
-	| 'audio'
-	| 'appearance'
-	| 'analytics'
-	| 'recording';
 
 /**
  * Discriminated union of all loggable events.
@@ -20,26 +9,38 @@ type SettingsSection =
  */
 export type Event =
 	// Application lifecycle
-	| { type: 'app_started' }
+	| { blob_size: number; duration?: number; type: 'manual_recording_completed'; }
 	// Recording completion events - always include blob_size, duration when available
-	| { type: 'manual_recording_completed'; blob_size: number; duration?: number }
-	| { type: 'vad_recording_completed'; blob_size: number; duration?: number }
-	| { type: 'file_uploaded'; blob_size: number }
-	// Transcription events
-	| { type: 'transcription_requested'; provider: TranscriptionServiceId }
+	| { blob_size: number; duration?: number; type: 'vad_recording_completed'; }
+	| { blob_size: number; type: 'file_uploaded'; }
 	| {
-			type: 'transcription_completed';
-			provider: TranscriptionServiceId;
 			duration: number;
-	  }
-	| {
-			type: 'transcription_failed';
 			provider: TranscriptionServiceId;
-			error_title: string;
-			error_description?: string;
+			type: 'transcription_completed';
 	  }
+	// Transcription events
+	| {
+			error_description?: string;
+			error_title: string;
+			provider: TranscriptionServiceId;
+			type: 'transcription_failed';
+	  }
+	| { provider: TranscriptionServiceId; type: 'transcription_requested'; }
+	| { section: SettingsSection; type: 'settings_changed'; }
 	// Settings events
-	| { type: 'settings_changed'; section: SettingsSection };
+	| { type: 'app_started' };
+
+// Settings sections that can be logged
+type SettingsSection =
+	| 'analytics'
+	| 'appearance'
+	| 'audio'
+	| 'recording'
+	| 'shortcuts'
+	| 'transcription';
+
+// Use the TranscriptionServiceId type directly
+type TranscriptionServiceId = (typeof TRANSCRIPTION_SERVICE_IDS)[number];
 
 /**
  * Stateless analytics service that provides utilities for event logging.
@@ -63,7 +64,7 @@ export const analytics = {
 export async function aptabaseLogEvent(
 	name: string,
 	props?: {
-		[key: string]: string | number;
+		[key: string]: number | string;
 	},
 ): Promise<void> {
 	await invoke<string>('plugin:aptabase|track_event', { name, props });

@@ -1,15 +1,16 @@
 <script lang="ts">
+	import { rpc } from '$lib/query';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
-	import { rpc } from '$lib/query';
 	import { RotateCcw } from '@lucide/svelte';
+
 	import ShortcutFormatHelp from '../keyboard-shortcut-recorder/ShortcutFormatHelp.svelte';
 	import ShortcutTable from '../keyboard-shortcut-recorder/ShortcutTable.svelte';
-	import { settings } from '$lib/stores/settings.svelte';
 </script>
 
 <svelte:head>
-	<title>Local Shortcuts - Whispering</title>
+	<title>Local Shortcuts - NoteFlux</title>
 </svelte:head>
 
 <section>
@@ -25,7 +26,7 @@
 			</div>
 			<p class="text-sm text-muted-foreground">
 				Set keyboard shortcuts that work when the app is in focus. These
-				shortcuts will only trigger when Whispering is the active application.
+				shortcuts will only trigger when NoteFlux is the active application.
 			</p>
 		</header>
 		<Button

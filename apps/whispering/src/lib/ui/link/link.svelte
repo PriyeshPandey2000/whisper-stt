@@ -3,8 +3,9 @@
 -->
 
 <script lang="ts">
-	import { cn } from '$lib/ui/utils/utils';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
+
+	import { cn } from '$lib/ui/utils/utils';
 
 	let { children, class: className, ...rest }: HTMLAnchorAttributes = $props();
 </script>

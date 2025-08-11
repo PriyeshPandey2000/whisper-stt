@@ -5,11 +5,11 @@ import { OpenaiTranscriptionServiceLive } from './openai';
 import { SpeachesTranscriptionServiceLive } from './speaches';
 
 export {
+	DeepgramTranscriptionServiceLive as deepgram,
 	ElevenlabsTranscriptionServiceLive as elevenlabs,
 	GroqTranscriptionServiceLive as groq,
 	OpenaiTranscriptionServiceLive as openai,
 	SpeachesTranscriptionServiceLive as speaches,
-	DeepgramTranscriptionServiceLive as deepgram,
 };
 
 export type { ElevenLabsTranscriptionService } from './elevenlabs';

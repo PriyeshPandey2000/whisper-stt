@@ -5,8 +5,8 @@
 	import { cn, type WithElementRef } from '$lib/ui/utils/utils.js';
 
 	let {
-		child,
 		children,
+		child,
 		class: className,
 		href = undefined,
 		ref = $bindable(null),

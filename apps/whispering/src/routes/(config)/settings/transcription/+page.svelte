@@ -1,42 +1,42 @@
 <script lang="ts">
-	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import CopyablePre from '$lib/components/copyable/CopyablePre.svelte';
+	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import {
 		LabeledInput,
 		LabeledSelect,
 		LabeledTextarea,
 	} from '$lib/components/labeled/index.js';
 	import {
+		DeepgramApiKeyInput,
 		ElevenLabsApiKeyInput,
 		GroqApiKeyInput,
-		OpenAiApiKeyInput,
-		DeepgramApiKeyInput
+		OpenAiApiKeyInput
 	} from '$lib/components/settings';
+	import { SUPPORTED_LANGUAGES_OPTIONS } from '$lib/constants/languages';
+	import {
+		DEEPGRAM_TRANSCRIPTION_MODELS,
+		ELEVENLABS_TRANSCRIPTION_MODELS,
+		GROQ_MODELS,
+		OPENAI_TRANSCRIPTION_MODELS,
+		TRANSCRIPTION_SERVICE_OPTIONS
+	} from '$lib/constants/transcription';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Badge } from '$lib/ui/badge';
 	import { Button } from '$lib/ui/button';
 	import * as Card from '$lib/ui/card';
 	import { Separator } from '$lib/ui/separator';
-	import { SUPPORTED_LANGUAGES_OPTIONS } from '$lib/constants/languages';
-	import {
-		ELEVENLABS_TRANSCRIPTION_MODELS,
-		GROQ_MODELS,
-		OPENAI_TRANSCRIPTION_MODELS,
-		TRANSCRIPTION_SERVICE_OPTIONS,
-		DEEPGRAM_TRANSCRIPTION_MODELS
-	} from '$lib/constants/transcription';
-	import { settings } from '$lib/stores/settings.svelte';
 	import { CheckIcon } from '@lucide/svelte';
 </script>
 
 <svelte:head>
-	<title>Transcription Settings - Whispering</title>
+	<title>Transcription Settings - NoteFlux</title>
 </svelte:head>
 
 <div class="space-y-6">
 	<div>
 		<h3 class="text-lg font-medium">Transcription</h3>
 		<p class="text-muted-foreground text-sm">
-			Configure your Whispering transcription preferences.
+			Configure your NoteFlux transcription preferences.
 		</p>
 	</div>
 	<Separator />
@@ -57,8 +57,8 @@
 			id="openai-model"
 			label="OpenAI Model"
 			items={OPENAI_TRANSCRIPTION_MODELS.map((model) => ({
-				value: model.name,
 				label: model.name,
+				value: model.name,
 				...model,
 			}))}
 			selected={settings.value['transcription.openai.model']}
@@ -85,8 +85,8 @@
 			id="groq-model"
 			label="Groq Model"
 			items={GROQ_MODELS.map((model) => ({
-				value: model.name,
 				label: model.name,
+				value: model.name,
 				...model,
 			}))}
 			selected={settings.value['transcription.groq.model']}
@@ -113,8 +113,8 @@
 			id="deepgram-model"
 			label="Deepgram Model"
 			items={DEEPGRAM_TRANSCRIPTION_MODELS.map((model) => ({
-				value: model.name,
 				label: model.name,
+				value: model.name,
 				...model,
 			}))}
 			selected={settings.value['transcription.deepgram.model']}
@@ -129,8 +129,8 @@
 			id="elevenlabs-model"
 			label="ElevenLabs Model"
 			items={ELEVENLABS_TRANSCRIPTION_MODELS.map((model) => ({
-				value: model.name,
 				label: model.name,
+				value: model.name,
 				...model,
 			}))}
 			selected={settings.value['transcription.elevenlabs.model']}
@@ -158,7 +158,7 @@
 				<Card.Header>
 					<Card.Title class="text-lg">Speaches Setup</Card.Title>
 					<Card.Description>
-						Install Speaches server and configure Whispering. Speaches is the
+						Install Speaches server and configure NoteFlux. Speaches is the
 						successor to faster-whisper-server with improved features and active
 						development.
 					</Card.Description>
@@ -367,9 +367,9 @@
 	item,
 }: {
 	item: {
-		name: string;
-		description: string;
 		cost: string;
+		description: string;
+		name: string;
 	};
 })}
 	<div class="flex flex-col gap-1 py-1">

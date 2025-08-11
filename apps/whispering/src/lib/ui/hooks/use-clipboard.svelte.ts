@@ -30,8 +30,19 @@ type Options = {
  *
  */
 export class UseClipboard {
-	#copiedStatus = $state<'success' | 'failure'>();
+	/** true when the user has just copied to the clipboard. */
+	get copied() {
+		return this.#copiedStatus === 'success';
+	}
+	/**	Indicates whether a copy has occurred
+	 * and gives a status of either `success` or `failure`. */
+	get status() {
+		return this.#copiedStatus;
+	}
+	#copiedStatus = $state<'failure' | 'success'>();
+
 	private delay: number;
+
 	private timeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
 	constructor({ delay = 500 }: Partial<Options> = {}) {
@@ -71,17 +82,6 @@ export class UseClipboard {
 			}, this.delay);
 		}
 
-		return this.#copiedStatus;
-	}
-
-	/** true when the user has just copied to the clipboard. */
-	get copied() {
-		return this.#copiedStatus === 'success';
-	}
-
-	/**	Indicates whether a copy has occurred
-	 * and gives a status of either `success` or `failure`. */
-	get status() {
 		return this.#copiedStatus;
 	}
 }

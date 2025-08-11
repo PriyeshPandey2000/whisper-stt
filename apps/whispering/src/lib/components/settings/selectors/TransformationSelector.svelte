@@ -1,22 +1,23 @@
 <script lang="ts">
+	import type { Transformation } from '$lib/services/db';
+
 	import { goto } from '$app/navigation';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
+	import { rpc } from '$lib/query';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Badge } from '$lib/ui/badge';
 	import * as Command from '$lib/ui/command';
-	import * as Popover from '$lib/ui/popover';
 	import { useCombobox } from '$lib/ui/hooks';
-	import { rpc } from '$lib/query';
-	import type { Transformation } from '$lib/services/db';
-	import { settings } from '$lib/stores/settings.svelte';
+	import * as Popover from '$lib/ui/popover';
 	import { cn } from '$lib/ui/utils';
 	import { createTransformationViewTransitionName } from '$lib/utils/createTransformationViewTransitionName';
-	import { createQuery } from '@tanstack/svelte-query';
 	import {
 		CheckIcon,
 		FilterIcon,
 		FilterXIcon,
 		LayersIcon,
 	} from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 
 	const transformationsQuery = createQuery(
 		rpc.transformations.queries.getAllTransformations.options,
@@ -54,7 +55,7 @@
 <Popover.Root bind:open={combobox.open}>
 	<Popover.Trigger bind:ref={combobox.triggerRef}>
 		{#snippet child({ props })}
-			<WhisperingButton
+			<NoteFluxButton
 				{...props}
 				class={cn('relative', className)}
 				tooltipContent={selectedTransformation
@@ -78,7 +79,7 @@
 						class="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary before:absolute before:left-0 before:top-0 before:h-full before:w-full before:rounded-full before:bg-primary/50 before:animate-ping"
 					></span>
 				{/if}
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-80 max-w-xl p-0">

@@ -1,15 +1,16 @@
 <script lang="ts">
+	import { rpc } from '$lib/query';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
-	import { rpc } from '$lib/query';
 	import { Layers2Icon, RotateCcw } from '@lucide/svelte';
+
 	import ShortcutFormatHelp from '../keyboard-shortcut-recorder/ShortcutFormatHelp.svelte';
 	import ShortcutTable from '../keyboard-shortcut-recorder/ShortcutTable.svelte';
-	import { settings } from '$lib/stores/settings.svelte';
 </script>
 
 <svelte:head>
-	<title>Global Shortcuts - Whispering</title>
+	<title>Global Shortcuts - NoteFlux</title>
 </svelte:head>
 
 {#if window.__TAURI_INTERNALS__}
@@ -25,7 +26,7 @@
 					<ShortcutFormatHelp type="global" />
 				</div>
 				<p class="text-sm text-muted-foreground">
-					Set system-wide keyboard shortcuts that work even when Whispering is
+					Set system-wide keyboard shortcuts that work even when NoteFlux is
 					not in focus. These shortcuts will trigger from anywhere on your
 					system.
 				</p>
@@ -57,7 +58,7 @@
 			<Layers2Icon class="mb-4 size-10 text-muted-foreground" />
 			<h3 class="mb-2 text-xl font-medium">Global Shortcuts</h3>
 			<p class="mb-6 max-w-md text-sm text-muted-foreground">
-				Global shortcuts allow you to use Whispering from any application on
+				Global shortcuts allow you to use NoteFlux from any application on
 				your computer. This feature is only available in the desktop app or
 				browser extension.
 			</p>

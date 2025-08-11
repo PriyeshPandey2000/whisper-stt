@@ -1,6 +1,6 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { ChromeWebStoreIcon } from '$lib/components/icons';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { Button } from '$lib/ui/button';
 	import { LaptopIcon as DesktopIcon } from '@lucide/svelte';
 </script>
@@ -18,7 +18,7 @@
 			You can access global keyboard shortcuts on the extension and desktop app.
 		</p>
 		<div class="flex flex-col gap-2 md:flex-row">
-			<WhisperingButton
+			<NoteFluxButton
 				tooltipContent="Check out the Chrome Extension"
 				href="https://github.com/epicenter-so/epicenter/releases"
 				target="_blank"
@@ -28,10 +28,10 @@
 			>
 				<DesktopIcon class="mr-2 size-6" />
 				Download for Desktop
-			</WhisperingButton>
-			<WhisperingButton
+			</NoteFluxButton>
+			<NoteFluxButton
 				tooltipContent="Check out the desktop app"
-				href="https://chromewebstore.google.com/detail/whispering/oilbfihknpdbpfkcncojikmooipnlglo"
+				href="https://chromewebstore.google.com/detail/noteflux/oilbfihknpdbpfkcncojikmooipnlglo"
 				target="_blank"
 				rel="noopener noreferrer"
 				variant="outline"
@@ -39,7 +39,7 @@
 			>
 				<ChromeWebStoreIcon class="mr-2 size-6" />
 				Get Chrome Extension
-			</WhisperingButton>
+			</NoteFluxButton>
 		</div>
 		<Button onclick={() => window.history.back()} variant="link">Go back</Button
 		>

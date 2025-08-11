@@ -1,7 +1,16 @@
 <script lang="ts">
+	import type {
+		ColumnDef,
+		ColumnFiltersState,
+		PaginationState,
+	} from '@tanstack/table-core';
+
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { TrashIcon } from '$lib/components/icons';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
+	import { rpc } from '$lib/query';
+	import { type Transformation } from '$lib/services/db';
+	import { createPersistedState } from '$lib/svelte-utils';
 	import { Badge } from '$lib/ui/badge';
 	import { Button } from '$lib/ui/button';
 	import { Checkbox } from '$lib/ui/checkbox';
@@ -9,21 +18,13 @@
 	import { Skeleton } from '$lib/ui/skeleton';
 	import { SelectAllPopover, SortableTableHeader } from '$lib/ui/table';
 	import * as Table from '$lib/ui/table';
-	import { rpc } from '$lib/query';
-	import { type Transformation } from '$lib/services/db';
-	import { createPersistedState } from '$lib/svelte-utils';
 	import { createTransformationViewTransitionName } from '$lib/utils/createTransformationViewTransitionName';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import {
-		FlexRender,
 		createTable as createSvelteTable,
+		FlexRender,
 		renderComponent,
 	} from '@tanstack/svelte-table';
-	import type {
-		ColumnDef,
-		ColumnFiltersState,
-		PaginationState,
-	} from '@tanstack/table-core';
 	import {
 		getCoreRowModel,
 		getFilteredRowModel,
@@ -32,6 +33,7 @@
 	} from '@tanstack/table-core';
 	import { createRawSnippet } from 'svelte';
 	import { z } from 'zod';
+
 	import CreateTransformationButton from './CreateTransformationButton.svelte';
 	import MarkTransformationActiveButton from './MarkTransformationActiveButton.svelte';
 	import TransformationRowActions from './TransformationRowActions.svelte';
@@ -45,36 +47,36 @@
 
 	const columns: ColumnDef<Transformation>[] = [
 		{
-			id: 'select',
-			header: ({ table }) =>
-				renderComponent(SelectAllPopover<Transformation>, { table }),
 			cell: ({ row }) =>
 				renderComponent(Checkbox, {
+					'aria-label': 'Select row',
 					checked: row.getIsSelected(),
 					onCheckedChange: (value) => row.toggleSelected(!!value),
-					'aria-label': 'Select row',
 				}),
-			enableSorting: false,
 			enableHiding: false,
+			enableSorting: false,
+			header: ({ table }) =>
+				renderComponent(SelectAllPopover<Transformation>, { table }),
+			id: 'select',
 		},
 		{
-			id: 'mark-selected',
 			cell: ({ row }) =>
 				renderComponent(MarkTransformationActiveButton, {
-					transformation: row.original,
 					size: 'icon',
+					transformation: row.original,
 				}),
-			enableSorting: false,
 			enableHiding: false,
+			enableSorting: false,
+			id: 'mark-selected',
 		},
 		{
 			accessorKey: 'id',
 			cell: ({ getValue }) =>
 				renderComponent(Badge, {
-					variant: 'id',
 					children: createRawSnippet((name) => ({
 						render: () => getValue<string>(),
 					})),
+					variant: 'id',
 				}),
 			header: 'ID',
 		},
@@ -95,60 +97,46 @@
 				}),
 		},
 		{
-			id: 'actions',
 			accessorFn: (transformation) => transformation,
-			header: 'Actions',
 			cell: ({ getValue }) => {
 				const transformation = getValue<Transformation>();
 				return renderComponent(TransformationRowActions, {
 					transformationId: transformation.id,
 				});
 			},
+			header: 'Actions',
+			id: 'actions',
 		},
 	];
 
 	let sorting = createPersistedState({
-		key: 'whispering-transformations-data-table-sorting',
-		onParseError: (error) => [{ id: 'title', desc: false }],
+		key: 'noteflux-transformations-data-table-sorting',
+		onParseError: (error) => [{ desc: false, id: 'title' }],
 		schema: z.array(z.object({ desc: z.boolean(), id: z.string() })),
 	});
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = createPersistedState({
-		key: 'whispering-transformations-data-table-row-selection',
+		key: 'noteflux-transformations-data-table-row-selection',
 		onParseError: (error) => ({}),
 		schema: z.record(z.string(), z.boolean()),
 	});
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
 	const table = createSvelteTable({
-		getRowId: (originalRow) => originalRow.id,
+		columns,
 		get data() {
 			return transformationsQuery.data ?? [];
 		},
-		columns,
 		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
-		onSortingChange: (updater) => {
-			if (typeof updater === 'function') {
-				sorting.value = updater(sorting.value);
-			} else {
-				sorting.value = updater;
-			}
-		},
+		getRowId: (originalRow) => originalRow.id,
+		getSortedRowModel: getSortedRowModel(),
 		onColumnFiltersChange: (updater) => {
 			if (typeof updater === 'function') {
 				columnFilters = updater(columnFilters);
 			} else {
 				columnFilters = updater;
-			}
-		},
-		onRowSelectionChange: (updater) => {
-			if (typeof updater === 'function') {
-				rowSelection.value = updater(rowSelection.value);
-			} else {
-				rowSelection.value = updater;
 			}
 		},
 		onPaginationChange: (updater) => {
@@ -158,18 +146,32 @@
 				pagination = updater;
 			}
 		},
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === 'function') {
+				rowSelection.value = updater(rowSelection.value);
+			} else {
+				rowSelection.value = updater;
+			}
+		},
+		onSortingChange: (updater) => {
+			if (typeof updater === 'function') {
+				sorting.value = updater(sorting.value);
+			} else {
+				sorting.value = updater;
+			}
+		},
 		state: {
-			get sorting() {
-				return sorting.value;
-			},
 			get columnFilters() {
 				return columnFilters;
+			},
+			get pagination() {
+				return pagination;
 			},
 			get rowSelection() {
 				return rowSelection.value;
 			},
-			get pagination() {
-				return pagination;
+			get sorting() {
+				return sorting.value;
 			},
 		},
 	});
@@ -209,19 +211,25 @@
 			oninput={(e) => (filterQuery.value = e.currentTarget.value)}
 		/>
 		{#if selectedTransformationRows.length > 0}
-			<WhisperingButton
+			<NoteFluxButton
 				tooltipContent="Delete selected transformations"
 				variant="outline"
 				size="icon"
 				onclick={() => {
 					confirmationDialog.open({
 						title: 'Delete transformations',
-						subtitle: 'Are you sure you want to delete these transformations?',
 						confirmText: 'Delete',
 						onConfirm: () => {
 							deleteTransformations.mutate(
 								selectedTransformationRows.map(({ original }) => original),
 								{
+									onError: (error) => {
+										rpc.notify.error.execute({
+											title: 'Failed to delete transformations!',
+											description: 'Your transformations could not be deleted.',
+											action: { error: error, type: 'more-details' },
+										});
+									},
 									onSuccess: () => {
 										rpc.notify.success.execute({
 											title: 'Deleted transformations!',
@@ -229,21 +237,15 @@
 												'Your transformations have been deleted successfully.',
 										});
 									},
-									onError: (error) => {
-										rpc.notify.error.execute({
-											title: 'Failed to delete transformations!',
-											description: 'Your transformations could not be deleted.',
-											action: { type: 'more-details', error: error },
-										});
-									},
 								},
 							);
 						},
+						subtitle: 'Are you sure you want to delete these transformations?',
 					});
 				}}
 			>
 				<TrashIcon class="size-4" />
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/if}
 
 		<CreateTransformationButton />

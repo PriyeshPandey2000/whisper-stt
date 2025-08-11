@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="https://whispering.bradenwong.com">
-    <img width="180" src="./src-tauri/recorder-state-icons/studio_microphone.png" alt="Whispering">
+  <a href="https://noteflux.bradenwong.com">
+    <img width="180" src="./src-tauri/recorder-state-icons/studio_microphone.png" alt="NoteFlux">
   </a>
-  <h1 align="center">Whispering</h1>
+  <h1 align="center">NoteFlux</h1>
   <p align="center">Press shortcut → speak → get text. Free and open source ❤️</p>
 </p>
 
@@ -30,26 +30,26 @@
   <img alt="Rust" src="https://img.shields.io/badge/-Rust-orange?style=flat-square&logo=rust&logoColor=white" />
 </p>
 
-## What is Whispering?
+## What is NoteFlux?
 
-Whispering turns your speech into text with a single keyboard shortcut. Press the shortcut, speak, and your words appear wherever you're typing. No window switching, no clicking around.
+NoteFlux turns your speech into text with a single keyboard shortcut. Press the shortcut, speak, and your words appear wherever you're typing. No window switching, no clicking around.
 
-I built this because I was tired of paying $30/month for transcription apps that are basically API wrappers. With Whispering, you bring your own API key and pay cents directly to providers. I use it 3-4 hours daily and pay about $3/month.
+I built this because I was tired of paying $30/month for transcription apps that are basically API wrappers. With NoteFlux, you bring your own API key and pay cents directly to providers. I use it 3-4 hours daily and pay about $3/month.
 
 The math is simple: transcription APIs cost $0.02-0.36/hour. Subscription apps charge $30/month. That's a 10-100x markup for a middleman you don't need.
 
-> **Note**: Whispering is designed for quick transcriptions, not long recordings. For extended recording sessions, use a dedicated recording app.
+> **Note**: NoteFlux is designed for quick transcriptions, not long recordings. For extended recording sessions, use a dedicated recording app.
 
 ## Demo
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=1jYgBMrfVZs">
-    <img src="https://img.youtube.com/vi/1jYgBMrfVZs/maxresdefault.jpg" alt="Whispering Complete Setup Guide" width="600">
+    <img src="https://img.youtube.com/vi/1jYgBMrfVZs/maxresdefault.jpg" alt="NoteFlux Complete Setup Guide" width="600">
   </a>
   <p><em>Click to watch: Complete setup and usage guide (5 min)</em></p>
 </div>
 
-> **Want to see the voice coding workflow?** Check out this [3-minute demo](https://youtube.com/shorts/tP1fuFpJt7g) showing how I use Whispering with Claude Code for faster development.
+> **Want to see the voice coding workflow?** Check out this [3-minute demo](https://youtube.com/shorts/tP1fuFpJt7g) showing how I use NoteFlux with Claude Code for faster development.
 
 ## Key Features
 
@@ -63,7 +63,7 @@ Built with Svelte 5 and Tauri, so it's tiny (~22MB) and starts instantly. The co
 
 Takes about 2 minutes to get running.
 
-### 1️⃣ Download Whispering
+### 1️⃣ Download NoteFlux
 
 Choose your operating system below and click the download link:
 
@@ -74,8 +74,8 @@ Choose your operating system below and click the download link:
 
 | Architecture | Download | Requirements |
 |-------------|----------|--------------|
-| **Apple Silicon** | [Whispering_7.1.1_aarch64.dmg](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_aarch64.dmg) | M1/M2/M3/M4 Macs |
-| **Intel** | [Whispering_7.1.1_x64.dmg](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_x64.dmg) | Intel-based Macs |
+| **Apple Silicon** | [NoteFlux_7.1.1_aarch64.dmg](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_aarch64.dmg) | M1/M2/M3/M4 Macs |
+| **Intel** | [NoteFlux_7.1.1_x64.dmg](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_x64.dmg) | Intel-based Macs |
 
 > **Not sure which Mac you have?** Click the Apple menu → About This Mac. Look for "Chip" or "Processor":
 > - Apple M1/M2/M3/M4 → Use Apple Silicon version
@@ -84,12 +84,12 @@ Choose your operating system below and click the download link:
 #### Installation steps:
 1. Download the `.dmg` file for your architecture
 2. Open the downloaded file
-3. Drag Whispering to your Applications folder
-4. Open Whispering from Applications
+3. Drag NoteFlux to your Applications folder
+4. Open NoteFlux from Applications
 
 ### Troubleshooting:
 - **"Unverified developer" warning:** Right-click the app → Open → Open
-- **"App is damaged" error (Apple Silicon):** Run `xattr -cr /Applications/Whispering.app` in Terminal
+- **"App is damaged" error (Apple Silicon):** Run `xattr -cr /Applications/NoteFlux.app` in Terminal
 
 </details>
 
@@ -100,8 +100,8 @@ Choose your operating system below and click the download link:
 
 | Installer Type | Download | Description |
 |---------------|----------|-------------|
-| **MSI Installer** | [Whispering_7.1.1_x64_en-US.msi](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_x64_en-US.msi) | Recommended Standard Windows installer |
-| **EXE Installer** | [Whispering_7.1.1_x64-setup.exe](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_x64-setup.exe) | Alternative installer option |
+| **MSI Installer** | [NoteFlux_7.1.1_x64_en-US.msi](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_x64_en-US.msi) | Recommended Standard Windows installer |
+| **EXE Installer** | [NoteFlux_7.1.1_x64-setup.exe](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_x64-setup.exe) | Alternative installer option |
 
 #### Installation
 
@@ -110,7 +110,7 @@ Choose your operating system below and click the download link:
 3. If Windows Defender appears: Click "More Info" → "Run Anyway"
 4. Follow the installation wizard
 
-Whispering will appear in your Start Menu when complete.
+NoteFlux will appear in your Start Menu when complete.
 
 </details>
 
@@ -121,29 +121,29 @@ Whispering will appear in your Start Menu when complete.
 
 | Package Format | Download | Compatible With |
 |---------------|----------|-----------------|
-| **AppImage** | [Whispering_7.1.1_amd64.AppImage](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_amd64.AppImage) | All Linux distributions |
-| **DEB Package** | [Whispering_7.1.1_amd64.deb](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_amd64.deb) | Debian, Ubuntu, Pop!_OS |
-| **RPM Package** | [Whispering-7.1.1-1.x86_64.rpm](https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering-7.1.1-1.x86_64.rpm) | Fedora, RHEL, openSUSE |
+| **AppImage** | [NoteFlux_7.1.1_amd64.AppImage](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_amd64.AppImage) | All Linux distributions |
+| **DEB Package** | [NoteFlux_7.1.1_amd64.deb](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_amd64.deb) | Debian, Ubuntu, Pop!_OS |
+| **RPM Package** | [NoteFlux-7.1.1-1.x86_64.rpm](https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux-7.1.1-1.x86_64.rpm) | Fedora, RHEL, openSUSE |
 
 #### Quick Install Commands
 
 **AppImage** (Universal)
 ```bash
-wget https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_amd64.AppImage
-chmod +x Whispering_7.1.1_amd64.AppImage
-./Whispering_7.1.1_amd64.AppImage
+wget https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_amd64.AppImage
+chmod +x NoteFlux_7.1.1_amd64.AppImage
+./NoteFlux_7.1.1_amd64.AppImage
 ```
 
 **Debian/Ubuntu**
 ```bash
-wget https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering_7.1.1_amd64.deb
-sudo dpkg -i Whispering_7.1.1_amd64.deb
+wget https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux_7.1.1_amd64.deb
+sudo dpkg -i NoteFlux_7.1.1_amd64.deb
 ```
 
 **Fedora/RHEL**
 ```bash
-wget https://github.com/epicenter-so/epicenter/releases/latest/download/Whispering-7.1.1-1.x86_64.rpm
-sudo rpm -i Whispering-7.1.1-1.x86_64.rpm
+wget https://github.com/epicenter-so/epicenter/releases/latest/download/NoteFlux-7.1.1-1.x86_64.rpm
+sudo rpm -i NoteFlux-7.1.1-1.x86_64.rpm
 ```
 
 </details>
@@ -155,11 +155,11 @@ sudo rpm -i Whispering-7.1.1-1.x86_64.rpm
 
 <br>
 
-**[🚀 Open Whispering Web App →](https://whispering.bradenwong.com)**
+**[🚀 Open NoteFlux Web App →](https://noteflux.bradenwong.com)**
 
 No installation needed! Works in any modern browser.
 
-> **Note:** The web version doesn't have global keyboard shortcuts, but otherwise works great for trying out Whispering before installing.
+> **Note:** The web version doesn't have global keyboard shortcuts, but otherwise works great for trying out NoteFlux before installing.
 
 </details>
 
@@ -176,10 +176,10 @@ Right now, I personally use **Groq** for almost all my transcriptions.
 
 ### 3️⃣ Connect & Test
 
-1. Open Whispering
+1. Open NoteFlux
 2. Click **Settings** (⚙️) → **Transcription**
 3. Select **Groq** → Paste your API key where it says `Groq API Key`
-4. Click the recording button (or press `Cmd+Shift+;` anywhere) and say "Testing Whispering"
+4. Click the recording button (or press `Cmd+Shift+;` anywhere) and say "Testing NoteFlux"
 
 **🎉 Success!** Your words are now in your clipboard. Paste anywhere!
 
@@ -188,7 +188,7 @@ Right now, I personally use **Groq** for almost all my transcriptions.
 
 ### Quick Fixes
 - **No transcription?** → Double-check API key in Settings
-- **Shortcut not working?** → Bring Whispering to foreground (see macOS section below)
+- **Shortcut not working?** → Bring NoteFlux to foreground (see macOS section below)
 - **Wrong provider selected?** → Check Settings → Transcription
 
 ### Platform-Specific Issues
@@ -200,40 +200,40 @@ This happens due to macOS App Nap, which suspends background apps to save batter
 
 **Quick fixes:**
 1. Use Voice Activated mode for hands-free operation (recommended)
-2. Bring Whispering to the foreground briefly to restore shortcuts
+2. Bring NoteFlux to the foreground briefly to restore shortcuts
 3. Keep the app window in the foreground (even as a smaller window)
 
-**Best practice:** Keep Whispering in the foreground in front of other apps. You can resize it to a smaller window or use Voice Activated mode for minimal disruption.
+**Best practice:** Keep NoteFlux in the foreground in front of other apps. You can resize it to a smaller window or use Voice Activated mode for minimal disruption.
 
 </details>
 
 <details>
 <summary><strong>Accidentally rejected microphone permissions?</strong></summary>
 
-If you accidentally clicked "Don't Allow" when Whispering asked for microphone access, here's how to fix it:
+If you accidentally clicked "Don't Allow" when NoteFlux asked for microphone access, here's how to fix it:
 
 #### 🍎 macOS
 1. Open **System Settings** → **Privacy & Security** → **Privacy** → **Microphone**
-2. Find **Whispering** in the list
+2. Find **NoteFlux** in the list
 3. Toggle the switch to enable microphone access
-4. If Whispering isn't in the list, reinstall the app to trigger the permission prompt again
+4. If NoteFlux isn't in the list, reinstall the app to trigger the permission prompt again
 
 #### 🪟 Windows
 If you accidentally blocked microphone permissions, use the Registry solution:
 
 **Registry Cleanup (Recommended)**
-1. Close Whispering
+1. Close NoteFlux
 2. Open Registry Editor (Win+R, type `regedit`)
-3. Use Find (Ctrl+F) to search for "Whispering"
-4. Delete all registry folders containing "Whispering"
+3. Use Find (Ctrl+F) to search for "NoteFlux"
+4. Delete all registry folders containing "NoteFlux"
 5. Press F3 to find next, repeat until all instances are removed
-6. Uninstall and reinstall Whispering
+6. Uninstall and reinstall NoteFlux
 7. Accept permissions when prompted
 
 <details>
 <summary>Alternative solutions</summary>
 
-**Delete App Data:** Navigate to `%APPDATA%\..\Local\com.bradenwong.whispering` and delete this folder, then reinstall.
+**Delete App Data:** Navigate to `%APPDATA%\..\Local\com.bradenwong.noteflux` and delete this folder, then reinstall.
 
 **Windows Settings:** Settings → Privacy & security → Microphone → Enable "Let desktop apps access your microphone"
 
@@ -415,19 +415,19 @@ Change the recording shortcut to whatever feels natural:
 
 </details>
 
-## Why Whispering Exists
+## Why NoteFlux Exists
 
 I was paying $30/month for a transcription app. Then I did the math: the actual API calls cost about $0.36/hour. At my usage (3-4 hours/day), I was paying $30 for what should cost $3.
 
 That's when I realized these apps are just middlemen. They take your audio, send it to OpenAI's Whisper API, and charge you 10x markup. Plus your recordings go through their servers, get stored who knows where, and you're locked into their ecosystem.
 
-So I built Whispering to cut out the middleman. You bring your own API key, your audio goes directly to the provider, and you pay actual costs. No subscription, no tracking, no lock-in. Just transcription at cost.
+So I built NoteFlux to cut out the middleman. You bring your own API key, your audio goes directly to the provider, and you pay actual costs. No subscription, no tracking, no lock-in. Just transcription at cost.
 
 The code is open source because I believe tools this fundamental should be free. Companies pivot, get acquired, or shut down. But open source is forever.
 
 ### Cost Comparison
 
-With Whispering, you pay providers directly instead of marked-up subscription prices:
+With NoteFlux, you pay providers directly instead of marked-up subscription prices:
 
 | Service | Cost per Hour | Light Use (20 min/day) | Moderate Use (1 hr/day) | Heavy Use (3 hr/day) | Traditional Tools |
 |---------|---------------|------------------------|-------------------------|----------------------|-------------------|
@@ -438,7 +438,7 @@ With Whispering, you pay providers directly instead of marked-up subscription pr
 
 ## How is my data stored?
 
-Whispering stores as much data as possible locally on your device, including recordings and text transcriptions. This approach ensures maximum privacy and data security. Here's an overview of how data is handled:
+NoteFlux stores as much data as possible locally on your device, including recordings and text transcriptions. This approach ensures maximum privacy and data security. Here's an overview of how data is handled:
 
 1. **Local Storage**: Voice recordings and transcriptions are stored in IndexedDB, which is used as blob storage and a place to store all of your data like text and transcriptions.
 
@@ -446,7 +446,7 @@ Whispering stores as much data as possible locally on your device, including rec
    - External services like OpenAI, Groq, or ElevenLabs (with your own API keys)
    - A local transcription service such as Speaches, which keeps everything on-device
 
-3. **Transformation Service (Optional)**: Whispering includes configurable transformation settings that allow you to pipe transcription output into custom transformation flows. These flows can leverage:
+3. **Transformation Service (Optional)**: NoteFlux includes configurable transformation settings that allow you to pipe transcription output into custom transformation flows. These flows can leverage:
    - External Large Language Models (LLMs) like OpenAI's GPT-4, Anthropic's Claude, Google's Gemini, or Groq's Llama models
    - Hosted LLMs within your custom workflows for advanced text processing
    - Simple find-and-replace operations for basic text modifications
@@ -459,7 +459,7 @@ You can change both the transcription and transformation services in the setting
 
 ### How is this different from other transcription apps?
 
-Most apps are middlemen charging $30/month for API calls that cost pennies. With Whispering, you bring your own API key and pay providers directly. Your audio goes straight from your device to the API. No servers in between, no data collection, no subscriptions.
+Most apps are middlemen charging $30/month for API calls that cost pennies. With NoteFlux, you bring your own API key and pay providers directly. Your audio goes straight from your device to the API. No servers in between, no data collection, no subscriptions.
 
 I built this for myself and use it every day. The code is open source so you can verify exactly what it does.
 
@@ -479,7 +479,7 @@ With Groq (my favorite): $0.02-$0.06/hour. With OpenAI: $0.18-$0.36/hour. Local 
 
 Your recordings stay on your device in IndexedDB. When you transcribe, audio goes directly to your chosen provider using your API key. No middleman servers. For maximum privacy, use local transcription.
 
-Note: we use anonymized event logging with [Aptabase](https://github.com/aptabase), an open-source, privacy-first analytics service. No personal data is attached to any of these events. You can see exactly what events we log [in `analytics.ts`](https://github.com/epicenter-so/epicenter/tree/main/apps/whispering/src/lib/services/analytics.ts) and where they are logged [by searching for `rpc.analytics.logEvent` in our codebase](https://github.com/search?q=repo%3Aepicenter-so%2Fepicenter+rpc.analytics.logEvent&type=code). You can turn this off in settings at any time.
+Note: we use anonymized event logging with [Aptabase](https://github.com/aptabase), an open-source, privacy-first analytics service. No personal data is attached to any of these events. You can see exactly what events we log [in `analytics.ts`](https://github.com/epicenter-so/epicenter/tree/main/apps/noteflux/src/lib/services/analytics.ts) and where they are logged [by searching for `rpc.analytics.logEvent` in our codebase](https://github.com/search?q=repo%3Aepicenter-so%2Fepicenter+rpc.analytics.logEvent&type=code). You can turn this off in settings at any time.
 
 ### Can I format the output automatically?
 
@@ -487,7 +487,7 @@ Yes - set up AI transformations to fix grammar, translate languages, or reformat
 
 ### What platforms work?
 
-Desktop: Mac (Intel & Apple Silicon), Windows, Linux. Web: Any modern browser at [whispering.bradenwong.com](https://whispering.bradenwong.com).
+Desktop: Mac (Intel & Apple Silicon), Windows, Linux. Web: Any modern browser at [noteflux.bradenwong.com](https://noteflux.bradenwong.com).
 
 ### Found a bug?
 
@@ -497,7 +497,7 @@ Open an issue on [GitHub](https://github.com/epicenter-so/epicenter/issues). I a
 
 ### Built With Modern Web Technologies
 
-Whispering showcases the power of modern web development as a comprehensive example application:
+NoteFlux showcases the power of modern web development as a comprehensive example application:
 
 #### Web and Desktop
 - [Svelte 5](https://svelte.dev): The UI reactivity library of choice with cutting-edge runes system
@@ -530,7 +530,7 @@ Whispering showcases the power of modern web development as a comprehensive exam
 
 ### Architecture Deep Dive
 
-Whispering uses a clean three-layer architecture that achieves **extensive code sharing** between the desktop app (Tauri) and web app. This is possible because of how we handle platform differences and separate business logic from UI concerns.
+NoteFlux uses a clean three-layer architecture that achieves **extensive code sharing** between the desktop app (Tauri) and web app. This is possible because of how we handle platform differences and separate business logic from UI concerns.
 
 **Quick Navigation:** [Service Layer](#service-layer---pure-business-logic--platform-abstraction) | [Query Layer](#query-layer---adding-reactivity-and-state-management) | [Error Handling](#error-handling-with-wellcrafted)
 
@@ -641,15 +641,15 @@ This design keeps all reactive state management isolated in the query layer, all
 
 #### Error Transformation
 
-The query layer also transforms service-specific errors into `WhisperingError` types that integrate seamlessly with the toast notification system. This happens inside `resultMutationFn` or `resultQueryFn`, creating a clean boundary between business logic errors and UI presentation:
+The query layer also transforms service-specific errors into `NoteFluxError` types that integrate seamlessly with the toast notification system. This happens inside `resultMutationFn` or `resultQueryFn`, creating a clean boundary between business logic errors and UI presentation:
 
 ```typescript
 // Service returns domain-specific error
 const { data, error: serviceError } = await services.recorder.startRecording(...);
 
 if (serviceError) {
-  // Query layer transforms to UI-friendly WhisperingError
-  return Err(WhisperingError({
+  // Query layer transforms to UI-friendly NoteFluxError
+  return Err(NoteFluxError({
     title: '❌ Failed to start recording',
     description: serviceError.message,  // Preserve detailed message
     action: { type: 'more-details', error: serviceError }
@@ -659,11 +659,11 @@ if (serviceError) {
 
 #### Error Handling with WellCrafted
 
-Whispering uses [WellCrafted](https://github.com/wellcrafted-dev/wellcrafted), a lightweight TypeScript library I created to bring Rust-inspired error handling to JavaScript. I built WellCrafted after using the [effect-ts library](https://github.com/Effect-TS/effect) when it first came out in 2023—I was very excited about the concepts but found it too verbose. WellCrafted distills my takeaways from effect-ts and makes them better by leaning into more native JavaScript syntax, making it perfect for this use case. Unlike traditional try-catch blocks that hide errors, WellCrafted makes all potential failures explicit in function signatures using the `Result<T, E>` pattern.
+NoteFlux uses [WellCrafted](https://github.com/wellcrafted-dev/wellcrafted), a lightweight TypeScript library I created to bring Rust-inspired error handling to JavaScript. I built WellCrafted after using the [effect-ts library](https://github.com/Effect-TS/effect) when it first came out in 2023—I was very excited about the concepts but found it too verbose. WellCrafted distills my takeaways from effect-ts and makes them better by leaning into more native JavaScript syntax, making it perfect for this use case. Unlike traditional try-catch blocks that hide errors, WellCrafted makes all potential failures explicit in function signatures using the `Result<T, E>` pattern.
 
 `wellcrafted` ensures robust error handling across the entire codebase, from service layer functions to UI components, while maintaining excellent developer experience with TypeScript's control flow analysis.
 
-### Run Whispering in Local Development Mode
+### Run NoteFlux in Local Development Mode
 
 1. Clone the repository: `git clone https://github.com/epicenter-so/epicenter.git`
 2. Change into the project directory: `cd epicenter`
@@ -671,7 +671,7 @@ Whispering uses [WellCrafted](https://github.com/wellcrafted-dev/wellcrafted), a
 
 To run the desktop app and website:
 ```bash
-cd apps/whispering
+cd apps/noteflux
 pnpm tauri dev
 ```
 
@@ -683,17 +683,17 @@ If you have concerns about the installers or want more control, you can build th
 #### Desktop
 
 ```bash
-cd apps/whispering
+cd apps/noteflux
 pnpm i
 pnpm tauri build
 ```
 
-Find the executable in `apps/whispering/target/release`
+Find the executable in `apps/noteflux/target/release`
 
 
 ### Contributing
 
-We welcome contributions! Whispering is built with care and attention to clean, maintainable code.
+We welcome contributions! NoteFlux is built with care and attention to clean, maintainable code.
 
 #### Code Style Guidelines
 - Follow existing TypeScript and Svelte patterns throughout
@@ -710,7 +710,7 @@ Note: WellCrafted is a TypeScript utility library I created to bring Rust-inspir
 
 #### Contributing New Adapters
 
-We'd love to expand Whispering's capabilities with more transcription and AI service adapters! Here's how to add a new adapter:
+We'd love to expand NoteFlux's capabilities with more transcription and AI service adapters! Here's how to add a new adapter:
 
 **Overview of the adapter system:**
 1. **Transcription services** (`services/transcription/`): Convert audio to text
@@ -725,7 +725,7 @@ Adding a new transcription service involves four main steps:
 1. **Create the service implementation** in `src/lib/services/transcription/`:
    ```typescript
    // src/lib/services/transcription/your-service.ts
-   import { WhisperingErr, type WhisperingError } from '$lib/result';
+   import { NoteFluxErr, type NoteFluxError } from '$lib/result';
    import type { Settings } from '$lib/settings';
    import { Err, Ok, tryAsync, type Result } from 'wellcrafted/result';
    
@@ -757,10 +757,10 @@ Adding a new transcription service involves four main steps:
            modelName: (string & {}) | YourServiceModel['name'];
            // Add any service-specific options
          }
-       ): Promise<Result<string, WhisperingError>> {
+       ): Promise<Result<string, NoteFluxError>> {
          // Validate API key
          if (!options.apiKey) {
-           return WhisperingErr({
+           return NoteFluxErr({
              title: '🔑 API Key Required',
              description: 'Please enter your YourService API key in settings.',
              action: {
@@ -774,7 +774,7 @@ Adding a new transcription service involves four main steps:
          // Make the API call
          const { data, error } = await tryAsync({
            try: () => yourServiceClient.transcribe(audioBlob, options),
-           mapErr: (error) => WhisperingErr({
+           mapErr: (error) => NoteFluxErr({
              title: '❌ Transcription Failed',
              description: error.message,
              action: { type: 'more-details', error },
@@ -922,12 +922,12 @@ Adding a new transcription service involves four main steps:
 
 ##### Adding an AI Transformation Adapter
 
-AI transformations in Whispering use completion services that can be integrated into transformation workflows. Here's how to add a new AI provider:
+AI transformations in NoteFlux use completion services that can be integrated into transformation workflows. Here's how to add a new AI provider:
 
 1. **Create the completion service** in `src/lib/services/completion/`:
    ```typescript
    // src/lib/services/completion/your-provider.ts
-   import { WhisperingErr, type WhisperingError } from '$lib/result';
+   import { NoteFluxErr, type NoteFluxError } from '$lib/result';
    import { Err, Ok, tryAsync, type Result } from 'wellcrafted/result';
    
    export function createYourProviderCompletionService() {
@@ -938,10 +938,10 @@ AI transformations in Whispering use completion services that can be integrated 
          systemPrompt: string;
          userPrompt: string;
          temperature?: number;
-       }): Promise<Result<string, WhisperingError>> {
+       }): Promise<Result<string, NoteFluxError>> {
          // Validate API key
          if (!options.apiKey) {
-           return WhisperingErr({
+           return NoteFluxErr({
              title: '🔑 API Key Required',
              description: 'Please add your YourProvider API key.',
            });
@@ -950,7 +950,7 @@ AI transformations in Whispering use completion services that can be integrated 
          // Make the completion request
          const { data, error } = await tryAsync({
            try: () => yourProviderClient.complete(options),
-           mapErr: (error) => WhisperingErr({
+           mapErr: (error) => NoteFluxErr({
              title: '❌ Completion Failed',
              description: error.message,
              action: { type: 'more-details', error },
@@ -1005,11 +1005,11 @@ AI transformations in Whispering use completion services that can be integrated 
 
 ##### Error Handling Best Practices
 
-Always use the `WhisperingErr` helper for user-facing errors:
+Always use the `NoteFluxErr` helper for user-facing errors:
 
 ```typescript
 // Good: User-friendly error with action
-return WhisperingErr({
+return NoteFluxErr({
   title: '⏱️ Rate Limit Reached',
   description: 'Too many requests. Please try again in a few minutes.',
   action: {
@@ -1021,7 +1021,7 @@ return WhisperingErr({
 
 // Handle different error types
 if (error.status === 401) {
-  return WhisperingErr({
+  return NoteFluxErr({
     title: '🔑 Invalid API Key',
     description: 'Your API key appears to be invalid or expired.',
     action: {
@@ -1035,7 +1035,7 @@ if (error.status === 401) {
 // Use with tryAsync for automatic error mapping
 const { data, error } = await tryAsync({
   try: () => apiClient.makeRequest(),
-  mapError: (error) => WhisperingErr({
+  mapError: (error) => NoteFluxErr({
     title: '❌ Request Failed',
     description: error.message,
     action: { type: 'more-details', error },
@@ -1112,22 +1112,22 @@ After running the script, follow the displayed instructions to commit, tag, and 
 - Performance optimizations
 - New transcription or transformation service integrations
 
-Feel free to suggest and implement any features that improve usability—I'll do my best to integrate contributions that make Whispering better for everyone.
+Feel free to suggest and implement any features that improve usability—I'll do my best to integrate contributions that make NoteFlux better for everyone.
 
 ## Support and Community
 
 ### License
 
-Whispering is released under the [MIT License](LICENSE). Use it, modify it, learn from it, and build upon it freely.
+NoteFlux is released under the [MIT License](LICENSE). Use it, modify it, learn from it, and build upon it freely.
 
 ### Support and Feedback
 
-If you encounter any issues or have suggestions for improvements, please open an issue on the [GitHub issues tab](https://github.com/epicenter-so/epicenter/issues) or contact me via [whispering@bradenwong.com](mailto:whispering@bradenwong.com). I really appreciate your feedback!
+If you encounter any issues or have suggestions for improvements, please open an issue on the [GitHub issues tab](https://github.com/epicenter-so/epicenter/issues) or contact me via [noteflux@bradenwong.com](mailto:noteflux@bradenwong.com). I really appreciate your feedback!
 
 - Community Chat: [Discord](https://go.epicenter.so/discord)
 - Issues and Bug Reports: [GitHub Issues](https://github.com/epicenter-so/epicenter/issues)
 - Feature Discussions: [GitHub Discussions](https://github.com/epicenter-so/epicenter/discussions)
-- Direct Contact: [whispering@bradenwong.com](mailto:whispering@bradenwong.com)
+- Direct Contact: [noteflux@bradenwong.com](mailto:noteflux@bradenwong.com)
 
 ### Sponsors
 
@@ -1139,4 +1139,4 @@ This project is supported by amazing people and organizations:
 
 Transcription should be free, open, and accessible to everyone. Join us in making it so.
 
-Thank you for using Whispering and happy writing!
+Thank you for using NoteFlux and happy writing!

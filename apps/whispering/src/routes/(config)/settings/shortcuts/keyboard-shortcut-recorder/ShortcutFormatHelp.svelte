@@ -1,10 +1,5 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import * as Alert from '$lib/ui/alert';
-	import { Badge } from '$lib/ui/badge';
-	import { Button } from '$lib/ui/button';
-	import * as Dialog from '$lib/ui/dialog';
-	import * as Tooltip from '$lib/ui/tooltip';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		ACCELERATOR_SECTIONS,
 		CommandOrAlt,
@@ -13,9 +8,14 @@
 		OPTION_DEAD_KEYS,
 	} from '$lib/constants/keyboard';
 	import { IS_MACOS } from '$lib/constants/platform';
+	import * as Alert from '$lib/ui/alert';
+	import { Badge } from '$lib/ui/badge';
+	import { Button } from '$lib/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
+	import * as Tooltip from '$lib/ui/tooltip';
 	import { AlertTriangle, ExternalLink, HelpCircle } from '@lucide/svelte';
 
-	let { type }: { type: 'local' | 'global' } = $props();
+	let { type }: { type: 'global' | 'local' } = $props();
 	let dialogOpen = $state(false);
 
 	const isLocal = $derived(type === 'local');
@@ -24,14 +24,6 @@
 	 * Examples for each shortcut type
 	 */
 	const SHORTCUT_EXAMPLES = {
-		local: [
-			' ',
-			`${CommandOrControl.toLowerCase()}+a`,
-			`${CommandOrControl.toLowerCase()}+shift+p`,
-			`${CommandOrAlt.toLowerCase()}+s`,
-			'f5',
-			`control+${CommandOrAlt.toLowerCase()}+delete`,
-		],
 		global: [
 			'Space',
 			'Control+A',
@@ -40,10 +32,18 @@
 			'F5',
 			`Control+${CommandOrAlt}+Delete`,
 		],
+		local: [
+			' ',
+			`${CommandOrControl.toLowerCase()}+a`,
+			`${CommandOrControl.toLowerCase()}+shift+p`,
+			`${CommandOrAlt.toLowerCase()}+s`,
+			'f5',
+			`control+${CommandOrAlt.toLowerCase()}+delete`,
+		],
 	} as const;
 </script>
 
-<WhisperingButton
+<NoteFluxButton
 	variant="ghost"
 	size="icon"
 	class="size-6"
@@ -52,7 +52,7 @@
 >
 	<HelpCircle class="size-4" />
 	<span class="sr-only">Shortcut format help</span>
-</WhisperingButton>
+</NoteFluxButton>
 
 <Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content class="sm:max-w-3xl">

@@ -1,28 +1,29 @@
 <script lang="ts">
-	import { Input } from '$lib/ui/input';
-	import { Label } from '$lib/ui/label';
-	import { cn } from '$lib/ui/utils';
 	import type { Snippet } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
+	import { Input } from '$lib/ui/input';
+	import { Label } from '$lib/ui/label';
+	import { cn } from '$lib/ui/utils';
+
 	let {
-		id,
-		label,
-		value = $bindable(),
-		type = 'text',
-		placeholder = '',
+		description,
 		disabled = false,
 		hideLabel = false,
-		description,
+		id,
+		label,
+		placeholder = '',
+		type = 'text',
+		value = $bindable(),
 		...restProps
 	}: HTMLInputAttributes & {
-		label: string;
-		value: string;
-		type?: 'text' | 'password' | 'number';
-		placeholder?: string;
+		description?: Snippet | string;
 		disabled?: boolean;
 		hideLabel?: boolean;
-		description?: string | Snippet;
+		label: string;
+		placeholder?: string;
+		type?: 'number' | 'password' | 'text';
+		value: string;
 	} = $props();
 </script>
 

@@ -1,27 +1,29 @@
 <script lang="ts">
+	import type { KeyboardEventSupportedKey } from '$lib/constants/keyboard';
+
+	import { IS_MACOS } from '$lib/constants/platform';
 	import * as Alert from '$lib/ui/alert';
 	import { Badge } from '$lib/ui/badge';
 	import { Button } from '$lib/ui/button';
 	import { Input } from '$lib/ui/input';
 	import * as Popover from '$lib/ui/popover';
-	import type { KeyboardEventSupportedKey } from '$lib/constants/keyboard';
-	import { IS_MACOS } from '$lib/constants/platform';
 	import { cn } from '$lib/ui/utils';
 	import { AlertTriangle, Keyboard, Pencil, XIcon } from '@lucide/svelte';
+
 	import { type KeyRecorder } from './create-key-recorder.svelte';
 
 	const {
 		title,
-		placeholder = 'Press a key combination',
 		autoFocus = true,
-		rawKeyCombination,
 		keyRecorder,
+		placeholder = 'Press a key combination',
+		rawKeyCombination,
 	}: {
-		title: string;
-		placeholder?: string;
 		autoFocus?: boolean;
-		rawKeyCombination: string | null;
 		keyRecorder: KeyRecorder;
+		placeholder?: string;
+		rawKeyCombination: null | string;
+		title: string;
 	} = $props();
 
 	let isPopoverOpen = $state(false);

@@ -10,7 +10,7 @@ Services are consumed through the query layer, which wraps them with caching, re
 // From: /lib/query/transcription.ts
 async function transcribeBlob(
 	blob: Blob,
-): Promise<Result<string, WhisperingError>> {
+): Promise<Result<string, NoteFluxError>> {
 	const selectedService =
 		settings.value['transcription.selectedTranscriptionService'];
 
@@ -58,7 +58,7 @@ export const ClipboardServiceLive = window.__TAURI_INTERNALS__
 	: createClipboardServiceWeb(); // Browser APIs
 ```
 
-This platform abstraction enables **97% code sharing** between Whispering's desktop and web versions. The vast majority of application logic is platform-agnostic, with only the thin service implementation layer varying between platforms. Instead of maintaining separate codebases, we write business logic once and let services handle platform differences automatically.
+This platform abstraction enables **97% code sharing** between NoteFlux's desktop and web versions. The vast majority of application logic is platform-agnostic, with only the thin service implementation layer varying between platforms. Instead of maintaining separate codebases, we write business logic once and let services handle platform differences automatically.
 
 #### Measuring Code Sharing
 
@@ -141,8 +141,8 @@ type DeviceStreamServiceError = TaggedError<'DeviceStreamServiceError'>;
 The error handling follows a clear pattern across three layers:
 
 1. **Service Layer**: Returns domain-specific tagged errors
-2. **Query Layer**: Wraps service errors into `WhisperingError` objects
-3. **UI Layer**: Displays `WhisperingError` objects in toasts without re-wrapping
+2. **Query Layer**: Wraps service errors into `NoteFluxError` objects
+3. **UI Layer**: Displays `NoteFluxError` objects in toasts without re-wrapping
 
 This pattern ensures consistent error handling and avoids double-wrapping errors.
 
@@ -197,17 +197,17 @@ This pattern ensures consistent error handling and avoids double-wrapping errors
 
 ### Important: Services Don't Know About UI
 
-Services should **never** import or use `WhisperingError`. That transformation happens in the query layer:
+Services should **never** import or use `NoteFluxError`. That transformation happens in the query layer:
 
 ```typescript
-// ❌ WRONG - Service shouldn't know about WhisperingError
-import { WhisperingError } from '$lib/result';
+// ❌ WRONG - Service shouldn't know about NoteFluxError
+import { NoteFluxError } from '$lib/result';
 
 // ✅ CORRECT - Service uses its own error type
 type MyServiceError = TaggedError<'MyServiceError'>;
 ```
 
-The query layer is responsible for transforming service errors into `WhisperingError` for toast notifications. This separation ensures:
+The query layer is responsible for transforming service errors into `NoteFluxError` for toast notifications. This separation ensures:
 
 - Services remain pure and testable
 - Error types can evolve independently
@@ -264,20 +264,20 @@ This example shows:
 
 ### Anti-Pattern: Double Wrapping
 
-Never wrap an already-wrapped error. The query layer handles the single transformation from service error to `WhisperingError`:
+Never wrap an already-wrapped error. The query layer handles the single transformation from service error to `NoteFluxError`:
 
 ```typescript
 // ❌ BAD: Service returns tagged error, query wraps it, then UI wraps again
 if (error) {
-	const whisperingError = WhisperingErr({
+	const notefluxError = NoteFluxErr({
 		/* ... */
 	});
-	notify.error.execute({ ...whisperingError.error }); // Double wrapping!
+	notify.error.execute({ ...notefluxError.error }); // Double wrapping!
 }
 
 // ✅ GOOD: Service returns tagged error, query wraps it, UI uses directly
 if (error) {
-	notify.error.execute(error); // Already a WhisperingError from query layer
+	notify.error.execute(error); // Already a NoteFluxError from query layer
 }
 ```
 

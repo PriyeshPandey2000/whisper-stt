@@ -13,8 +13,8 @@
 	});
 
 	const items = [
-		{ href: '/settings/shortcuts/local', title: 'Local Shortcuts' },
-		{ href: '/settings/shortcuts/global', title: 'Global Shortcuts' },
+		{ title: 'Local Shortcuts', href: '/settings/shortcuts/local' },
+		{ title: 'Global Shortcuts', href: '/settings/shortcuts/global' },
 	] as const;
 </script>
 
@@ -22,7 +22,7 @@
 	<header>
 		<h1 class="text-3xl font-bold tracking-tight">Keyboard Shortcuts</h1>
 		<p class="mt-2 text-muted-foreground">
-			Configure keyboard shortcuts to quickly access Whispering features.
+			Configure keyboard shortcuts to quickly access NoteFlux features.
 		</p>
 	</header>
 

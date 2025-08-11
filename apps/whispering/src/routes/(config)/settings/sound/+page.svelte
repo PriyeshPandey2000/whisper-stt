@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { LabeledSwitch } from '$lib/components/labeled';
-	import { Separator } from '$lib/ui/separator';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { Separator } from '$lib/ui/separator';
 </script>
 
 <svelte:head>
-	<title>Sound Settings - Whispering</title>
+	<title>Sound Settings - NoteFlux</title>
 </svelte:head>
 
 <div class="space-y-6">
 	<div>
 		<h3 class="text-lg font-medium">Sound</h3>
 		<p class="text-muted-foreground text-sm">
-			Configure your Whispering sound preferences.
+			Configure your NoteFlux sound preferences.
 		</p>
 	</div>
 

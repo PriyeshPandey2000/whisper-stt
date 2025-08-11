@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The `constants` directory serves as the centralized source of truth for all immutable values used throughout the Whispering application. This includes configuration values, enumerations, type definitions, and any other values that remain constant during runtime.
+The `constants` directory serves as the centralized source of truth for all immutable values used throughout the NoteFlux application. This includes configuration values, enumerations, type definitions, and any other values that remain constant during runtime.
 
 ## Organization Philosophy
 

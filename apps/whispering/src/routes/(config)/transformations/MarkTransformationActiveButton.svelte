@@ -1,17 +1,18 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import type { Transformation } from '$lib/services/db';
+
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { CheckCircleIcon, CircleIcon } from '@lucide/svelte';
 
 	let {
-		transformation,
 		class: className,
 		size = 'default',
+		transformation,
 	}: {
-		transformation: Transformation;
 		class?: string;
 		size?: 'default' | 'icon';
+		transformation: Transformation;
 	} = $props();
 
 	const isTransformationActive = $derived(
@@ -26,7 +27,7 @@
 	);
 </script>
 
-<WhisperingButton
+<NoteFluxButton
 	tooltipContent={displayText}
 	variant="ghost"
 	{size}
@@ -47,4 +48,4 @@
 	{:else}
 		<CircleIcon class="size-4" />
 	{/if}
-</WhisperingButton>
+</NoteFluxButton>

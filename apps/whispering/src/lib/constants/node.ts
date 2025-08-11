@@ -1,4 +1,5 @@
 import { type } from 'arktype';
+
 import { createApps, createAppUrls } from './apps.js';
 
 /**
@@ -8,22 +9,22 @@ import { createApps, createAppUrls } from './apps.js';
 
 // Schema
 const nodeEnvSchema = type({
-	NODE_ENV: "'development' | 'production'",
-
-	DATABASE_URL: 'string.url',
-	BETTER_AUTH_URL: 'string.url',
 	BETTER_AUTH_SECRET: 'string',
+
+	BETTER_AUTH_URL: 'string.url',
+	DATABASE_URL: 'string.url',
 	GITHUB_CLIENT_ID: 'string',
 	GITHUB_CLIENT_SECRET: 'string',
+	NODE_ENV: "'development' | 'production'",
 });
+
+export type NodeEnv = typeof nodeEnvSchema.infer;
 
 export function validateNodeEnv(env: unknown): NodeEnv {
 	const result = nodeEnvSchema(env);
 	if (result instanceof type.errors) throw new Error(result.summary);
 	return result;
 }
-
-export type NodeEnv = typeof nodeEnvSchema.infer;
 
 /**
  * Node.js build-time environment.

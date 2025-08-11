@@ -3,6 +3,12 @@
 		let isOpen = $state(false);
 		let logs = $state<UnifiedNotificationOptions[]>([]);
 		return {
+			addLog: (log: UnifiedNotificationOptions) => {
+				logs.push(log);
+			},
+			clearLogs: () => {
+				logs = [];
+			},
 			get isOpen() {
 				return isOpen;
 			},
@@ -12,12 +18,6 @@
 			get logs() {
 				return logs;
 			},
-			addLog: (log: UnifiedNotificationOptions) => {
-				logs.push(log);
-			},
-			clearLogs: () => {
-				logs = [];
-			},
 		};
 	})();
 
@@ -25,10 +25,12 @@
 </script>
 
 <script lang="ts">
+	import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
+
 	import * as Alert from '$lib/ui/alert';
 	import * as Popover from '$lib/ui/popover';
-	import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
 	import { ScrollArea } from '$lib/ui/scroll-area';
+	import { cn } from '$lib/ui/utils';
 	import {
 		AlertCircle,
 		AlertTriangle,
@@ -38,14 +40,14 @@
 		LogsIcon,
 	} from '@lucide/svelte';
 	import { mode } from 'mode-watcher';
-	import WhisperingButton from './WhisperingButton.svelte';
-	import { cn } from '$lib/ui/utils';
+
+	import NoteFluxButton from './NoteFluxButton.svelte';
 </script>
 
 <Popover.Root bind:open={notificationLog.isOpen}>
 	<Popover.Trigger>
 		{#snippet child({ props })}
-			<WhisperingButton
+			<NoteFluxButton
 				tooltipContent="Notification History"
 				class="fixed bottom-4 right-4 z-50 hidden xs:inline-flex"
 				variant="outline"
@@ -53,7 +55,7 @@
 				{...props}
 			>
 				<LogsIcon class="size-4" />
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content

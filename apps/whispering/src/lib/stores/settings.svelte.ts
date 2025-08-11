@@ -1,12 +1,13 @@
 import { commands } from '$lib/commands';
 import { rpc } from '$lib/query';
 import {
-	type Settings,
 	getDefaultSettings,
 	parseStoredSettings,
+	type Settings,
 	settingsSchema,
 } from '$lib/settings/settings';
 import { createPersistedState } from '$lib/svelte-utils';
+
 import {
 	syncGlobalShortcutsWithSettings,
 	syncLocalShortcutsWithSettings,
@@ -19,8 +20,7 @@ import {
 export const settings = (() => {
 	// Private settings instance
 	const _settings = createPersistedState({
-		key: 'whispering-settings',
-		schema: settingsSchema,
+		key: 'noteflux-settings',
 		onParseError: (error) => {
 			// For empty storage, return defaults
 			if (error.type === 'storage_empty') {
@@ -47,26 +47,54 @@ export const settings = (() => {
 			// Fallback - should never reach here
 			return getDefaultSettings();
 		},
-		onUpdateSuccess: () => {
-			rpc.notify.success.execute({
-				title: 'Settings updated!',
-				description: '',
-			});
-		},
 		onUpdateError: (err) => {
 			rpc.notify.error.execute({
 				title: 'Error updating settings',
 				description: err instanceof Error ? err.message : 'Unknown error',
 			});
 		},
+		onUpdateSuccess: () => {
+			rpc.notify.success.execute({
+				title: 'Settings updated!',
+				description: '',
+			});
+		},
+		schema: settingsSchema,
 	});
 
 	return {
 		/**
-		 * Read-only access to current settings values
+		 * Reset all settings to their default values
 		 */
-		get value(): Settings {
-			return _settings.value;
+		reset() {
+			_settings.value = getDefaultSettings();
+		},
+
+		/**
+		 * Reset shortcuts to their default values
+		 * @param type 'local' or 'global' shortcuts to reset
+		 */
+		resetShortcuts(type: 'global' | 'local') {
+			const defaultSettings = getDefaultSettings();
+			const updates = commands.reduce<Partial<Settings>>((acc, command) => {
+				const shortcutKey = `shortcuts.${type}.${command.id}` as const;
+				acc[shortcutKey] = defaultSettings[shortcutKey];
+				return acc;
+			}, {});
+
+			_settings.value = {
+				..._settings.value,
+				...updates,
+			};
+
+			switch (type) {
+				case 'global':
+					syncGlobalShortcutsWithSettings();
+					break;
+				case 'local':
+					syncLocalShortcutsWithSettings();
+					break;
+			}
 		},
 
 		/**
@@ -87,37 +115,10 @@ export const settings = (() => {
 		},
 
 		/**
-		 * Reset all settings to their default values
+		 * Read-only access to current settings values
 		 */
-		reset() {
-			_settings.value = getDefaultSettings();
-		},
-
-		/**
-		 * Reset shortcuts to their default values
-		 * @param type 'local' or 'global' shortcuts to reset
-		 */
-		resetShortcuts(type: 'local' | 'global') {
-			const defaultSettings = getDefaultSettings();
-			const updates = commands.reduce<Partial<Settings>>((acc, command) => {
-				const shortcutKey = `shortcuts.${type}.${command.id}` as const;
-				acc[shortcutKey] = defaultSettings[shortcutKey];
-				return acc;
-			}, {});
-
-			_settings.value = {
-				..._settings.value,
-				...updates,
-			};
-
-			switch (type) {
-				case 'local':
-					syncLocalShortcutsWithSettings();
-					break;
-				case 'global':
-					syncGlobalShortcutsWithSettings();
-					break;
-			}
+		get value(): Settings {
+			return _settings.value;
 		},
 	};
 })();

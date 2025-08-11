@@ -1,4 +1,5 @@
 import { type } from 'arktype';
+
 import { createApps, createAppUrls } from './apps.js';
 
 /**
@@ -9,22 +10,22 @@ import { createApps, createAppUrls } from './apps.js';
 
 // Schema
 const cloudflareEnvSchema = type({
-	NODE_ENV: "'development' | 'production'",
-	
-	DATABASE_URL: 'string.url',
-	BETTER_AUTH_URL: 'string.url',
 	BETTER_AUTH_SECRET: 'string',
+	
+	BETTER_AUTH_URL: 'string.url',
+	DATABASE_URL: 'string.url',
 	GITHUB_CLIENT_ID: 'string',
 	GITHUB_CLIENT_SECRET: 'string',
+	NODE_ENV: "'development' | 'production'",
 });
+
+export type CloudflareEnv = typeof cloudflareEnvSchema.infer;
 
 export function validateCloudflareEnv(env: unknown): CloudflareEnv {
 	const result = cloudflareEnvSchema(env);
 	if (result instanceof type.errors) throw new Error(result.summary);
 	return result;
 }
-
-export type CloudflareEnv = typeof cloudflareEnvSchema.infer;
 
 /**
  * Cloudflare Workers URLs - lazy evaluation with environment.

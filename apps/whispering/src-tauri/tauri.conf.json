@@ -33,9 +33,9 @@
 			}
 		}
 	},
-	"productName": "Whispering",
+	"productName": "NoteFlux",
 	"version": "7.1.1",
-	"identifier": "com.bradenwong.whispering",
+	"identifier": "com.bradenwong.noteflux",
 	"plugins": {
 		"updater": {
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUwQzE1RjEyRThENzg0OEEKUldTS2hOZm9FbC9CVU1uZ1JLWlluMm1mOHd4N1RWUkNjME9PcHA3Nkg2ek5RMnZyVTVDS2k1QkwK",
@@ -48,7 +48,7 @@
 		"windows": [
 			{
 				"resizable": true,
-				"title": "Whispering",
+				"title": "NoteFlux",
 				"width": 800,
 				"height": 600,
 				"minHeight": 84,

@@ -2,12 +2,12 @@
  * Sound effect names used throughout the application
  */
 
-export type WhisperingSoundNames =
+export type NoteFluxSoundNames =
+	| 'manual-cancel'
 	| 'manual-start'
 	| 'manual-stop'
-	| 'manual-cancel'
-	| 'vad-start'
-	| 'vad-capture'
-	| 'vad-stop'
 	| 'transcriptionComplete'
-	| 'transformationComplete';
+	| 'transformationComplete'
+	| 'vad-capture'
+	| 'vad-start'
+	| 'vad-stop';

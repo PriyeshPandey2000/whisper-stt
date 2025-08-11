@@ -1,11 +1,11 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { Runs } from '$lib/components/transformations-editor';
+	import { rpc } from '$lib/query';
 	import { Button } from '$lib/ui/button';
 	import * as Dialog from '$lib/ui/dialog';
-	import { rpc } from '$lib/query';
-	import { createQuery } from '@tanstack/svelte-query';
 	import { HistoryIcon } from '@lucide/svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 
 	let { recordingId }: { recordingId: string } = $props();
 
@@ -20,14 +20,14 @@
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger>
 		{#snippet child({ props })}
-			<WhisperingButton
+			<NoteFluxButton
 				{...props}
 				variant="ghost"
 				size="icon"
 				tooltipContent="View Transformation Runs"
 			>
 				<HistoryIcon class="size-4" />
-			</WhisperingButton>
+			</NoteFluxButton>
 		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Content class="sm:max-w-4xl">

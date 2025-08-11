@@ -14,18 +14,18 @@ export const createApps = (env: 'development' | 'production') => {
 			URL: isProduction ? 'https://api.epicenter.so' : 'http://localhost:8787',
 		},
 		/**
+		 * NoteFlux audio transcription application
+		 */
+		AUDIO: {
+			URL: isProduction
+				? 'https://noteflux.bradenwong.com'
+				: 'http://localhost:1420',
+		},
+		/**
 		 * Main epicenter.sh web application
 		 */
 		SH: {
 			URL: isProduction ? 'https://epicenter.sh' : 'http://localhost:5173',
-		},
-		/**
-		 * Whispering audio transcription application
-		 */
-		AUDIO: {
-			URL: isProduction
-				? 'https://whispering.bradenwong.com'
-				: 'http://localhost:1420',
 		},
 	} as const;
 };

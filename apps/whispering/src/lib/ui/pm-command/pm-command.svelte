@@ -18,32 +18,33 @@
 	type Variant = VariantProps<typeof style>['variant'];
 
 	export type PMCommandProps = {
-		variant?: Variant;
-		class?: string;
-		agents?: Agent[];
 		agent?: Agent;
-		command: Command;
+		agents?: Agent[];
 		args: string[];
+		class?: string;
+		command: Command;
+		variant?: Variant;
 	};
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/ui/utils/utils';
-	import type { Command, Agent } from 'package-manager-detector';
-	import { resolveCommand } from 'package-manager-detector/commands';
+	import type { Agent, Command } from 'package-manager-detector';
+
 	import CopyButton from '$lib/ui/copy-button/copy-button.svelte';
+	import * as Tabs from '$lib/ui/tabs';
+	import * as Tooltip from '$lib/ui/tooltip';
+	import { cn } from '$lib/ui/utils/utils';
 	import ClipboardIcon from '@lucide/svelte/icons/clipboard';
 	import TerminalIcon from '@lucide/svelte/icons/terminal';
-	import * as Tooltip from '$lib/ui/tooltip';
-	import * as Tabs from '$lib/ui/tabs';
+	import { resolveCommand } from 'package-manager-detector/commands';
 
 	let {
-		variant = 'default',
-		class: className,
-		command,
+		agent = $bindable('npm'),
 		agents = ['npm', 'pnpm', 'yarn', 'bun'],
 		args,
-		agent = $bindable('npm')
+		class: className,
+		command,
+		variant = 'default'
 	}: PMCommandProps = $props();
 
 	const cmd = $derived(resolveCommand(agent, command, args));

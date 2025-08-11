@@ -30,6 +30,12 @@
  */
 
 import type { Command } from '$lib/commands';
+import type { NoteFluxSoundNames } from '$lib/constants/sounds';
+import type { DeepgramModel } from '$lib/services/transcription/deepgram';
+import type { ElevenLabsModel } from '$lib/services/transcription/elevenlabs';
+import type { GroqModel } from '$lib/services/transcription/groq';
+import type { OpenAIModel } from '$lib/services/transcription/openai';
+
 import {
 	BITRATE_VALUES_KBPS,
 	DEFAULT_BITRATE_KBPS,
@@ -37,15 +43,10 @@ import {
 } from '$lib/constants/audio';
 import { CommandOrAlt, CommandOrControl } from '$lib/constants/keyboard';
 import { SUPPORTED_LANGUAGES } from '$lib/constants/languages';
-import type { WhisperingSoundNames } from '$lib/constants/sounds';
 import { TRANSCRIPTION_SERVICE_IDS } from '$lib/constants/transcription';
-import type { ElevenLabsModel } from '$lib/services/transcription/elevenlabs';
-import type { GroqModel } from '$lib/services/transcription/groq';
-import type { OpenAIModel } from '$lib/services/transcription/openai';
 import { ALWAYS_ON_TOP_VALUES } from '$lib/constants/ui';
-import { type DeviceIdentifier, asDeviceIdentifier } from '$lib/services/types';
-import { type ZodBoolean, type ZodString, z } from 'zod';
-import type { DeepgramModel } from '$lib/services/transcription/deepgram';
+import { asDeviceIdentifier, type DeviceIdentifier } from '$lib/services/types';
+import { z, type ZodBoolean, type ZodString } from 'zod';
 
 /**
  * The main settings schema that defines all application settings.
@@ -75,36 +76,52 @@ import type { DeepgramModel } from '$lib/services/transcription/deepgram';
  */
 export const settingsSchema = z.object({
 	...({
+		'sound.playOn.manual-cancel': z.boolean().default(true),
 		'sound.playOn.manual-start': z.boolean().default(true),
 		'sound.playOn.manual-stop': z.boolean().default(true),
-		'sound.playOn.manual-cancel': z.boolean().default(true),
-		'sound.playOn.vad-start': z.boolean().default(true),
-		'sound.playOn.vad-capture': z.boolean().default(true),
-		'sound.playOn.vad-stop': z.boolean().default(true),
 		'sound.playOn.transcriptionComplete': z.boolean().default(true),
 		'sound.playOn.transformationComplete': z.boolean().default(true),
+		'sound.playOn.vad-capture': z.boolean().default(true),
+		'sound.playOn.vad-start': z.boolean().default(true),
+		'sound.playOn.vad-stop': z.boolean().default(true),
 	} satisfies Record<
-		`sound.playOn.${WhisperingSoundNames}`,
+		`sound.playOn.${NoteFluxSoundNames}`,
 		z.ZodDefault<ZodBoolean>
 	>),
 
-	'transcription.clipboard.copyOnSuccess': z.boolean().default(true),
-	'transcription.clipboard.pasteOnSuccess': z.boolean().default(false),
-	'transformation.clipboard.copyOnSuccess': z.boolean().default(true),
-	'transformation.clipboard.pasteOnSuccess': z.boolean().default(false),
+	// Analytics settings
+	'analytics.enabled': z.boolean().default(true),
+	'apiKeys.anthropic': z.string().default(''),
+	'apiKeys.deepgram': z.string().default(''),
+	'apiKeys.elevenlabs': z.string().default(''),
 
-	'system.alwaysOnTop': z.enum(ALWAYS_ON_TOP_VALUES).default('Never'),
+	'apiKeys.google': z.string().default(''),
 
-	'database.recordingRetentionStrategy': z
-		.enum(['keep-forever', 'limit-count'])
-		.default('keep-forever'),
+	'apiKeys.groq': z.string().default(''),
+	'apiKeys.openai': z.string().default(''),
+
 	'database.maxRecordingCount': z
 		.string()
 		.regex(/^\d+$/, 'Must be a number')
 		.default('100'),
+	'database.recordingRetentionStrategy': z
+		.enum(['keep-forever', 'limit-count'])
+		.default('keep-forever'),
 
+	// Desktop recording settings
+	'recording.desktop.outputFolder': z.string().nullable().default(null), // null = use app data dir
+
+	'recording.desktop.sampleRate': z
+		.enum(['16000', '44100', '48000'])
+		.default('16000'),
 	// Recording mode settings
 	'recording.mode': z.enum(RECORDING_MODES).default('manual'),
+
+	// Navigator settings (shared by manual, VAD, and live modes)
+	'recording.navigator.bitrateKbps': z
+		.enum(BITRATE_VALUES_KBPS)
+		.optional()
+		.default(DEFAULT_BITRATE_KBPS),
 	/**
 	 * Platform-agnostic device identifier for audio recording devices.
 	 * @see DeviceIdentifier
@@ -114,99 +131,83 @@ export const settingsSchema = z.object({
 		.nullable()
 		.transform((val) => (val ? asDeviceIdentifier(val) : null))
 		.default(null),
+	'system.alwaysOnTop': z.enum(ALWAYS_ON_TOP_VALUES).default('Never'),
+	'transcription.clipboard.copyOnSuccess': z.boolean().default(true),
 
-	// Navigator settings (shared by manual, VAD, and live modes)
-	'recording.navigator.bitrateKbps': z
-		.enum(BITRATE_VALUES_KBPS)
-		.optional()
-		.default(DEFAULT_BITRATE_KBPS),
+	'transcription.clipboard.pasteOnSuccess': z.boolean().default(false),
+	'transcription.deepgram.model': z
+		.string()
+		.transform((val) => val as DeepgramModel['name'] | (string & {}))
+		.default('nova-2' satisfies DeepgramModel['name']),
+	'transcription.elevenlabs.model': z
+		.string()
+		.transform((val) => val as ElevenLabsModel['name'] | (string & {}))
+		.default('scribe_v1' satisfies ElevenLabsModel['name']),
+	'transcription.groq.model': z
+		.string()
+		.transform((val) => val as GroqModel['name'] | (string & {}))
+		.default('whisper-large-v3-turbo' satisfies GroqModel['name']),
+	// Service-specific settings
+	'transcription.openai.model': z
+		.string()
+		.transform((val) => val as OpenAIModel['name'] | (string & {}))
+		.default('gpt-4o-mini-transcribe' satisfies OpenAIModel['name']),
+	// Shared settings in transcription
+	'transcription.outputLanguage': z.enum(SUPPORTED_LANGUAGES).default('auto'),
 
-	// Desktop recording settings
-	'recording.desktop.outputFolder': z.string().nullable().default(null), // null = use app data dir
-	'recording.desktop.sampleRate': z
-		.enum(['16000', '44100', '48000'])
-		.default('16000'),
+	'transcription.prompt': z.string().default(''),
 
 	'transcription.selectedTranscriptionService': z
 		.enum(TRANSCRIPTION_SERVICE_IDS)
 		.default('Groq'),
-	// Shared settings in transcription
-	'transcription.outputLanguage': z.enum(SUPPORTED_LANGUAGES).default('auto'),
-	'transcription.prompt': z.string().default(''),
-	'transcription.temperature': z.string().default('0.0'),
-
-	// Service-specific settings
-	'transcription.openai.model': z
-		.string()
-		.transform((val) => val as (string & {}) | OpenAIModel['name'])
-		.default('gpt-4o-mini-transcribe' satisfies OpenAIModel['name']),
-	'transcription.elevenlabs.model': z
-		.string()
-		.transform((val) => val as (string & {}) | ElevenLabsModel['name'])
-		.default('scribe_v1' satisfies ElevenLabsModel['name']),
-	'transcription.groq.model': z
-		.string()
-		.transform((val) => val as (string & {}) | GroqModel['name'])
-		.default('whisper-large-v3-turbo' satisfies GroqModel['name']),
-	'transcription.deepgram.model': z
-		.string()
-		.transform((val) => val as (string & {}) | DeepgramModel['name'])
-		.default('nova-2' satisfies DeepgramModel['name']),
 	'transcription.speaches.baseUrl': z.string().default('http://localhost:8000'),
 	'transcription.speaches.modelId': z
 		.string()
 		.default('Systran/faster-distil-whisper-small.en'),
+	'transcription.temperature': z.string().default('0.0'),
+	'transformation.clipboard.copyOnSuccess': z.boolean().default(true),
+	'transformation.clipboard.pasteOnSuccess': z.boolean().default(false),
 
 	'transformations.selectedTransformationId': z
 		.string()
 		.nullable()
 		.default(null),
 
-	'apiKeys.openai': z.string().default(''),
-	'apiKeys.anthropic': z.string().default(''),
-	'apiKeys.groq': z.string().default(''),
-	'apiKeys.google': z.string().default(''),
-	'apiKeys.deepgram': z.string().default(''),
-	'apiKeys.elevenlabs': z.string().default(''),
-
-	// Analytics settings
-	'analytics.enabled': z.boolean().default(true),
-
 	...({
-		'shortcuts.local.toggleManualRecording': z.string().nullable().default(' '),
-		'shortcuts.local.startManualRecording': z.string().nullable().default(null),
-		'shortcuts.local.stopManualRecording': z.string().nullable().default(null),
 		'shortcuts.local.cancelManualRecording': z.string().nullable().default('c'),
-		'shortcuts.local.toggleVadRecording': z.string().nullable().default('v'),
-		'shortcuts.local.startVadRecording': z.string().nullable().default(null),
-		'shortcuts.local.stopVadRecording': z.string().nullable().default(null),
 		'shortcuts.local.pushToTalk': z.string().nullable().default('p'),
+		'shortcuts.local.startManualRecording': z.string().nullable().default(null),
+		'shortcuts.local.startVadRecording': z.string().nullable().default(null),
+		'shortcuts.local.stopManualRecording': z.string().nullable().default(null),
+		'shortcuts.local.stopVadRecording': z.string().nullable().default(null),
+		'shortcuts.local.toggleManualRecording': z.string().nullable().default(' '),
+		'shortcuts.local.toggleVadRecording': z.string().nullable().default('v'),
 	} satisfies Record<
 		`shortcuts.local.${Command['id']}`,
 		z.ZodDefault<z.ZodNullable<ZodString>>
 	>),
 
 	...({
-		'shortcuts.global.toggleManualRecording': z
-			.string()
-			.nullable()
-			.default(`${CommandOrControl}+Shift+;`),
-		'shortcuts.global.startManualRecording': z
-			.string()
-			.nullable()
-			.default(null),
-		'shortcuts.global.stopManualRecording': z.string().nullable().default(null),
 		'shortcuts.global.cancelManualRecording': z
 			.string()
 			.nullable()
 			.default(`${CommandOrControl}+Shift+'`),
-		'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
-		'shortcuts.global.startVadRecording': z.string().nullable().default(null),
-		'shortcuts.global.stopVadRecording': z.string().nullable().default(null),
 		'shortcuts.global.pushToTalk': z
 			.string()
 			.nullable()
 			.default(`${CommandOrAlt}+Shift+D`),
+		'shortcuts.global.startManualRecording': z
+			.string()
+			.nullable()
+			.default(null),
+		'shortcuts.global.startVadRecording': z.string().nullable().default(null),
+		'shortcuts.global.stopManualRecording': z.string().nullable().default(null),
+		'shortcuts.global.stopVadRecording': z.string().nullable().default(null),
+		'shortcuts.global.toggleManualRecording': z
+			.string()
+			.nullable()
+			.default(`${CommandOrControl}+Shift+;`),
+		'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.global.${Command['id']}`,
 		z.ZodDefault<z.ZodNullable<ZodString>>

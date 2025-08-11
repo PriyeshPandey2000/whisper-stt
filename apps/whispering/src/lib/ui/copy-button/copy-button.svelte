@@ -10,19 +10,20 @@
 	import CopyIcon from '@lucide/svelte/icons/copy';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { scale } from 'svelte/transition';
+
 	import type { CopyButtonProps } from './types';
 
 	let {
-		ref = $bindable(null),
-		text,
-		icon,
-		animationDuration = 500,
-		variant = 'ghost',
-		size = 'icon',
-		onCopy,
-		class: className,
-		tabindex = -1,
 		children,
+		animationDuration = 500,
+		class: className,
+		icon,
+		onCopy,
+		ref = $bindable(null),
+		size = 'icon',
+		tabindex = -1,
+		text,
+		variant = 'ghost',
 		...rest
 	}: CopyButtonProps = $props();
 

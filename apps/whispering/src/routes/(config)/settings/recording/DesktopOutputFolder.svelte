@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Input } from '$lib/ui/input';
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import { FolderOpen, ExternalLink, RotateCcw } from '@lucide/svelte';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { Input } from '$lib/ui/input';
+	import { ExternalLink, FolderOpen, RotateCcw } from '@lucide/svelte';
 
 	// Top-level await to get the default app data directory
-	let defaultAppDataPath = $state<string | null>(null);
+	let defaultAppDataPath = $state<null | string>(null);
 	
 	// Initialize the default path asynchronously
 	if (window.__TAURI_INTERNALS__) {
@@ -24,9 +24,9 @@
 		
 		const { open } = await import('@tauri-apps/plugin-dialog');
 		const selected = await open({
+			title: 'Select Recording Output Folder',
 			directory: true,
 			multiple: false,
-			title: 'Select Recording Output Folder',
 		});
 		
 		if (selected) settings.updateKey('recording.desktop.outputFolder', selected);
@@ -60,16 +60,16 @@
 		/>
 	{/if}
 	
-	<WhisperingButton 
+	<NoteFluxButton 
 		tooltipContent="Select output folder"
 		variant="outline" 
 		size="icon"
 		onclick={selectOutputFolder}
 	>
 		<FolderOpen class="h-4 w-4" />
-	</WhisperingButton>
+	</NoteFluxButton>
 	
-	<WhisperingButton 
+	<NoteFluxButton 
 		tooltipContent="Open output folder"
 		variant="outline" 
 		size="icon"
@@ -77,10 +77,10 @@
 		disabled={displayPath === null}
 	>
 		<ExternalLink class="h-4 w-4" />
-	</WhisperingButton>
+	</NoteFluxButton>
 	
 	{#if settings.value['recording.desktop.outputFolder']}
-		<WhisperingButton
+		<NoteFluxButton
 			tooltipContent="Reset to default folder"
 			variant="outline"
 			size="icon"
@@ -89,6 +89,6 @@
 			}}
 		>
 			<RotateCcw class="h-4 w-4" />
-		</WhisperingButton>
+		</NoteFluxButton>
 	{/if}
 </div>

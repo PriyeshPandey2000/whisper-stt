@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { commands } from '$lib/commands';
-	import { Input } from '$lib/ui/input';
-	import * as Table from '$lib/ui/table';
 	import { rpc } from '$lib/query';
 	import { getDefaultSettings } from '$lib/settings';
+	import { Input } from '$lib/ui/input';
+	import * as Table from '$lib/ui/table';
 	import { createPressedKeys } from '$lib/utils/createPressedKeys.svelte';
 	import { Search } from '@lucide/svelte';
+
 	import GlobalKeyboardShortcutRecorder from './GlobalKeyboardShortcutRecorder.svelte';
 	import LocalKeyboardShortcutRecorder from './LocalKeyboardShortcutRecorder.svelte';
 
-	let { type }: { type: 'local' | 'global' } = $props();
+	let { type }: { type: 'global' | 'local' } = $props();
 
 	let searchQuery = $state('');
 

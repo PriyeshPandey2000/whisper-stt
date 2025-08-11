@@ -1,61 +1,62 @@
 import { rpc } from '$lib/query';
+
 import type { ShortcutTriggerState } from './services/_shortcut-trigger-state';
 
 type SatisfiedCommand = {
-	id: string;
-	title: string;
-	on: ShortcutTriggerState;
 	callback: () => void;
+	id: string;
+	on: ShortcutTriggerState;
+	title: string;
 };
 
 export const commands = [
 	{
-		id: 'pushToTalk',
 		title: 'Push to talk',
+		callback: () => rpc.commands.toggleManualRecording.execute(undefined),
+		id: 'pushToTalk',
 		on: 'Both',
-		callback: () => rpc.commands.toggleManualRecording.execute(undefined),
 	},
 	{
-		id: 'toggleManualRecording',
 		title: 'Toggle recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.toggleManualRecording.execute(undefined),
+		id: 'toggleManualRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'startManualRecording',
 		title: 'Start recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.startManualRecording.execute(undefined),
+		id: 'startManualRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'stopManualRecording',
 		title: 'Stop recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.stopManualRecording.execute(undefined),
+		id: 'stopManualRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'cancelManualRecording',
 		title: 'Cancel recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.cancelManualRecording.execute(undefined),
+		id: 'cancelManualRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'startVadRecording',
 		title: 'Start voice activated recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.startVadRecording.execute(undefined),
+		id: 'startVadRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'stopVadRecording',
 		title: 'Stop voice activated recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.stopVadRecording.execute(undefined),
+		id: 'stopVadRecording',
+		on: 'Pressed',
 	},
 	{
-		id: 'toggleVadRecording',
 		title: 'Toggle voice activated recording',
-		on: 'Pressed',
 		callback: () => rpc.commands.toggleVadRecording.execute(undefined),
+		id: 'toggleVadRecording',
+		on: 'Pressed',
 	},
 ] as const satisfies SatisfiedCommand[];
 

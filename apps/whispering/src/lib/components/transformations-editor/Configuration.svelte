@@ -1,23 +1,19 @@
 <script lang="ts">
-	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
+	import type { Transformation } from '$lib/services/db';
+
 	import {
 		LabeledInput,
 		LabeledSelect,
 		LabeledSwitch,
 		LabeledTextarea,
 	} from '$lib/components/labeled/index.js';
+	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		AnthropicApiKeyInput,
 		GoogleApiKeyInput,
 		GroqApiKeyInput,
 		OpenAiApiKeyInput,
 	} from '$lib/components/settings';
-	import * as Accordion from '$lib/ui/accordion';
-	import * as Alert from '$lib/ui/alert';
-	import { Button } from '$lib/ui/button';
-	import * as Card from '$lib/ui/card';
-	import * as SectionHeader from '$lib/ui/section-header';
-	import { Separator } from '$lib/ui/separator';
 	import {
 		TRANSFORMATION_STEP_TYPES,
 		TRANSFORMATION_STEP_TYPES_TO_LABELS,
@@ -29,8 +25,13 @@
 		INFERENCE_PROVIDER_OPTIONS,
 		OPENAI_INFERENCE_MODEL_OPTIONS,
 	} from '$lib/constants/inference';
-	import type { Transformation } from '$lib/services/db';
 	import { generateDefaultTransformationStep } from '$lib/services/db';
+	import * as Accordion from '$lib/ui/accordion';
+	import * as Alert from '$lib/ui/alert';
+	import { Button } from '$lib/ui/button';
+	import * as Card from '$lib/ui/card';
+	import * as SectionHeader from '$lib/ui/section-header';
+	import { Separator } from '$lib/ui/separator';
 	import { CopyIcon, PlusIcon, TrashIcon } from '@lucide/svelte';
 	import { slide } from 'svelte/transition';
 
@@ -138,8 +139,8 @@
 									items={TRANSFORMATION_STEP_TYPES.map(
 										(type) =>
 											({
-												value: type,
 												label: TRANSFORMATION_STEP_TYPES_TO_LABELS[type],
+												value: type,
 											}) as const,
 									)}
 									onSelectedChange={(value) => {
@@ -156,7 +157,7 @@
 								/>
 							</div>
 							<div class="flex items-center gap-2">
-								<WhisperingButton
+								<NoteFluxButton
 									tooltipContent="Duplicate step"
 									variant="ghost"
 									size="icon"
@@ -164,8 +165,8 @@
 									onclick={() => duplicateStep(index)}
 								>
 									<CopyIcon class="size-4" />
-								</WhisperingButton>
-								<WhisperingButton
+								</NoteFluxButton>
+								<NoteFluxButton
 									tooltipContent="Delete step"
 									variant="ghost"
 									size="icon"
@@ -173,7 +174,7 @@
 									onclick={() => removeStep(index)}
 								>
 									<TrashIcon class="size-4" />
-								</WhisperingButton>
+								</NoteFluxButton>
 							</div>
 						</div>
 						{#if step.type === 'prompt_transform'}
