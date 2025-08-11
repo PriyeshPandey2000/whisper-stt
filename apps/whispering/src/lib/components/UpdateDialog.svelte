@@ -59,11 +59,11 @@
 </script>
 
 <script lang="ts">
-	import * as Dialog from '@repo/ui/dialog';
-	import { Button } from '@repo/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
+	import { Button } from '$lib/ui/button';
 	import { relaunch } from '@tauri-apps/plugin-process';
 	import { rpc } from '$lib/query';
-	import * as Alert from '@repo/ui/alert';
+	import * as Alert from '$lib/ui/alert';
 	import { AlertTriangle } from '@lucide/svelte';
 	import { extractErrorMessage } from 'wellcrafted/error';
 

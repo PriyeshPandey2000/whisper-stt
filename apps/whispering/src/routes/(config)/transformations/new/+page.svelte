@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Editor } from '$lib/components/transformations-editor';
-	import { Button } from '@repo/ui/button';
-	import * as Card from '@repo/ui/card';
+	import { Button } from '$lib/ui/button';
+	import * as Card from '$lib/ui/card';
 	import { rpc } from '$lib/query';
 	import { generateDefaultTransformation } from '$lib/services/db';
 	import { createMutation } from '@tanstack/svelte-query';

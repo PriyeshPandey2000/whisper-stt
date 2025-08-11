@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
-	import { Button } from '@repo/ui/button';
-	import { Separator } from '@repo/ui/separator';
+	import { Button } from '$lib/ui/button';
+	import { Separator } from '$lib/ui/separator';
 	import { rpc } from '$lib/query';
 	import { RotateCcw } from '@lucide/svelte';
 	import SidebarNav from './SidebarNav.svelte';

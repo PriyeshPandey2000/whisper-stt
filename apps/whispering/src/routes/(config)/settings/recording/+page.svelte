@@ -1,7 +1,7 @@
 <script lang="ts">
   import DesktopOutputFolder from './DesktopOutputFolder.svelte';
 	import { LabeledSelect } from '$lib/components/labeled/index.js';
-	import { Separator } from '@repo/ui/separator';
+	import { Separator } from '$lib/ui/separator';
 	import {
 		BITRATE_OPTIONS,
 		RECORDING_MODE_OPTIONS,

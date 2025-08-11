@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
 	import { Editor } from '$lib/components/transformations-editor';
-	import { Button } from '@repo/ui/button';
-	import * as Dialog from '@repo/ui/dialog';
-	import { Separator } from '@repo/ui/separator';
+	import { Button } from '$lib/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
+	import { Separator } from '$lib/ui/separator';
 	import { rpc } from '$lib/query';
 	import { generateDefaultTransformation } from '$lib/services/db';
 	import { createMutation } from '@tanstack/svelte-query';

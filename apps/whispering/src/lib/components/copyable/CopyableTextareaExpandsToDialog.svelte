@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { ClipboardIcon } from '$lib/components/icons';
-	import { Button } from '@repo/ui/button';
-	import * as Card from '@repo/ui/card';
-	import * as Dialog from '@repo/ui/dialog';
-	import { Textarea } from '@repo/ui/textarea';
+	import { Button } from '$lib/ui/button';
+	import * as Card from '$lib/ui/card';
+	import * as Dialog from '$lib/ui/dialog';
+	import { Textarea } from '$lib/ui/textarea';
 	import { rpc } from '$lib/query';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { mergeProps } from 'bits-ui';

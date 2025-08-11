@@ -3,8 +3,8 @@
 		LabeledSelect,
 		LabeledSwitch,
 	} from '$lib/components/labeled/index.js';
-	import { Button } from '@repo/ui/button';
-	import { Separator } from '@repo/ui/separator';
+	import { Button } from '$lib/ui/button';
+	import { Separator } from '$lib/ui/separator';
 	import { ALWAYS_ON_TOP_OPTIONS } from '$lib/constants/ui';
 	import { settings } from '$lib/stores/settings.svelte';
 </script>

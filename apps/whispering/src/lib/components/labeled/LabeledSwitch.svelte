@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Label } from '@repo/ui/label';
-	import { Switch } from '@repo/ui/switch';
+	import { Label } from '$lib/ui/label';
+	import { Switch } from '$lib/ui/switch';
 	import type { Snippet } from 'svelte';
 
 	let {

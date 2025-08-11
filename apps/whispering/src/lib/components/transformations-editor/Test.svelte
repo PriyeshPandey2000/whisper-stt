@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { LabeledTextarea } from '$lib/components/labeled/index.js';
-	import { Button } from '@repo/ui/button';
-	import * as SectionHeader from '@repo/ui/section-header';
-	import { Separator } from '@repo/ui/separator';
+	import { Button } from '$lib/ui/button';
+	import * as SectionHeader from '$lib/ui/section-header';
+	import { Separator } from '$lib/ui/separator';
 	import { rpc } from '$lib/query';
 	import type { Transformation } from '$lib/services/db';
 	import { createMutation } from '@tanstack/svelte-query';

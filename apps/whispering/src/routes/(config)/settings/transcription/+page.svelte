@@ -12,10 +12,10 @@
 		OpenAiApiKeyInput,
 		DeepgramApiKeyInput
 	} from '$lib/components/settings';
-	import { Badge } from '@repo/ui/badge';
-	import { Button } from '@repo/ui/button';
-	import * as Card from '@repo/ui/card';
-	import { Separator } from '@repo/ui/separator';
+	import { Badge } from '$lib/ui/badge';
+	import { Button } from '$lib/ui/button';
+	import * as Card from '$lib/ui/card';
+	import { Separator } from '$lib/ui/separator';
 	import { SUPPORTED_LANGUAGES_OPTIONS } from '$lib/constants/languages';
 	import {
 		ELEVENLABS_TRANSCRIPTION_MODELS,

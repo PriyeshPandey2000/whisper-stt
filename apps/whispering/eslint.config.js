@@ -1,3 +1,3 @@
-import { base, svelteConfig } from '@repo/config/eslint';
+import { base, svelteConfig } from './src/lib/config/eslint.js';
 
 export default [...base, ...svelteConfig];

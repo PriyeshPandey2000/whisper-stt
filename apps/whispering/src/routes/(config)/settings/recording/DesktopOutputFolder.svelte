@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input } from '@repo/ui/input';
+	import { Input } from '$lib/ui/input';
 	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { FolderOpen, ExternalLink, RotateCcw } from '@lucide/svelte';
 	import { settings } from '$lib/stores/settings.svelte';

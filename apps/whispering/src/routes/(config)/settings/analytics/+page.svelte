@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Card from '@repo/ui/card';
-	import { Badge } from '@repo/ui/badge';
-	import { Label } from '@repo/ui/label';
-	import { Switch } from '@repo/ui/switch';
+	import * as Card from '$lib/ui/card';
+	import { Badge } from '$lib/ui/badge';
+	import { Label } from '$lib/ui/label';
+	import { Switch } from '$lib/ui/switch';
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
 

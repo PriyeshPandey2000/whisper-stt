@@ -1,0 +1,247 @@
+@import 'tailwindcss';
+
+/* Simplified prose styles following Shadcn patterns
+   - Uses semantic color tokens that adapt to dark mode automatically
+   - Simplified selectors without repetitive :not() patterns
+   - No need for .prose-invert since colors adapt automatically
+*/
+
+.prose {
+	@apply max-w-[65ch] text-foreground;
+
+	/* Headings */
+	& h1 {
+		@apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+	}
+
+	& h2 {
+		@apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-12 first:mt-0;
+	}
+
+	& h3 {
+		@apply scroll-m-20 text-2xl font-semibold mt-12 tracking-tight first:mt-0;
+	}
+
+	& h4 {
+		@apply scroll-m-20 text-xl font-semibold mt-12 tracking-tight first:mt-0;
+	}
+
+	& h5 {
+		@apply scroll-m-20 text-lg font-semibold mt-12 tracking-tight first:mt-0;
+	}
+
+	& h6 {
+		@apply scroll-m-20 text-base font-semibold mt-12 tracking-tight first:mt-0;
+	}
+
+	/* Remove top margin from paragraphs after headings */
+	& :where(h1, h2, h3, h4, h5, h6) + p {
+		@apply mt-0;
+	}
+
+	/* Paragraphs and text */
+	& p {
+		@apply leading-[175%] [&:not(:first-child)]:mt-6;
+	}
+
+	& li {
+		@apply leading-[175%];
+	}
+
+	& a {
+		@apply font-medium text-primary underline underline-offset-4;
+	}
+
+	& blockquote {
+		@apply mt-6 border-l-2 pl-6 italic;
+	}
+
+	/* Lists */
+	& ul {
+		@apply my-6 ml-6 list-disc [&>li]:mt-2;
+
+		& p {
+			@apply my-0 inline;
+		}
+	}
+
+	& ol {
+		@apply my-6 ml-6 list-decimal [&>li]:mt-2;
+
+		& p {
+			@apply my-0 inline;
+		}
+	}
+
+	/* Code blocks */
+	& pre {
+		@apply bg-muted text-foreground rounded-md p-4 my-6 text-sm overflow-y-auto;
+
+		& code {
+			@apply bg-transparent text-inherit font-mono;
+		}
+	}
+
+	& :not(pre) > code {
+		@apply relative rounded bg-muted text-foreground px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+	}
+
+	/* Tables */
+	& table {
+		@apply my-6 w-full overflow-y-auto;
+
+		& thead tr {
+			@apply m-0 border-t p-0 even:bg-muted;
+		}
+
+		& th {
+			@apply border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right;
+		}
+
+		& tbody tr {
+			@apply m-0 border-t p-0 even:bg-muted;
+		}
+
+		& td {
+			@apply border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right;
+		}
+	}
+
+	/* Utility classes */
+	& .lead {
+		@apply text-xl text-muted-foreground;
+	}
+
+	& .large {
+		@apply text-lg font-semibold;
+	}
+
+	& .small {
+		@apply text-sm font-medium leading-none;
+	}
+
+	& .muted {
+		@apply text-sm text-muted-foreground;
+	}
+
+	/* Media */
+	& :where(img, picture, video) {
+		@apply my-6;
+	}
+
+	& picture > img {
+		@apply my-0;
+	}
+
+	/* Interactive elements */
+	& kbd {
+		@apply rounded-md bg-muted px-1.5 py-0.5 text-xs font-semibold;
+	}
+
+	& hr {
+		@apply my-10;
+	}
+
+	/* Definition lists */
+	& dl {
+		@apply my-6;
+
+		& dt {
+			@apply font-semibold mt-6 tracking-tight first:mt-0;
+		}
+
+		& dd {
+			@apply mt-2 ml-6;
+		}
+	}
+
+	/* Details/Summary */
+	& details {
+		@apply mt-6;
+
+		& summary {
+			@apply cursor-pointer font-semibold mt-6 tracking-tight;
+		}
+
+		& p {
+			@apply [&:first-of-type]:mt-2;
+		}
+	}
+
+	/* Text formatting */
+	& mark {
+		@apply bg-yellow-300 dark:bg-yellow-300/20;
+	}
+
+	& :where(strong, b) {
+		@apply font-bold;
+	}
+
+	& :where(em, i) {
+		@apply italic;
+	}
+
+	& :where(del, s) {
+		@apply line-through;
+	}
+
+	& ins {
+		@apply underline;
+	}
+
+	& sub {
+		@apply text-[0.75em] align-sub;
+	}
+
+	& sup {
+		@apply text-[0.75em] align-super;
+	}
+
+	& abbr[title] {
+		@apply underline decoration-dotted cursor-help;
+	}
+
+	& cite {
+		@apply italic;
+	}
+
+	& q {
+		@apply before:content-[open-quote] after:content-[close-quote];
+	}
+
+	& figure {
+		@apply my-8;
+	}
+
+	& figcaption {
+		@apply text-sm text-muted-foreground mt-2;
+	}
+
+	& u {
+		@apply underline;
+	}
+
+	& var {
+		@apply font-mono text-[0.875em] italic;
+	}
+
+	& samp {
+		@apply font-mono text-[0.875em];
+	}
+
+	& time {
+		@apply text-muted-foreground;
+	}
+
+	& address {
+		@apply italic not-italic my-6;
+	}
+
+	& dfn {
+		@apply italic font-semibold;
+	}
+}
+
+.prose-invert {
+	@apply text-primary-foreground;
+}

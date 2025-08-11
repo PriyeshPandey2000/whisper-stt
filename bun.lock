@@ -127,14 +127,14 @@
       },
     },
     "apps/whispering": {
-      "name": "@repo/whispering",
+      "name": "whispering",
       "version": "7.1.1",
       "dependencies": {
         "@anthropic-ai/sdk": "^0.55.0",
         "@aptabase/tauri": "^0.4.1",
+        "@fontsource-variable/manrope": "^5.2.6",
         "@google/generative-ai": "^0.24.1",
-        "@repo/constants": "workspace:*",
-        "@repo/svelte-utils": "workspace:*",
+        "@internationalized/date": "^3.8.1",
         "@ricky0123/vad-web": "^0.0.24",
         "@standard-schema/spec": "^1.0.0",
         "@tanstack/svelte-query": "https://pkg.pr.new/epicenterhq/query/@tanstack/svelte-query@fcc9ad6fc7c2ab51fb289b380b3cb99409ea802b",
@@ -154,19 +154,26 @@
         "@tauri-apps/plugin-updater": "^2.9.0",
         "arktype": "catalog:",
         "audio-recorder-polyfill": "^0.4.1",
+        "bits-ui": "catalog:",
+        "clsx": "catalog:",
         "date-fns": "catalog:",
         "dexie": "^4.0.11",
         "elevenlabs": "^1.59.0",
         "groq-sdk": "^0.25.0",
         "nanoid": "catalog:",
         "openai": "^5.7.0",
+        "package-manager-detector": "^1.3.0",
+        "paneforge": "^1.0.0-next.5",
+        "runed": "^0.31.1",
+        "tailwind-merge": "catalog:",
+        "tailwind-variants": "catalog:",
+        "tw-animate-css": "^1.3.5",
+        "vaul-svelte": "^0.3.2",
         "wellcrafted": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
         "@lucide/svelte": "catalog:",
-        "@repo/config": "workspace:*",
-        "@repo/ui": "workspace:*",
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/kit": "catalog:",
         "@sveltejs/vite-plugin-svelte": "catalog:",
@@ -716,8 +723,6 @@
     "@repo/svelte-utils": ["@repo/svelte-utils@workspace:packages/svelte-utils"],
 
     "@repo/ui": ["@repo/ui@workspace:packages/ui"],
-
-    "@repo/whispering": ["@repo/whispering@workspace:apps/whispering"],
 
     "@ricky0123/vad-web": ["@ricky0123/vad-web@0.0.24", "", { "dependencies": { "onnxruntime-web": "1.14.0" } }, "sha512-uv6GWW/kq8BkVErMQzXp3uwSyYMT3w/3QJiUerVaaKp7EwhOTIRY+96EoyFdG2WOFU5RkLk/2CVGbI7nDlxhEg=="],
 
@@ -2248,6 +2253,8 @@
     "which-pm-runs": ["which-pm-runs@1.1.0", "", {}, "sha512-n1brCuqClxfFfq/Rb0ICg9giSZqCS+pLtccdag6C2HyufBrh3fBOiy9nb6ggRMvWOVH5GrdJskj5iGTZNxd7SA=="],
 
     "which-typed-array": ["which-typed-array@1.1.19", "", { "dependencies": { "available-typed-arrays": "^1.0.7", "call-bind": "^1.0.8", "call-bound": "^1.0.4", "for-each": "^0.3.5", "get-proto": "^1.0.1", "gopd": "^1.2.0", "has-tostringtag": "^1.0.2" } }, "sha512-rEvr90Bck4WZt9HHFC4DJMsjvu7x+r6bImz0/BrbWb7A2djJ8hnZMrWnHo9F8ssv0OMErasDhftrfROTyqSDrw=="],
+
+    "whispering": ["whispering@workspace:apps/whispering"],
 
     "widest-line": ["widest-line@5.0.0", "", { "dependencies": { "string-width": "^7.0.0" } }, "sha512-c9bZp7b5YtRj2wOe6dlj32MK+Bx/M/d+9VB2SHM1OtsUHR0aV0tdP6DWh/iMt0kWi1t5g1Iudu6hQRNd1A4PVA=="],
 

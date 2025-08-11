@@ -6,7 +6,7 @@ import {
 	parseStoredSettings,
 	settingsSchema,
 } from '$lib/settings/settings';
-import { createPersistedState } from '@repo/svelte-utils';
+import { createPersistedState } from '$lib/svelte-utils';
 import {
 	syncGlobalShortcutsWithSettings,
 	syncLocalShortcutsWithSettings,

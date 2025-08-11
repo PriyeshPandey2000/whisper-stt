@@ -2,22 +2,22 @@
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
 	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { ClipboardIcon, TrashIcon } from '$lib/components/icons';
-	import { Badge } from '@repo/ui/badge';
-	import { Button, buttonVariants } from '@repo/ui/button';
-	import { Card } from '@repo/ui/card';
-	import { Checkbox } from '@repo/ui/checkbox';
-	import * as Dialog from '@repo/ui/dialog';
-	import * as DropdownMenu from '@repo/ui/dropdown-menu';
-	import { Input } from '@repo/ui/input';
-	import { Label } from '@repo/ui/label';
-	import { Skeleton } from '@repo/ui/skeleton';
-	import { SelectAllPopover, SortableTableHeader } from '@repo/ui/table';
-	import * as Table from '@repo/ui/table';
-	import { Textarea } from '@repo/ui/textarea';
+	import { Badge } from '$lib/ui/badge';
+	import { Button, buttonVariants } from '$lib/ui/button';
+	import { Card } from '$lib/ui/card';
+	import { Checkbox } from '$lib/ui/checkbox';
+	import * as Dialog from '$lib/ui/dialog';
+	import * as DropdownMenu from '$lib/ui/dropdown-menu';
+	import { Input } from '$lib/ui/input';
+	import { Label } from '$lib/ui/label';
+	import { Skeleton } from '$lib/ui/skeleton';
+	import { SelectAllPopover, SortableTableHeader } from '$lib/ui/table';
+	import * as Table from '$lib/ui/table';
+	import { Textarea } from '$lib/ui/textarea';
 	import { rpc } from '$lib/query';
 	import type { Recording } from '$lib/services/db';
-	import { cn } from '@repo/ui/utils';
-	import { createPersistedState } from '@repo/svelte-utils';
+	import { cn } from '$lib/ui/utils';
+	import { createPersistedState } from '$lib/svelte-utils';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import {
 		FlexRender,

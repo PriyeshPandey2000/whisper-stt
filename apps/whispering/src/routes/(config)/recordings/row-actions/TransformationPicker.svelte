@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import { Badge } from '@repo/ui/badge';
-	import * as Command from '@repo/ui/command';
-	import * as Popover from '@repo/ui/popover';
-	import { useCombobox } from '@repo/ui/hooks';
+	import { Badge } from '$lib/ui/badge';
+	import * as Command from '$lib/ui/command';
+	import * as Popover from '$lib/ui/popover';
+	import { useCombobox } from '$lib/ui/hooks';
 	import { rpc } from '$lib/query';
 	import type { Transformation } from '$lib/services/db';
 	import { createQuery } from '@tanstack/svelte-query';

@@ -2,16 +2,16 @@
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
 	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
 	import { TrashIcon } from '$lib/components/icons';
-	import { Badge } from '@repo/ui/badge';
-	import { Button } from '@repo/ui/button';
-	import { Checkbox } from '@repo/ui/checkbox';
-	import { Input } from '@repo/ui/input';
-	import { Skeleton } from '@repo/ui/skeleton';
-	import { SelectAllPopover, SortableTableHeader } from '@repo/ui/table';
-	import * as Table from '@repo/ui/table';
+	import { Badge } from '$lib/ui/badge';
+	import { Button } from '$lib/ui/button';
+	import { Checkbox } from '$lib/ui/checkbox';
+	import { Input } from '$lib/ui/input';
+	import { Skeleton } from '$lib/ui/skeleton';
+	import { SelectAllPopover, SortableTableHeader } from '$lib/ui/table';
+	import * as Table from '$lib/ui/table';
 	import { rpc } from '$lib/query';
 	import { type Transformation } from '$lib/services/db';
-	import { createPersistedState } from '@repo/svelte-utils';
+	import { createPersistedState } from '$lib/svelte-utils';
 	import { createTransformationViewTransitionName } from '$lib/utils/createTransformationViewTransitionName';
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import {

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import WhisperingButton from '$lib/components/WhisperingButton.svelte';
-	import { Badge } from '@repo/ui/badge';
-	import * as Command from '@repo/ui/command';
-	import * as Popover from '@repo/ui/popover';
-	import { useCombobox } from '@repo/ui/hooks';
+	import { Badge } from '$lib/ui/badge';
+	import * as Command from '$lib/ui/command';
+	import * as Popover from '$lib/ui/popover';
+	import { useCombobox } from '$lib/ui/hooks';
 	import {
 		TRANSCRIPTION_SERVICES,
 		type TranscriptionService,
@@ -14,7 +14,7 @@
 		isTranscriptionServiceConfigured,
 	} from '$lib/settings/transcription-validation';
 	import { settings } from '$lib/stores/settings.svelte';
-	import { cn } from '@repo/ui/utils';
+	import { cn } from '$lib/ui/utils';
 	import { CheckIcon, MicIcon, SettingsIcon } from '@lucide/svelte';
 
 	let { class: className }: { class?: string } = $props();

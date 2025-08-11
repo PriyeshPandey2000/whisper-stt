@@ -25,10 +25,10 @@
 </script>
 
 <script lang="ts">
-	import * as Alert from '@repo/ui/alert';
-	import * as Popover from '@repo/ui/popover';
+	import * as Alert from '$lib/ui/alert';
+	import * as Popover from '$lib/ui/popover';
 	import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
-	import { ScrollArea } from '@repo/ui/scroll-area';
+	import { ScrollArea } from '$lib/ui/scroll-area';
 	import {
 		AlertCircle,
 		AlertTriangle,
@@ -39,7 +39,7 @@
 	} from '@lucide/svelte';
 	import { mode } from 'mode-watcher';
 	import WhisperingButton from './WhisperingButton.svelte';
-	import { cn } from '@repo/ui/utils';
+	import { cn } from '$lib/ui/utils';
 </script>
 
 <Popover.Root bind:open={notificationLog.isOpen}>

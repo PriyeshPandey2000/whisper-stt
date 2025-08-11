@@ -58,8 +58,8 @@
 </script>
 
 <script lang="ts">
-	import * as Dialog from '@repo/ui/dialog';
-	import { Button } from '@repo/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
+	import { Button } from '$lib/ui/button';
 </script>
 
 <Dialog.Root bind:open={moreDetailsDialog.isOpen}>
