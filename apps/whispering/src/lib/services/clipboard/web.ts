@@ -28,6 +28,17 @@ export function createClipboardServiceWeb(): ClipboardService {
 			return Ok(undefined);
 		},
 
+		typeAtCursor: async (text) => {
+			// In web browsers, we cannot simulate typing for security reasons
+			// Fall back to clipboard-based approach 
+			return ClipboardServiceErr({
+				cause: undefined,
+				context: { text },
+				message:
+					'Automatic typing is not supported in web browsers for security reasons. Please paste manually using Cmd/Ctrl+V.',
+			});
+		},
+
 		pasteFromClipboard: async () => {
 			// In web browsers, we cannot programmatically paste for security reasons
 			// The user must manually paste with Cmd/Ctrl+V

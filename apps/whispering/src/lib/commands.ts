@@ -71,3 +71,15 @@ export const commandCallbacks = commands.reduce<CommandCallbacks>(
 	},
 	{} as CommandCallbacks,
 );
+
+// Global shortcut callbacks - these pass 'global-shortcut' as the initiation method
+export const globalCommandCallbacks: CommandCallbacks = {
+	pushToTalk: () => rpc.commands.toggleManualRecording.execute({ initiatedVia: 'global-shortcut' }),
+	toggleManualRecording: () => rpc.commands.toggleManualRecording.execute({ initiatedVia: 'global-shortcut' }),
+	startManualRecording: () => rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' }),
+	stopManualRecording: () => rpc.commands.stopManualRecording.execute(undefined),
+	cancelManualRecording: () => rpc.commands.cancelManualRecording.execute(undefined),
+	startVadRecording: () => rpc.commands.startVadRecording.execute(undefined),
+	stopVadRecording: () => rpc.commands.stopVadRecording.execute(undefined),
+	toggleVadRecording: () => rpc.commands.toggleVadRecording.execute(undefined),
+};

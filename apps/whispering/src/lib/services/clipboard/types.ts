@@ -16,6 +16,22 @@ export type ClipboardService = {
 	) => Promise<Result<void, ClipboardServiceError>>;
 
 	/**
+	 * Types text directly at the current cursor position, character by character.
+	 * This bypasses the clipboard entirely and is ideal for situations where focus
+	 * may have changed or clipboard paste might not work reliably.
+	 *
+	 * **Note**: This is slower than paste for large text blocks but more reliable.
+	 * Best used for global shortcuts where cursor focus needs to be maintained.
+	 *
+	 * - Desktop: Uses Enigo to simulate keyboard typing
+	 * - Web: Not implemented (falls back to paste)
+	 * - Mobile: Not implemented (falls back to paste)
+	 */
+	typeAtCursor: (
+		text: string,
+	) => Promise<Result<void, ClipboardServiceError>>;
+
+	/**
 	 * Pastes text from the clipboard at the current cursor position.
 	 * Simulates the standard paste keyboard shortcut (Cmd+V on macOS, Ctrl+V elsewhere).
 	 *

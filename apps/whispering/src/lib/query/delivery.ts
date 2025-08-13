@@ -40,9 +40,11 @@ export const delivery = {
 		resultMutationFn: async ({
 			text,
 			toastId,
+			initiatedVia = 'local',
 		}: {
 			text: string;
 			toastId: string;
+			initiatedVia?: 'global-shortcut' | 'local';
 		}) => {
 			// Shows transcription result and offers manual copy action
 			const offerManualCopy = () =>
@@ -153,9 +155,19 @@ export const delivery = {
 				return Ok(undefined);
 			}
 
-			// Try to paste at cursor
-			const { error: pasteError } =
-				await rpc.clipboard.pasteFromClipboard.execute(undefined);
+			// Try to paste at cursor - use different methods based on how recording was initiated
+			let pasteError;
+			if (initiatedVia === 'global-shortcut') {
+				// For global shortcuts, type directly at cursor position to ensure it works
+				// regardless of focus changes during recording
+				const { error } = await rpc.clipboard.typeAtCursor.execute({ text });
+				pasteError = error;
+			} else {
+				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
+				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
+				pasteError = error;
+			}
+
 			if (pasteError) {
 				warnPasteFailedButCopied(pasteError);
 				confirmTextInClipboard();
@@ -199,9 +211,11 @@ export const delivery = {
 		resultMutationFn: async ({
 			text,
 			toastId,
+			initiatedVia = 'local',
 		}: {
 			text: string;
 			toastId: string;
+			initiatedVia?: 'global-shortcut' | 'local';
 		}) => {
 			// Define all notification functions at the top for clarity
 
@@ -314,9 +328,19 @@ export const delivery = {
 				return Ok(undefined);
 			}
 
-			// Try to paste at cursor
-			const { error: pasteError } =
-				await rpc.clipboard.pasteFromClipboard.execute(undefined);
+			// Try to paste at cursor - use different methods based on how recording was initiated
+			let pasteError;
+			if (initiatedVia === 'global-shortcut') {
+				// For global shortcuts, type directly at cursor position to ensure it works
+				// regardless of focus changes during recording
+				const { error } = await rpc.clipboard.typeAtCursor.execute({ text });
+				pasteError = error;
+			} else {
+				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
+				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
+				pasteError = error;
+			}
+
 			if (pasteError) {
 				warnPasteFailedButCopied(pasteError);
 				confirmTextInClipboard();

@@ -2,7 +2,7 @@ import type { KeyboardEventSupportedKey } from '$lib/constants/keyboard';
 import type { Accelerator } from '$lib/services/global-shortcut-manager';
 import type { CommandId } from '$lib/services/local-shortcut-manager';
 
-import { type Command, commandCallbacks } from '$lib/commands';
+import { type Command, commandCallbacks, globalCommandCallbacks } from '$lib/commands';
 import { IS_MACOS } from '$lib/constants/platform';
 import * as services from '$lib/services';
 
@@ -28,7 +28,7 @@ export const shortcuts = {
 			) as Accelerator;
 			return services.globalShortcutManager.register({
 				accelerator,
-				callback: commandCallbacks[command.id],
+				callback: globalCommandCallbacks[command.id],
 				on: command.on,
 			});
 		},

@@ -15,6 +15,17 @@ export function createClipboardServiceExtension(): ClipboardService {
 				try: () => navigator.clipboard.writeText(text),
 			}),
 
+		typeAtCursor: (text) =>
+			tryAsync({
+				mapErr: (error) =>
+					ClipboardServiceErr({
+						cause: error,
+						context: { text },
+						message: 'Unable to type text at cursor position',
+					}),
+				try: () => writeTextToCursor(text),
+			}),
+
 		pasteFromClipboard: () =>
 			tryAsync({
 				mapErr: (error) =>

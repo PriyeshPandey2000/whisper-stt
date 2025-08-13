@@ -8,6 +8,11 @@ export const clipboard = {
 		resultMutationFn: ({ text }: { text: string }) =>
 			services.clipboard.copyToClipboard(text),
 	}),
+	typeAtCursor: defineMutation({
+		mutationKey: ['clipboard', 'typeAtCursor'],
+		resultMutationFn: ({ text }: { text: string }) =>
+			services.clipboard.typeAtCursor(text),
+	}),
 	pasteFromClipboard: defineMutation({
 		mutationKey: ['clipboard', 'pasteFromClipboard'],
 		resultMutationFn: async () => await services.clipboard.pasteFromClipboard(),

@@ -22,6 +22,18 @@ export function createClipboardServiceDesktop(): ClipboardService {
 				try: () => writeText(text),
 			}),
 
+		typeAtCursor: (text) =>
+			tryAsync({
+				mapErr: (error) =>
+					ClipboardServiceErr({
+						cause: error,
+						context: { text },
+						message:
+							'There was an error typing text at cursor position. Please try pasting manually with Cmd/Ctrl+V.',
+					}),
+				try: () => invoke<void>('write_text', { text }),
+			}),
+
 		pasteFromClipboard: async () => {
 			// Try to paste using keyboard shortcut
 			const { error: pasteError } = await tryAsync({

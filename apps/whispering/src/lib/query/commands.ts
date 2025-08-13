@@ -19,10 +19,13 @@ import { vadRecorder } from './vad-recorder';
 // Track manual recording start time for duration calculation
 let manualRecordingStartTime: null | number = null;
 
+// Track how the current recording was initiated
+let recordingInitiatedVia: 'global-shortcut' | 'local' | null = null;
+
 // Internal mutations for manual recording
 const startManualRecording = defineMutation({
 	mutationKey: ['commands', 'startManualRecording'] as const,
-	resultMutationFn: async () => {
+	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 		const toastId = nanoid();
 		notify.loading.execute({
 			title: '🎙️ Preparing to record...',
@@ -83,8 +86,9 @@ const startManualRecording = defineMutation({
 				}
 			}
 		}
-		// Track start time for duration calculation
+		// Track start time and initiation method for duration calculation and pasting behavior
 		manualRecordingStartTime = Date.now();
+		recordingInitiatedVia = initiatedVia;
 		console.info('Recording started');
 		sound.playSoundIfEnabled.execute('manual-start');
 		return Ok(undefined);
@@ -117,10 +121,13 @@ const stopManualRecording = defineMutation({
 
 		// Log manual recording completion
 		let duration: number | undefined;
+		const initiatedVia = recordingInitiatedVia || 'local';
 		if (manualRecordingStartTime) {
 			duration = Date.now() - manualRecordingStartTime;
 			manualRecordingStartTime = null; // Reset for next recording
 		}
+		recordingInitiatedVia = null; // Reset for next recording
+
 		rpc.analytics.logEvent.execute({
 			blob_size: blob.size,
 			duration,
@@ -132,6 +139,7 @@ const stopManualRecording = defineMutation({
 			completionDescription: 'Recording saved and session closed successfully',
 			completionTitle: '✨ Recording Complete!',
 			toastId,
+			initiatedVia,
 		});
 
 		return Ok(undefined);
@@ -174,6 +182,7 @@ const startVadRecording = defineMutation({
 							'Voice activated capture complete! Ready for another take',
 						completionTitle: '✨ Voice activated capture complete!',
 						toastId,
+						initiatedVia: 'local', // VAD is currently always local (no global VAD shortcuts)
 					});
 				},
 				onSpeechStart: () => {
@@ -268,6 +277,9 @@ const stopVadRecording = defineMutation({
 });
 
 export const commands = {
+	// Start manual recording
+	startManualRecording,
+
 	// Cancel manual recording
 	cancelManualRecording: defineMutation({
 		mutationKey: ['commands', 'cancelManualRecording'] as const,
@@ -287,8 +299,9 @@ export const commands = {
 			switch (cancelRecordingResult.status) {
 				case 'cancelled': {
 					// Session cleanup is now handled internally by the recorder service
-					// Reset start time if recording was cancelled
+					// Reset start time and initiation method if recording was cancelled
 					manualRecordingStartTime = null;
+					recordingInitiatedVia = null;
 					notify.success.execute({
 						title: '✅ All Done!',
 						description: 'Recording cancelled successfully',
@@ -310,7 +323,6 @@ export const commands = {
 			return Ok(undefined);
 		},
 	}),
-	startManualRecording,
 	startVadRecording,
 	stopManualRecording,
 
@@ -319,7 +331,7 @@ export const commands = {
 	// Toggle manual recording
 	toggleManualRecording: defineMutation({
 		mutationKey: ['commands', 'toggleManualRecording'] as const,
-		resultMutationFn: async () => {
+		resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 			const { data: currentRecordingId, error: getRecordingIdError } =
 				await recorder.getCurrentRecordingId.fetch();
 			if (getRecordingIdError) {
@@ -329,7 +341,7 @@ export const commands = {
 			if (currentRecordingId) {
 				return await stopManualRecording.execute(undefined);
 			}
-			return await startManualRecording.execute(undefined);
+			return await startManualRecording.execute({ initiatedVia });
 		},
 	}),
 
@@ -397,6 +409,7 @@ export const commands = {
 						completionDescription: file.name,
 						completionTitle: '📁 File uploaded successfully!',
 						toastId,
+						initiatedVia: 'local', // File uploads are always local
 					});
 				}),
 			);
@@ -424,11 +437,13 @@ async function processRecordingPipeline({
 	completionDescription,
 	completionTitle,
 	toastId,
+	initiatedVia = 'local',
 }: {
 	blob: Blob;
 	completionDescription: string;
 	completionTitle: string;
 	toastId: string;
+	initiatedVia?: 'global-shortcut' | 'local';
 }) {
 	const now = new Date().toISOString();
 	const newRecordingId = nanoid();
@@ -492,6 +507,7 @@ async function processRecordingPipeline({
 	await delivery.deliverTranscriptionResult.execute({
 		text: transcribedText,
 		toastId: transcribeToastId,
+		initiatedVia,
 	});
 
 	// Determine if we need to chain to transformation
@@ -564,5 +580,6 @@ async function processRecordingPipeline({
 	await delivery.deliverTransformationResult.execute({
 		text: transformationRun.output,
 		toastId: transformToastId,
+		initiatedVia,
 	});
 }
