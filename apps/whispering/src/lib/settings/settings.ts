@@ -134,7 +134,7 @@ export const settingsSchema = z.object({
 	'system.alwaysOnTop': z.enum(ALWAYS_ON_TOP_VALUES).default('Never'),
 	'transcription.clipboard.copyOnSuccess': z.boolean().default(true),
 
-	'transcription.clipboard.pasteOnSuccess': z.boolean().default(false),
+	'transcription.clipboard.pasteOnSuccess': z.boolean().default(true),
 	'transcription.deepgram.model': z
 		.string()
 		.transform((val) => val as DeepgramModel['name'] | (string & {}))
@@ -166,7 +166,7 @@ export const settingsSchema = z.object({
 		.default('Systran/faster-distil-whisper-small.en'),
 	'transcription.temperature': z.string().default('0.0'),
 	'transformation.clipboard.copyOnSuccess': z.boolean().default(true),
-	'transformation.clipboard.pasteOnSuccess': z.boolean().default(false),
+	'transformation.clipboard.pasteOnSuccess': z.boolean().default(true),
 
 	'transformations.selectedTransformationId': z
 		.string()
