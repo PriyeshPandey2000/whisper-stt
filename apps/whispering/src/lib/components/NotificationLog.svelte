@@ -1,5 +1,7 @@
 <script module lang="ts">
-	const notificationLog = (() => {
+	import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
+
+	export const notificationLog = (() => {
 		let isOpen = $state(false);
 		let logs = $state<UnifiedNotificationOptions[]>([]);
 		return {
@@ -20,12 +22,9 @@
 			},
 		};
 	})();
-
-	export { notificationLog };
 </script>
 
 <script lang="ts">
-	import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
 
 	import * as Alert from '$lib/ui/alert';
 	import * as Popover from '$lib/ui/popover';

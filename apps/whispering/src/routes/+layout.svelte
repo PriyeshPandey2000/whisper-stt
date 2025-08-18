@@ -5,7 +5,7 @@
 	import * as services from '$lib/services';
 	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import '$lib/ui/app.css';
-	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
+	// import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
 
 	import AppShell from './+layout/AppShell.svelte';
 
@@ -43,4 +43,4 @@
 	</AppShell>
 </QueryClientProvider>
 
-<SvelteQueryDevtools client={queryClient} buttonPosition="bottom-left" />
+<!-- <SvelteQueryDevtools client={queryClient} buttonPosition="bottom-left" /> -->

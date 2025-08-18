@@ -22,6 +22,11 @@ let manualRecordingStartTime: null | number = null;
 // Track how the current recording was initiated
 let recordingInitiatedVia: 'global-shortcut' | 'local' | null = null;
 
+// Track VAD recording state for debouncing and initiation context
+let vadInitiatedVia: 'global-shortcut' | 'local' | null = null;
+let vadSessionActive = false;
+let vadDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
 // Internal mutations for manual recording
 const startManualRecording = defineMutation({
 	mutationKey: ['commands', 'startManualRecording'] as const,
@@ -149,7 +154,17 @@ const stopManualRecording = defineMutation({
 // Internal mutations for VAD recording
 const startVadRecording = defineMutation({
 	mutationKey: ['commands', 'startVadRecording'] as const,
-	resultMutationFn: async () => {
+	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
+		// Store the initiation context
+		vadInitiatedVia = initiatedVia;
+		vadSessionActive = true;
+		
+		// Clear any existing debounce timeout
+		if (vadDebounceTimeout) {
+			clearTimeout(vadDebounceTimeout);
+			vadDebounceTimeout = null;
+		}
+		
 		const toastId = nanoid();
 		console.info('Starting voice activated capture');
 		notify.loading.execute({
@@ -160,6 +175,21 @@ const startVadRecording = defineMutation({
 		const { data: deviceAcquisitionOutcome, error: startActiveListeningError } =
 			await vadRecorder.startActiveListening.execute({
 				onSpeechEnd: async (blob) => {
+					// Debouncing: ignore if session is not active or already processing
+					if (!vadSessionActive) {
+						console.log('VAD onSpeechEnd ignored: session not active');
+						return;
+					}
+					
+					// Set session as inactive to prevent multiple triggers
+					vadSessionActive = false;
+					
+					// Set up debounce timeout to prevent rapid retriggering
+					vadDebounceTimeout = setTimeout(() => {
+						vadSessionActive = true;
+						vadDebounceTimeout = null;
+					}, 2000); // 2 second debounce
+					
 					const toastId = nanoid();
 					notify.success.execute({
 						title: '🎙️ Voice activated speech captured',
@@ -182,7 +212,7 @@ const startVadRecording = defineMutation({
 							'Voice activated capture complete! Ready for another take',
 						completionTitle: '✨ Voice activated capture complete!',
 						toastId,
-						initiatedVia: 'local', // VAD is currently always local (no global VAD shortcuts)
+						initiatedVia: vadInitiatedVia || 'local', // Use the stored initiation context
 					});
 				},
 				onSpeechStart: () => {
@@ -262,6 +292,15 @@ const stopVadRecording = defineMutation({
 		});
 		const { error: stopVadError } =
 			await vadRecorder.stopActiveListening.execute(undefined);
+		
+		// Clean up VAD state regardless of success/failure
+		vadInitiatedVia = null;
+		vadSessionActive = false;
+		if (vadDebounceTimeout) {
+			clearTimeout(vadDebounceTimeout);
+			vadDebounceTimeout = null;
+		}
+		
 		if (stopVadError) {
 			notify.error.execute({ id: toastId, ...stopVadError });
 			return Err(stopVadError);
@@ -348,12 +387,12 @@ export const commands = {
 	// Toggle VAD recording
 	toggleVadRecording: defineMutation({
 		mutationKey: ['commands', 'toggleVadRecording'] as const,
-		resultMutationFn: async () => {
+		resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 			const { data: vadState } = await vadRecorder.getVadState.fetch();
 			if (vadState === 'LISTENING' || vadState === 'SPEECH_DETECTED') {
 				return await stopVadRecording.execute(undefined);
 			}
-			return await startVadRecording.execute(undefined);
+			return await startVadRecording.execute({ initiatedVia });
 		},
 	}),
 

@@ -3,7 +3,7 @@
 	import { commandCallbacks } from '$lib/commands';
 	import ConfirmationDialog from '$lib/components/ConfirmationDialog.svelte';
 	import MoreDetailsDialog from '$lib/components/MoreDetailsDialog.svelte';
-	import NotificationLog from '$lib/components/NotificationLog.svelte';
+	// import NotificationLog from '$lib/components/NotificationLog.svelte';
 	import UpdateDialog from '$lib/components/UpdateDialog.svelte';
 	import { rpc } from '$lib/query';
 	import * as services from '$lib/services';
@@ -62,6 +62,7 @@
 	});
 
 	const TOASTER_SETTINGS = {
+		closeButton: true,
 		duration: 5000,
 		position: 'bottom-right',
 		richColors: true,
@@ -99,16 +100,18 @@
 	{@render children()}
 </div>
 
-<Toaster
-	offset={16}
-	class="xs:block hidden"
-	theme={mode.current}
-	{...TOASTER_SETTINGS}
-/>
+{#if settings.value['notifications.enabled']}
+	<Toaster
+		offset={16}
+		class="xs:block hidden"
+		theme={mode.current}
+		{...TOASTER_SETTINGS}
+	/>
+{/if}
 <ModeWatcher />
 <ConfirmationDialog />
 <MoreDetailsDialog />
-<NotificationLog />
+<!-- <NotificationLog /> -->
 <UpdateDialog />
 
 <style>

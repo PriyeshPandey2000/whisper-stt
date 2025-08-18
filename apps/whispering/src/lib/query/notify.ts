@@ -1,8 +1,9 @@
 import type { UnifiedNotificationOptions } from '$lib/services/notifications/types';
 
 import { dev } from '$app/environment';
-import { notificationLog } from '$lib/components/NotificationLog.svelte';
+import { notificationLog } from '$lib/components/NotificationLog';
 import * as services from '$lib/services';
+import { settings } from '$lib/stores/settings.svelte';
 import { Ok } from 'wellcrafted/result';
 
 import { defineMutation } from './_client';
@@ -17,6 +18,15 @@ const createNotifyMutation = (
 			options: Omit<UnifiedNotificationOptions, 'variant'>,
 		) => {
 			const fullOptions: UnifiedNotificationOptions = { ...options, variant };
+
+			// Check if notifications are disabled
+			if (!settings.value['notifications.enabled']) {
+				// Still log in dev mode even if notifications are disabled
+				if (dev) {
+					console.log('[Notify] (disabled)', fullOptions);
+				}
+				return Ok('disabled');
+			}
 
 			// Log in dev mode
 			if (dev) {

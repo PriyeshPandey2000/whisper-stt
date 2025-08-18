@@ -79,7 +79,7 @@ export const globalCommandCallbacks: CommandCallbacks = {
 	startManualRecording: () => rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' }),
 	stopManualRecording: () => rpc.commands.stopManualRecording.execute(undefined),
 	cancelManualRecording: () => rpc.commands.cancelManualRecording.execute(undefined),
-	startVadRecording: () => rpc.commands.startVadRecording.execute(undefined),
+	startVadRecording: () => rpc.commands.startVadRecording.execute({ initiatedVia: 'global-shortcut' }),
 	stopVadRecording: () => rpc.commands.stopVadRecording.execute(undefined),
-	toggleVadRecording: () => rpc.commands.toggleVadRecording.execute(undefined),
+	toggleVadRecording: () => rpc.commands.toggleVadRecording.execute({ initiatedVia: 'global-shortcut' }),
 };

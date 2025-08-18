@@ -65,6 +65,18 @@
 
 	<Separator />
 
+	<LabeledSwitch
+		id="notifications.enabled"
+		label="Show notification toasts"
+		description="Enable or disable all notification toasts in the app"
+		checked={settings.value['notifications.enabled']}
+		onCheckedChange={(v) => {
+			settings.updateKey('notifications.enabled', v);
+		}}
+	/>
+
+	<Separator />
+
 	<LabeledSelect
 		id="recording-retention-strategy"
 		label="Auto Delete Recordings"
