@@ -39,13 +39,13 @@
 			label: 'Settings',
 			type: 'anchor',
 		},
-		{
-			external: true,
-			href: 'https://github.com/epicenter-so/epicenter',
-			icon: GithubIcon,
-			label: 'View project on GitHub',
-			type: 'anchor',
-		},
+		// {
+		// 	external: true,
+		// 	href: 'https://github.com/epicenter-so/epicenter',
+		// 	icon: GithubIcon,
+		// 	label: 'View project on GitHub',
+		// 	type: 'anchor',
+		// },
 		{
 			action: toggleMode,
 			icon: SunIcon,
