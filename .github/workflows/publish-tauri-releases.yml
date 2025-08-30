@@ -121,6 +121,9 @@ jobs:
           # Required: GitHub token for creating releases and uploading assets
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
+          # Aptabase analytics key
+          APTABASE_KEY: ${{ secrets.APTABASE_KEY }}
+          
           # Tauri code signing (optional but recommended)
           # These enable automatic updates without security warnings
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
