@@ -86,6 +86,11 @@ jobs:
       - name: install frontend dependencies
         run: bun install
 
+      # Create .env file for Tauri build
+      - name: Create .env file
+        run: |
+          echo "APTABASE_KEY=${{ secrets.APTABASE_KEY }}" > apps/whispering/src-tauri/.env
+
       # Build the frontend (SvelteKit app) before Tauri packaging
       - name: Build frontend
         run: cd apps/whispering && bun run build  # Build whispering directly
