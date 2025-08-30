@@ -34,13 +34,13 @@
 		}
 	},
 	"productName": "NoteFlux",
-	"version": "7.1.1",
-	"identifier": "com.bradenwong.noteflux",
+	"version": "0.1.0",
+	"identifier": "com.priyeshpandey.noteflux",
 	"plugins": {
 		"updater": {
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUwQzE1RjEyRThENzg0OEEKUldTS2hOZm9FbC9CVU1uZ1JLWlluMm1mOHd4N1RWUkNjME9PcHA3Nkg2ek5RMnZyVTVDS2k1QkwK",
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRCRjNDMkJGMzdGRUM4RTYKUldUbXlQNDN2OEx6Uzl6T1h0MTdJWkRQTG91eTZzalJwVHhaY290eG9pcmF3cGRDSEFubWU2clIK",
 			"endpoints": [
-				"https://github.com/epicenter-so/epicenter/releases/latest/download/latest.json"
+				"https://github.com/PriyeshPandey2000/whisper-stt/releases/latest/download/latest.json"
 			]
 		}
 	},
