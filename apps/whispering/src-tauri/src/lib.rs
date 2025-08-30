@@ -6,7 +6,6 @@ mod accessibility;
 #[cfg(target_os = "macos")]
 use accessibility::{is_macos_accessibility_enabled, open_apple_accessibility};
 
-use dotenvy_macro::dotenv;
 use tauri::Manager;
 use tauri_plugin_aptabase::EventTracker;
 
@@ -19,8 +18,13 @@ use recorder::commands::{
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
 pub async fn run() {
+    // Load .env file if it exists
+    dotenvy::dotenv().ok();
+    
     let mut builder = tauri::Builder::default()
-        .plugin(tauri_plugin_aptabase::Builder::new(dotenv!("APTABASE_KEY")).build())
+        .plugin(tauri_plugin_aptabase::Builder::new(
+            &std::env::var("APTABASE_KEY").unwrap_or_default()
+        ).build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
