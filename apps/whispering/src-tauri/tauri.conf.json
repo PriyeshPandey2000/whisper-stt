@@ -37,6 +37,11 @@
 	"version": "0.1.0",
 	"identifier": "com.priyeshpandey.noteflux",
 	"plugins": {
+		"deep-link": {
+			"desktop": {
+				"schemes": ["noteflux"]
+			}
+		},
 		"updater": {
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRCRjNDMkJGMzdGRUM4RTYKUldUbXlQNDN2OEx6Uzl6T1h0MTdJWkRQTG91eTZzalJwVHhaY290eG9pcmF3cGRDSEFubWU2clIK",
 			"endpoints": [

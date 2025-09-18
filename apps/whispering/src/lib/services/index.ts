@@ -1,4 +1,5 @@
 import { analytics } from './analytics';
+import * as auth from './auth';
 import { ClipboardServiceLive } from './clipboard';
 import * as completions from './completion';
 import { DbServiceLive } from './db';
@@ -21,6 +22,7 @@ import { VadServiceLive } from './vad-recorder';
 export {
 	analytics,
 	asDeviceIdentifier,
+	auth,
 	ClipboardServiceLive as clipboard,
 	completions,
 	DbServiceLive as db,

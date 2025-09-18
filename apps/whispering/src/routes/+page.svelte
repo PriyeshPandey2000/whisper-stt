@@ -3,6 +3,7 @@
 	import type { UnlistenFn } from '@tauri-apps/api/event';
 
 	import { commandCallbacks } from '$lib/commands';
+	import AuthSection from '$lib/components/auth/AuthSection.svelte';
 	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import { ClipboardIcon } from '$lib/components/icons';
 	import NavItems from '$lib/components/NavItems.svelte';
@@ -380,6 +381,11 @@
 		</div>
 
 		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
+
+		<!-- Authentication Section -->
+		<div class="mb-6">
+			<AuthSection />
+		</div>
 
 		<div class="xs:flex hidden flex-col items-center gap-3">
 			<p class="text-foreground/75 text-center text-sm">
