@@ -14,6 +14,7 @@ import { ToastServiceLive } from './toast';
 import * as transcriptions from './transcription';
 import { TrayIconServiceLive } from './tray';
 import { asDeviceIdentifier } from './types';
+import * as usageTracking from './usage-tracking';
 import { VadServiceLive } from './vad-recorder';
 
 /**
@@ -36,5 +37,6 @@ export {
 	ToastServiceLive as toast,
 	transcriptions,
 	TrayIconServiceLive as tray,
+	usageTracking,
 	VadServiceLive as vad,
 };

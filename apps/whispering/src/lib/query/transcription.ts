@@ -186,6 +186,25 @@ async function transcribeBlob(
 			provider: selectedService,
 			type: 'transcription_completed',
 		});
+
+		// Track usage for billing/analytics (fire-and-forget, won't block)
+		// Only track for services that charge by duration (like Groq)
+		if (selectedService === 'Groq') {
+			try {
+				// Import usage tracking dynamically to avoid circular imports
+				const { trackUsage, getAudioDurationFromBlob } = await import('$lib/services/usage-tracking');
+				const durationMinutes = await getAudioDurationFromBlob(blob);
+				trackUsage({
+					durationMinutes,
+					estimatedCost: 0, // Will be calculated in trackUsage
+					provider: selectedService,
+					fileName: 'audio-recording' // Could be enhanced to use actual filename
+				});
+			} catch (error) {
+				console.warn('Usage tracking failed, but transcription succeeded:', error);
+				// Don't fail the transcription if usage tracking fails
+			}
+		}
 	}
 
 	return transcriptionResult;
