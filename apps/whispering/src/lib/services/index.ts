@@ -1,4 +1,5 @@
 import { analytics } from './analytics';
+import * as auth from './auth';
 import { ClipboardServiceLive } from './clipboard';
 import * as completions from './completion';
 import { DbServiceLive } from './db';
@@ -13,6 +14,7 @@ import { ToastServiceLive } from './toast';
 import * as transcriptions from './transcription';
 import { TrayIconServiceLive } from './tray';
 import { asDeviceIdentifier } from './types';
+import * as usageTracking from './usage-tracking';
 import { VadServiceLive } from './vad-recorder';
 
 /**
@@ -21,6 +23,7 @@ import { VadServiceLive } from './vad-recorder';
 export {
 	analytics,
 	asDeviceIdentifier,
+	auth,
 	ClipboardServiceLive as clipboard,
 	completions,
 	DbServiceLive as db,
@@ -34,5 +37,6 @@ export {
 	ToastServiceLive as toast,
 	transcriptions,
 	TrayIconServiceLive as tray,
+	usageTracking,
 	VadServiceLive as vad,
 };

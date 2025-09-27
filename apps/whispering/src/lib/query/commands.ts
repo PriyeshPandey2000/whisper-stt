@@ -543,18 +543,30 @@ async function processRecordingPipeline({
 
 	sound.playSoundIfEnabled.execute('transcriptionComplete');
 
-	await delivery.deliverTranscriptionResult.execute({
-		text: transcribedText,
-		toastId: transcribeToastId,
-		initiatedVia,
-	});
+	// COMMENTED OUT: Raw text delivery when transformation is selected
+	// This ensures only transformed text goes to clipboard/cursor when transformation is applied
+	// await delivery.deliverTranscriptionResult.execute({
+	// 	text: transcribedText,
+	// 	toastId: transcribeToastId,
+	// 	initiatedVia,
+	// });
 
 	// Determine if we need to chain to transformation
 	const transformationId =
 		settings.value['transformations.selectedTransformationId'];
 
-	// Check if transformation is valid if specified
-	if (!transformationId) return;
+	// If no transformation is selected, deliver the raw transcription result and exit
+	if (!transformationId) {
+		await delivery.deliverTranscriptionResult.execute({
+			text: transcribedText,
+			toastId: transcribeToastId,
+			initiatedVia,
+		});
+		return;
+	}
+
+	// When transformation is selected, the raw text delivery above is skipped
+	// The final transformed text will be delivered via deliverTransformationResult
 	const { data: transformation, error: getTransformationError } =
 		await transformations.queries
 			.getTransformationById(() => transformationId)

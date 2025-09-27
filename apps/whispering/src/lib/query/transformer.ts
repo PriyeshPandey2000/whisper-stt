@@ -13,6 +13,7 @@ import {
 } from '$lib/result';
 import * as services from '$lib/services';
 import { settings } from '$lib/stores/settings.svelte';
+import { getGroqApiKey } from '$lib/utils/embedded-keys';
 import { createTaggedError, extractErrorMessage } from 'wellcrafted/error';
 import { Err, isErr, Ok, type Result } from 'wellcrafted/result';
 
@@ -180,44 +181,45 @@ async function handleStep({
 			);
 
 			switch (provider) {
-				case 'Anthropic': {
-					const { data: completionResponse, error: completionError } =
-						await services.completions.anthropic.complete({
-							apiKey: settings.value['apiKeys.anthropic'],
-							model:
-								step['prompt_transform.inference.provider.Anthropic.model'],
-							systemPrompt,
-							userPrompt,
-						});
+				// COMMENTED OUT: BYOK providers - using only Groq for SaaS model
+				// case 'Anthropic': {
+				// 	const { data: completionResponse, error: completionError } =
+				// 		await services.completions.anthropic.complete({
+				// 			apiKey: settings.value['apiKeys.anthropic'],
+				// 			model:
+				// 				step['prompt_transform.inference.provider.Anthropic.model'],
+				// 			systemPrompt,
+				// 			userPrompt,
+				// 		});
 
-					if (completionError) {
-						return Err(completionError.message);
-					}
+				// 	if (completionError) {
+				// 		return Err(completionError.message);
+				// 	}
 
-					return Ok(completionResponse);
-				}
+				// 	return Ok(completionResponse);
+				// }
 
-				case 'Google': {
-					const { data: completion, error: completionError } =
-						await services.completions.google.complete({
-							apiKey: settings.value['apiKeys.google'],
-							model: step['prompt_transform.inference.provider.Google.model'],
-							systemPrompt,
-							userPrompt,
-						});
+				// case 'Google': {
+				// 	const { data: completion, error: completionError } =
+				// 		await services.completions.google.complete({
+				// 			apiKey: settings.value['apiKeys.google'],
+				// 			model: step['prompt_transform.inference.provider.Google.model'],
+				// 			systemPrompt,
+				// 			userPrompt,
+				// 		});
 
-					if (completionError) {
-						return Err(completionError.message);
-					}
+				// 	if (completionError) {
+				// 		return Err(completionError.message);
+				// 	}
 
-					return Ok(completion);
-				}
+				// 	return Ok(completion);
+				// }
 
 				case 'Groq': {
 					const model = step['prompt_transform.inference.provider.Groq.model'];
 					const { data: completionResponse, error: completionError } =
 						await services.completions.groq.complete({
-							apiKey: settings.value['apiKeys.groq'],
+							apiKey: getGroqApiKey(),
 							model,
 							systemPrompt,
 							userPrompt,
@@ -230,21 +232,21 @@ async function handleStep({
 					return Ok(completionResponse);
 				}
 
-				case 'OpenAI': {
-					const { data: completionResponse, error: completionError } =
-						await services.completions.openai.complete({
-							apiKey: settings.value['apiKeys.openai'],
-							model: step['prompt_transform.inference.provider.OpenAI.model'],
-							systemPrompt,
-							userPrompt,
-						});
+				// case 'OpenAI': {
+				// 	const { data: completionResponse, error: completionError } =
+				// 		await services.completions.openai.complete({
+				// 			apiKey: settings.value['apiKeys.openai'],
+				// 			model: step['prompt_transform.inference.provider.OpenAI.model'],
+				// 			systemPrompt,
+				// 			userPrompt,
+				// 		});
 
-					if (completionError) {
-						return Err(completionError.message);
-					}
+				// 	if (completionError) {
+				// 		return Err(completionError.message);
+				// 	}
 
-					return Ok(completionResponse);
-				}
+				// 	return Ok(completionResponse);
+				// }
 
 				default:
 					return Err(`Unsupported provider: ${provider}`);
