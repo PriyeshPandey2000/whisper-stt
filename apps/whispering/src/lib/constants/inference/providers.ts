@@ -3,10 +3,11 @@
  */
 
 export const INFERENCE_PROVIDERS = [
-	'OpenAI',
+	// COMMENTED OUT: BYOK providers - using only Groq for SaaS model
+	// 'OpenAI',
 	'Groq',
-	'Anthropic',
-	'Google',
+	// 'Anthropic',
+	// 'Google',
 ] as const;
 
 export const INFERENCE_PROVIDER_OPTIONS = INFERENCE_PROVIDERS.map(

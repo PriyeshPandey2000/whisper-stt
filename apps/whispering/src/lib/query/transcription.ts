@@ -3,6 +3,7 @@ import type { Recording } from '$lib/services/db';
 import { NoteFluxErr, type NoteFluxError } from '$lib/result';
 import * as services from '$lib/services';
 import { settings } from '$lib/stores/settings.svelte';
+import { getGroqApiKey } from '$lib/utils/embedded-keys';
 import { Err, Ok, partitionResults, type Result } from 'wellcrafted/result';
 
 import { rpc } from './';
@@ -128,45 +129,51 @@ async function transcribeBlob(
 	const transcriptionResult: Result<string, NoteFluxError> =
 		await (async () => {
 			switch (selectedService) {
-				case 'Deepgram':
-					return await services.transcriptions.deepgram.transcribe(blob, {
-						apiKey: settings.value['apiKeys.deepgram'],
-						modelName: settings.value['transcription.deepgram.model'],
-						outputLanguage: settings.value['transcription.outputLanguage'],
-						prompt: settings.value['transcription.prompt'],
-						temperature: settings.value['transcription.temperature'],
-					});
-				case 'ElevenLabs':
-					return await services.transcriptions.elevenlabs.transcribe(blob, {
-						apiKey: settings.value['apiKeys.elevenlabs'],
-						modelName: settings.value['transcription.elevenlabs.model'],
-						outputLanguage: settings.value['transcription.outputLanguage'],
-						prompt: settings.value['transcription.prompt'],
-						temperature: settings.value['transcription.temperature'],
-					});
+				// COMMENTED OUT: BYOK providers - using only Groq for SaaS model
+				// case 'Deepgram':
+				// 	return await services.transcriptions.deepgram.transcribe(blob, {
+				// 		apiKey: settings.value['apiKeys.deepgram'],
+				// 		modelName: settings.value['transcription.deepgram.model'],
+				// 		outputLanguage: settings.value['transcription.outputLanguage'],
+				// 		prompt: settings.value['transcription.prompt'],
+				// 		temperature: settings.value['transcription.temperature'],
+				// 	});
+				// case 'ElevenLabs':
+				// 	return await services.transcriptions.elevenlabs.transcribe(blob, {
+				// 		apiKey: settings.value['apiKeys.elevenlabs'],
+				// 		modelName: settings.value['transcription.elevenlabs.model'],
+				// 		outputLanguage: settings.value['transcription.outputLanguage'],
+				// 		prompt: settings.value['transcription.prompt'],
+				// 		temperature: settings.value['transcription.temperature'],
+				// 	});
 				case 'Groq':
 					return await services.transcriptions.groq.transcribe(blob, {
-						apiKey: settings.value['apiKeys.groq'],
+						apiKey: getGroqApiKey(),
 						modelName: settings.value['transcription.groq.model'],
 						outputLanguage: settings.value['transcription.outputLanguage'],
 						prompt: settings.value['transcription.prompt'],
 						temperature: settings.value['transcription.temperature'],
 					});
-				case 'OpenAI':
-					return await services.transcriptions.openai.transcribe(blob, {
-						apiKey: settings.value['apiKeys.openai'],
-						modelName: settings.value['transcription.openai.model'],
-						outputLanguage: settings.value['transcription.outputLanguage'],
-						prompt: settings.value['transcription.prompt'],
-						temperature: settings.value['transcription.temperature'],
-					});
-				case 'speaches':
-					return await services.transcriptions.speaches.transcribe(blob, {
-						baseUrl: settings.value['transcription.speaches.baseUrl'],
-						modelId: settings.value['transcription.speaches.modelId'],
-						outputLanguage: settings.value['transcription.outputLanguage'],
-						prompt: settings.value['transcription.prompt'],
-						temperature: settings.value['transcription.temperature'],
+				// case 'OpenAI':
+				// 	return await services.transcriptions.openai.transcribe(blob, {
+				// 		apiKey: settings.value['apiKeys.openai'],
+				// 		modelName: settings.value['transcription.openai.model'],
+				// 		outputLanguage: settings.value['transcription.outputLanguage'],
+				// 		prompt: settings.value['transcription.prompt'],
+				// 		temperature: settings.value['transcription.temperature'],
+				// 	});
+				// case 'speaches':
+				// 	return await services.transcriptions.speaches.transcribe(blob, {
+				// 		baseUrl: settings.value['transcription.speaches.baseUrl'],
+				// 		modelId: settings.value['transcription.speaches.modelId'],
+				// 		outputLanguage: settings.value['transcription.outputLanguage'],
+				// 		prompt: settings.value['transcription.prompt'],
+				// 		temperature: settings.value['transcription.temperature'],
+				// 	});
+				default:
+					return NoteFluxErr({
+						title: '⚠️ Unsupported transcription service',
+						description: `The selected service "${selectedService}" is not supported in SaaS mode.`,
 					});
 			}
 		})();

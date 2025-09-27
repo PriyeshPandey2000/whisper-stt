@@ -4,11 +4,11 @@
  */
 
 export const GROQ_INFERENCE_MODELS = [
-	// Production models
+	// Production models (fastest first)
+	'llama-3.1-8b-instant', // Fastest - prioritized for transformations
+	'llama-3.3-70b-versatile',
 	'gemma2-9b-it',
 	'meta-llama/llama-guard-4-12b',
-	'llama-3.3-70b-versatile',
-	'llama-3.1-8b-instant',
 	// Preview models
 	'deepseek-r1-distill-llama-70b',
 	'meta-llama/llama-4-maverick-17b-128e-instruct',
@@ -22,7 +22,11 @@ export const GROQ_INFERENCE_MODELS = [
 
 export const GROQ_INFERENCE_MODEL_OPTIONS = GROQ_INFERENCE_MODELS.map(
 	(model) => ({
-		label: model,
+		label: model === 'llama-3.1-8b-instant' 
+			? `${model} (⚡ Fastest)` 
+			: model === 'llama-3.3-70b-versatile'
+			? `${model} (🔄 Balanced)`
+			: model,
 		value: model,
 	}),
 );

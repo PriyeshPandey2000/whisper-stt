@@ -1,12 +1,14 @@
 <script lang="ts">
 	import {
-		AnthropicApiKeyInput,
-		ElevenLabsApiKeyInput,
-		GoogleApiKeyInput,
+		// COMMENTED OUT: BYOK API key inputs - using only Groq for SaaS model
+		// AnthropicApiKeyInput,
+		// ElevenLabsApiKeyInput,
+		// GoogleApiKeyInput,
 		GroqApiKeyInput,
-		OpenAiApiKeyInput,
+		// OpenAiApiKeyInput,
 	} from '$lib/components/settings';
 	import { Separator } from '$lib/ui/separator';
+	import { isSaaSMode } from '$lib/utils/embedded-keys';
 </script>
 
 <svelte:head>
@@ -22,9 +24,19 @@
 	</div>
 	<Separator />
 
-	<OpenAiApiKeyInput />
-	<AnthropicApiKeyInput />
-	<GroqApiKeyInput />
-	<GoogleApiKeyInput />
-	<ElevenLabsApiKeyInput />
+	<!-- COMMENTED OUT: BYOK API key inputs - using only Groq for SaaS model -->
+	<!-- <OpenAiApiKeyInput /> -->
+	<!-- <AnthropicApiKeyInput /> -->
+	
+	<!-- Show Groq API key input only in development mode -->
+	{#if !isSaaSMode()}
+		<GroqApiKeyInput />
+	{:else}
+		<div class="text-muted-foreground text-sm italic">
+			✅ API keys are embedded in this build
+		</div>
+	{/if}
+	
+	<!-- <GoogleApiKeyInput /> -->
+	<!-- <ElevenLabsApiKeyInput /> -->
 </div>

@@ -13,7 +13,8 @@ export type RecordingMode = (typeof RECORDING_MODES)[number];
 
 export const RECORDING_MODE_OPTIONS = [
 	{ desktopOnly: false, icon: '🎙️', label: 'Manual', value: 'manual' },
-	{ desktopOnly: false, icon: '🎤', label: 'Voice Activated', value: 'vad' },
+	// COMMENTED OUT: Voice Activated mode - will be added back after transformation integration
+	// { desktopOnly: false, icon: '🎤', label: 'Voice Activated', value: 'vad' },
 	// { desktopOnly: false, icon: '📁', label: 'Upload File', value: 'upload' },
 	// { label: 'Live', value: 'live', icon: '🎬', desktopOnly: false },
 	// { label: 'CPAL', value: 'cpal', icon: '🔊', desktopOnly: true },
