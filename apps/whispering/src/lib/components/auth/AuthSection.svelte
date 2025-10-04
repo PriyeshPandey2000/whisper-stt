@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/ui/button';
 	import { auth } from '$lib/stores/auth.svelte';
 	
@@ -6,31 +7,25 @@
 	
 	async function handleSignIn() {
 		try {
-			console.log('🎯 Sign In button clicked!');
-			console.log('🔍 auth object:', auth);
-			console.log('🔍 auth.signIn function:', auth.signIn);
 			await auth.signIn();
-			console.log('✅ Sign In completed');
 		} catch (error) {
-			console.error('💥 Sign in failed:', error);
+			console.error('Sign in failed:', error);
 		}
 	}
 	
 	async function handleSignUp() {
 		try {
-			console.log('🎯 Sign Up button clicked!');
-			console.log('🔍 auth object:', auth);
-			console.log('🔍 auth.signUp function:', auth.signUp);
 			await auth.signUp();
-			console.log('✅ Sign Up completed');
 		} catch (error) {
-			console.error('💥 Sign up failed:', error);
+			console.error('Sign up failed:', error);
 		}
 	}
 	
 	async function handleSignOut() {
 		try {
 			await auth.signOut();
+			// Redirect to homepage after sign out
+			goto('/');
 		} catch (error) {
 			console.error('Sign out failed:', error);
 		}
@@ -38,29 +33,27 @@
 	
 </script>
 
-<div class="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/20">
-	{#if auth.isLoading}
+{#if auth.isLoading}
+	<div class="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/20">
 		<div class="text-center">
 			<p class="text-sm text-muted-foreground mb-2">Loading authentication...</p>
 			<Button disabled size="sm">
 				Loading...
 			</Button>
 		</div>
-	{:else if auth.isAuthenticated}
-		<div class="text-center">
-			<p class="text-sm text-muted-foreground mb-2">
-				Welcome, {auth.user?.email}!
-			</p>
-			<Button onclick={handleSignOut} size="sm" variant="outline">
-				Sign Out
-			</Button>
-		</div>
-	{:else}
+	</div>
+{:else if auth.isAuthenticated}
+	<!-- Sign out button without border -->
+	<Button onclick={handleSignOut} size="sm" variant="outline">
+		Sign Out
+	</Button>
+{:else}
+	<div class="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/20">
 		<div class="text-center">
 			<p class="text-sm text-muted-foreground mb-3">
 				Sign in to sync your recordings and settings
 			</p>
-			<div class="flex gap-2">
+			<div class="flex gap-2 justify-center">
 				<Button onclick={handleSignIn} size="sm" variant="default">
 					Sign In
 				</Button>
@@ -69,5 +62,5 @@
 				</Button>
 			</div>
 		</div>
-	{/if}
-</div>
+	</div>
+{/if}

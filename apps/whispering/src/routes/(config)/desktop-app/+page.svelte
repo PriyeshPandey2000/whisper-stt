@@ -62,7 +62,7 @@
 			<div class="flex flex-col gap-3 sm:flex-row">
 				<NoteFluxButton
 					tooltipContent="Download NoteFlux Desktop App"
-					href="https://github.com/epicenter-so/epicenter/releases"
+					href="https://github.com/PriyeshPandey2000/whisper-stt/releases"
 					target="_blank"
 					rel="noopener noreferrer"
 					variant="default"

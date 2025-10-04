@@ -8,21 +8,17 @@ import { Err, Ok, type Result, tryAsync, trySync } from 'wellcrafted/result';
 export const GROQ_MODELS = [
 	{
 		description:
-			'Best accuracy (10.3% WER) and full multilingual support, including translation. Recommended for error-sensitive applications requiring multilingual support.',
-		cost: '$0.111/hour',
-		name: 'whisper-large-v3',
+			'Highest accuracy and state-of-the-art performance for multilingual transcription. Slower processing but best quality results.',
+		cost: 'Multilingual',
+		name: 'Whisper Large V3',
+		modelId: 'whisper-large-v3',
 	},
 	{
 		description:
-			'Fast multilingual model with good accuracy (12% WER). Best price-to-performance ratio for multilingual applications.',
-		cost: '$0.04/hour',
-		name: 'whisper-large-v3-turbo',
-	},
-	{
-		description:
-			'Fastest and most cost-effective model, but English-only. Recommended for English transcription where speed and cost are priorities.',
-		cost: '$0.02/hour',
-		name: 'distil-whisper-large-v3-en',
+			'Faster processing with good accuracy for multilingual transcription. Optimized for speed while maintaining quality.',
+		cost: 'Multilingual',
+		name: 'Whisper Large V3 Turbo',
+		modelId: 'whisper-large-v3-turbo',
 	},
 ] as const;
 
@@ -121,7 +117,7 @@ export function createGroqTranscriptionService() {
 							options.outputLanguage === 'auto'
 								? undefined
 								: options.outputLanguage,
-						model: options.modelName,
+						model: GROQ_MODELS.find(m => m.name === options.modelName)?.modelId || options.modelName,
 						prompt: options.prompt ? options.prompt : undefined,
 						temperature: options.temperature
 							? Number.parseFloat(options.temperature)

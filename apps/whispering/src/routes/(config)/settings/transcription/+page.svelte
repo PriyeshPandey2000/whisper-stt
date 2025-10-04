@@ -95,7 +95,7 @@
 			}}
 			renderOption={renderModelOption}
 		>
-			{#snippet description()}
+			<!-- {#snippet description()}
 				You can find more details about the models in the <Button
 					variant="link"
 					class="px-0.3 py-0.2 h-fit"
@@ -105,9 +105,9 @@
 				>
 					Groq docs
 				</Button>.
-			{/snippet}
+			{/snippet} -->
 		</LabeledSelect>
-		<GroqApiKeyInput />
+		<!-- <GroqApiKeyInput /> -->
 	{:else if settings.value['transcription.selectedTranscriptionService'] === 'Deepgram'}
 		<LabeledSelect
 			id="deepgram-model"

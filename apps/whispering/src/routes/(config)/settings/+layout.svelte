@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { confirmationDialog } from '$lib/components/ConfirmationDialog.svelte';
+	import AuthSection from '$lib/components/auth/AuthSection.svelte';
 	import { rpc } from '$lib/query';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
@@ -14,7 +16,7 @@
 		typeof value === 'string';
 	const versionPromise = (async () => {
 		const res = await fetch(
-			'https://api.github.com/repos/epicenter-so/epicenter/releases/latest',
+			'https://api.github.com/repos/PriyeshPandey2000/whisper-stt/releases/latest',
 		);
 		const { html_url: latestReleaseUrl, tag_name: latestVersion } =
 			await res.json();
@@ -69,7 +71,11 @@
 				{/await}
 			</p>
 		</div>
-		<Button
+		<div class="flex gap-2 items-center">
+			{#if auth.isAuthenticated}
+				<AuthSection />
+			{/if}
+			<Button
 			variant="outline"
 			size="sm"
 			onclick={() => {
@@ -92,6 +98,7 @@
 			<RotateCcw class="mr-2 size-4" />
 			Reset to defaults
 		</Button>
+		</div>
 	</div>
 	<Separator class="my-6" />
 	<div class="flex flex-col space-y-8 lg:flex-row lg:gap-8">

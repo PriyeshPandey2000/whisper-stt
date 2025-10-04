@@ -20,6 +20,7 @@
 		vadStateToIcons,
 	} from '$lib/constants/audio';
 	import { rpc } from '$lib/query';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import {
 		ACCEPT_AUDIO,
@@ -213,7 +214,14 @@
 	<title>NoteFlux</title>
 </svelte:head>
 
-<main class="flex flex-1 flex-col items-center justify-center gap-4">
+<main class="flex flex-1 flex-col items-center justify-center gap-4 relative">
+	<!-- Sign Out - When authenticated - Extreme top-right corner -->
+	<!-- {#if auth.isAuthenticated}
+		<div class="absolute top-4 right-4 z-10">
+			<AuthSection />
+		</div>
+	{/if} -->
+	
 	<!-- Container wrapper for consistent max-width -->
 	<div class="w-full max-w-2xl px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden flex-col items-center gap-4">
@@ -221,10 +229,17 @@
 				NoteFlux
 			</h1>
 			<p class="text-muted-foreground text-center">
-				Press shortcut → speak → get text. Free and open source ❤️
+				Press shortcut → speak → get text.
 			</p>
 		</div>
 
+		<!-- Authentication Section - Show first -->
+		{#if !auth.isAuthenticated}
+			<div class="mb-6">
+				<AuthSection />
+			</div>
+		{:else}
+		<!-- Main App Content - Only show when authenticated -->
 		<ToggleGroup.Root
 			type="single"
 			value={settings.value['recording.mode']}
@@ -382,11 +397,6 @@
 
 		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
 
-		<!-- Authentication Section -->
-		<div class="mb-6">
-			<AuthSection />
-		</div>
-
 		<div class="xs:flex hidden flex-col items-center gap-3">
 			<p class="text-foreground/75 text-center text-sm">
 				Click the microphone or press
@@ -436,7 +446,7 @@
 				{#if !window.__TAURI_INTERNALS__}
 					and {' '}<NoteFluxButton
 						tooltipContent="Check out the desktop app"
-						href="https://github.com/epicenter-so/epicenter/releases"
+						href="https://github.com/PriyeshPandey2000/whisper-stt/releases"
 						target="_blank"
 						rel="noopener noreferrer"
 						variant="link"
@@ -447,5 +457,6 @@
 				{/if} for more integrations!
 			</p> -->
 		</div>
+		{/if}
 	</div>
 </main>

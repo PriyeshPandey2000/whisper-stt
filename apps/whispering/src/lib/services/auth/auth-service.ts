@@ -43,9 +43,7 @@ class AuthService {
       });
 
       // Listen for auth changes
-      supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        
+      supabase.auth.onAuthStateChange((_, session) => {
         this.updateAuthState({
           session,
           user: session?.user ? this.mapUser(session.user) : null,
@@ -65,8 +63,6 @@ class AuthService {
         const { onOpenUrl } = await import('@tauri-apps/plugin-deep-link');
         
         await onOpenUrl((urls) => {
-          console.log('Deep link received:', urls);
-          
           for (const url of urls) {
             if (url.startsWith('noteflux://auth/callback')) {
               this.handleAuthCallback(url);
@@ -74,8 +70,6 @@ class AuthService {
             }
           }
         });
-        
-        console.log('Deep link listener initialized');
       } catch (error) {
         console.error('Failed to initialize deep links:', error);
       }
@@ -127,86 +121,60 @@ class AuthService {
 
   // Sign in by opening browser to web app
   async signIn() {
-    console.log('🔑 AuthService.signIn() called');
     try {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
       const signInUrl = `https://noteflux.app/sign-in?redirect_to=${encodeURIComponent(redirectTo)}`;
       
-      console.log('🌐 Opening browser for sign in:', signInUrl);
-      console.log('🚀 Is Tauri environment:', !!(window as any).__TAURI_INTERNALS__);
-      
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {
         // Use Tauri opener
-        console.log('📱 Using Tauri opener...');
         try {
           const openerModule = await import('@tauri-apps/plugin-opener');
-          console.log('📦 Opener module imported:', Object.keys(openerModule));
           
           if (openerModule.openUrl) {
-            console.log('✅ Using openUrl function');
             await openerModule.openUrl(signInUrl);
-            console.log('🎉 Browser opened successfully with openUrl');
           } else {
-            console.error('❌ openUrl function not found in opener module');
             throw new Error('openUrl function not available');
           }
         } catch (importError) {
-          console.error('💥 Error importing opener module:', importError);
           throw importError;
         }
       } else {
         // Use web browser API
-        console.log('🌐 Using window.open (web environment)');
         window.open(signInUrl, '_blank');
-        console.log('✅ window.open completed');
       }
     } catch (error) {
-      console.error('💥 Error in signIn:', error);
       throw new Error('Failed to open sign in page: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
 
   // Sign up by opening browser to web app
   async signUp() {
-    console.log('🔑 AuthService.signUp() called');
     try {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
       const signUpUrl = `https://noteflux.app/sign-up?redirect_to=${encodeURIComponent(redirectTo)}`;
       
-      console.log('🌐 Opening browser for sign up:', signUpUrl);
-      console.log('🚀 Is Tauri environment:', !!(window as any).__TAURI_INTERNALS__);
-      
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {
         // Use Tauri opener
-        console.log('📱 Using Tauri opener...');
         try {
           const openerModule = await import('@tauri-apps/plugin-opener');
-          console.log('📦 Opener module imported:', Object.keys(openerModule));
           
           if (openerModule.openUrl) {
-            console.log('✅ Using openUrl function');
             await openerModule.openUrl(signUpUrl);
-            console.log('🎉 Browser opened successfully with openUrl');
           } else {
-            console.error('❌ openUrl function not found in opener module');
             throw new Error('openUrl function not available');
           }
         } catch (importError) {
-          console.error('💥 Error importing opener module:', importError);
           throw importError;
         }
       } else {
         // Use web browser API
-        console.log('🌐 Using window.open (web environment)');
         window.open(signUpUrl, '_blank');
-        console.log('✅ window.open completed');
       }
     } catch (error) {
-      console.error('💥 Error in signUp:', error);
       throw new Error('Failed to open sign up page: ' + (error instanceof Error ? error.message : String(error)));
     }
   }
@@ -228,39 +196,27 @@ class AuthService {
   // Handle auth callback from web app
   async handleAuthCallback(url: string) {
     try {
-      console.log('🔗 Handling auth callback:', url);
-      
       // Extract tokens from URL
       const urlObj = new URL(url);
       const accessToken = urlObj.searchParams.get('access_token');
       const refreshToken = urlObj.searchParams.get('refresh_token');
-      
-      console.log('🎫 Extracted tokens:', { 
-        accessToken: accessToken ? `${accessToken.substring(0, 20)}...` : null,
-        refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : null
-      });
       
       if (!accessToken || !refreshToken) {
         throw new Error('Missing auth tokens in callback URL');
       }
 
       // Set the session with the tokens
-      console.log('🔧 Setting Supabase session...');
       const { data, error } = await supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
       });
 
       if (error) {
-        console.error('❌ Error setting session:', error);
         throw error;
       }
 
-      console.log('✅ Successfully authenticated:', data.user?.email);
-      console.log('👤 User data:', data.user);
       return data;
     } catch (error) {
-      console.error('💥 Error handling auth callback:', error);
       throw new Error('Failed to complete authentication: ' + (error instanceof Error ? error.message : String(error)));
     }
   }

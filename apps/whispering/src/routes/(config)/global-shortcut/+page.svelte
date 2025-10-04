@@ -20,7 +20,7 @@
 		<div class="flex flex-col gap-2 md:flex-row">
 			<NoteFluxButton
 				tooltipContent="Check out the Chrome Extension"
-				href="https://github.com/epicenter-so/epicenter/releases"
+				href="https://github.com/PriyeshPandey2000/whisper-stt/releases"
 				target="_blank"
 				rel="noopener noreferrer"
 				variant="default"
