@@ -111,7 +111,7 @@ jobs:
           else
             echo "No release notes file found at $RELEASE_FILE, using fallback"
             # Fallback message if no release file exists
-            RELEASE_NOTES="Whispering ${{ github.ref_name }} is now available. Check GitHub for the full changelog."
+            RELEASE_NOTES="noteflux ${{ github.ref_name }} is now available. Check GitHub for the full changelog."
           fi
           
           # Save output for use in later steps
@@ -155,7 +155,7 @@ jobs:
           tagName: ${{ github.ref_name }}
           
           # Release title shown on GitHub
-          releaseName: 'Whispering ${{ github.ref_name }}'
+          releaseName: 'noteflux ${{ github.ref_name }}'
           
           # Release description from our processed release notes
           # Full release notes for GitHub release page
