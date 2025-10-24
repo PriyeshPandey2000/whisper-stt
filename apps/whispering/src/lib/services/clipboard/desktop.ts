@@ -22,28 +22,45 @@ export function createClipboardServiceDesktop(): ClipboardService {
 				try: () => writeText(text),
 			}),
 
-		typeAtCursor: (text) =>
-			tryAsync({
-				mapErr: (error) =>
-					ClipboardServiceErr({
+		typeAtCursor: (text) => {
+			console.log('🚀 [CLIPBOARD] typeAtCursor called with text length:', text.length);
+			return tryAsync({
+				mapErr: (error) => {
+					console.error('❌ [CLIPBOARD] typeAtCursor failed:', error);
+					return ClipboardServiceErr({
 						cause: error,
 						context: { text },
 						message:
 							'There was an error typing text at cursor position. Please try pasting manually with Cmd/Ctrl+V.',
-					}),
-				try: () => invoke<void>('write_text', { text }),
-			}),
+					});
+				},
+				try: async () => {
+					console.log('⌨️ [CLIPBOARD] Invoking write_text command');
+					const result = await invoke<void>('write_text', { text });
+					console.log('✅ [CLIPBOARD] write_text completed successfully');
+					return result;
+				},
+			});
+		},
 
 		pasteFromClipboard: async () => {
+			console.log('🚀 [CLIPBOARD] pasteFromClipboard called');
 			// Try to paste using keyboard shortcut
 			const { error: pasteError } = await tryAsync({
-				mapErr: (error) =>
-					ClipboardServiceErr({
+				mapErr: (error) => {
+					console.error('❌ [CLIPBOARD] pasteFromClipboard failed:', error);
+					return ClipboardServiceErr({
 						cause: error,
 						message:
 							'There was an error simulating the paste keyboard shortcut. Please try pasting manually with Cmd/Ctrl+V.',
-					}),
-				try: () => invoke<void>('paste'),
+					});
+				},
+				try: async () => {
+					console.log('📋 [CLIPBOARD] Invoking paste command');
+					const result = await invoke<void>('paste');
+					console.log('✅ [CLIPBOARD] paste completed successfully');
+					return result;
+				},
 			});
 
 			// If paste succeeded, we're done

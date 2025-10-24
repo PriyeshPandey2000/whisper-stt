@@ -31,6 +31,7 @@ let vadDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
 const startManualRecording = defineMutation({
 	mutationKey: ['commands', 'startManualRecording'] as const,
 	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
+		console.log('🎙️ [COMMAND] startManualRecording called with initiatedVia:', initiatedVia);
 		const toastId = nanoid();
 		notify.loading.execute({
 			title: '🎙️ Preparing to record...',
@@ -371,6 +372,7 @@ export const commands = {
 	toggleManualRecording: defineMutation({
 		mutationKey: ['commands', 'toggleManualRecording'] as const,
 		resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
+			console.log('🔄 [COMMAND] toggleManualRecording called with initiatedVia:', initiatedVia);
 			const { data: currentRecordingId, error: getRecordingIdError } =
 				await recorder.getCurrentRecordingId.fetch();
 			if (getRecordingIdError) {

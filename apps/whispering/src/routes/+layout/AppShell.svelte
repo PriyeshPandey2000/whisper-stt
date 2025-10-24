@@ -23,7 +23,6 @@
 		syncLocalShortcutsWithSettings,
 	} from './register-commands';
 	import { registerOnboarding } from './register-onboarding';
-	import { syncIconWithRecorderState } from './syncIconWithRecorderState.svelte';
 
 	const getRecorderStateQuery = createQuery(
 		rpc.recorder.getRecorderState.options,
@@ -48,7 +47,6 @@
 
 	if (window.__TAURI_INTERNALS__) {
 		syncWindowAlwaysOnTopWithRecorderState();
-		syncIconWithRecorderState();
 	}
 
 	$effect(() => {

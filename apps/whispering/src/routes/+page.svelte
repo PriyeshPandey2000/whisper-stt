@@ -234,11 +234,11 @@
 		</div>
 
 		<!-- Authentication Section - Show first -->
-		{#if !auth.isAuthenticated}
+		<!-- {#if !auth.isAuthenticated}
 			<div class="mb-6">
 				<AuthSection />
 			</div>
-		{:else}
+		{:else} -->
 		<!-- Main App Content - Only show when authenticated -->
 		<ToggleGroup.Root
 			type="single"
@@ -432,31 +432,7 @@
 					to start recording anywhere.
 				</p>
 			{/if}
-			<!-- <p class="text-muted-foreground text-center text-sm font-light">
-				Check out the {' '}<NoteFluxButton
-					tooltipContent="Check out the Chrome Extension"
-					href="https://chromewebstore.google.com/detail/noteflux/oilbfihknpdbpfkcncojikmooipnlglo"
-					target="_blank"
-					rel="noopener noreferrer"
-					variant="link"
-					size="inline"
-				>
-					extension
-				</NoteFluxButton>{' '}
-				{#if !window.__TAURI_INTERNALS__}
-					and {' '}<NoteFluxButton
-						tooltipContent="Check out the desktop app"
-						href="https://github.com/PriyeshPandey2000/whisper-stt/releases"
-						target="_blank"
-						rel="noopener noreferrer"
-						variant="link"
-						size="inline"
-					>
-						app
-					</NoteFluxButton>{' '}
-				{/if} for more integrations!
-			</p> -->
 		</div>
-		{/if}
+		<!-- {/if} -->
 	</div>
 </main>

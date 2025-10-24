@@ -75,33 +75,63 @@ pub async fn init_recording_session(
 }
 
 #[tauri::command]
-pub async fn start_recording(state: State<'_, AppData>) -> Result<()> {
-    info!("Starting recording");
-    let mut recorder = state
-        .recorder
-        .lock()
-        .map_err(|e| format!("Failed to lock recorder: {}", e))?;
-    recorder.start_recording()
+pub async fn start_recording(
+    state: State<'_, AppData>, 
+    app_handle: tauri::AppHandle
+) -> Result<()> {
+    let result = {
+        let mut recorder = state
+            .recorder
+            .lock()
+            .map_err(|e| format!("Failed to lock recorder: {}", e))?;
+        recorder.start_recording()
+    };
+    
+    // Show recording indicator if recording started successfully
+    if result.is_ok() {
+        // Show recording overlay
+        let _ = show_recording_overlay(app_handle.clone()).await;
+    }
+    
+    result
 }
 
 #[tauri::command]
-pub async fn stop_recording(state: State<'_, AppData>) -> Result<AudioRecording> {
-    info!("Stopping recording");
-    let mut recorder = state
-        .recorder
-        .lock()
-        .map_err(|e| format!("Failed to lock recorder: {}", e))?;
-    recorder.stop_recording()
+pub async fn stop_recording(
+    state: State<'_, AppData>,
+    app_handle: tauri::AppHandle
+) -> Result<AudioRecording> {
+    let result = {
+        let mut recorder = state
+            .recorder
+            .lock()
+            .map_err(|e| format!("Failed to lock recorder: {}", e))?;
+        recorder.stop_recording()
+    };
+    
+    // Hide overlay
+    let _ = hide_recording_overlay(app_handle.clone()).await;
+    
+    result
 }
 
 #[tauri::command]
-pub async fn cancel_recording(state: State<'_, AppData>) -> Result<()> {
-    info!("Cancelling recording");
-    let mut recorder = state
-        .recorder
-        .lock()
-        .map_err(|e| format!("Failed to lock recorder: {}", e))?;
-    recorder.cancel_recording()
+pub async fn cancel_recording(
+    state: State<'_, AppData>,
+    app_handle: tauri::AppHandle
+) -> Result<()> {
+    let result = {
+        let mut recorder = state
+            .recorder
+            .lock()
+            .map_err(|e| format!("Failed to lock recorder: {}", e))?;
+        recorder.cancel_recording()
+    };
+    
+    // Hide overlay when recording is cancelled
+    let _ = hide_recording_overlay(app_handle.clone()).await;
+    
+    result
 }
 
 #[tauri::command]
@@ -123,3 +153,22 @@ pub async fn get_current_recording_id(state: State<'_, AppData>) -> Result<Optio
         .map_err(|e| format!("Failed to lock recorder: {}", e))?;
     Ok(recorder.get_current_recording_id())
 }
+
+#[tauri::command]
+pub async fn show_recording_overlay(app_handle: tauri::AppHandle) -> Result<()> {
+    if let Some(window) = app_handle.get_webview_window("recording-overlay") {
+        window.show().map_err(|e| format!("Failed to show overlay: {}", e))?;
+        Ok(())
+    } else {
+        Err("Overlay window not found".to_string())
+    }
+}
+
+#[tauri::command]
+pub async fn hide_recording_overlay(app_handle: tauri::AppHandle) -> Result<()> {
+    if let Some(window) = app_handle.get_webview_window("recording-overlay") {
+        window.hide().map_err(|e| format!("Failed to hide overlay: {}", e))?;
+    }
+    Ok(())
+}
+

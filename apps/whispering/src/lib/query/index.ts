@@ -14,7 +14,6 @@ import { transcription } from './transcription';
 import { transformationRuns } from './transformation-runs';
 import { transformations } from './transformations';
 import { transformer } from './transformer';
-import { tray } from './tray';
 import { vadRecorder } from './vad-recorder';
 
 /**
@@ -37,6 +36,5 @@ export const rpc = {
 	transformationRuns,
 	transformations,
 	transformer,
-	tray,
 	vadRecorder,
 };

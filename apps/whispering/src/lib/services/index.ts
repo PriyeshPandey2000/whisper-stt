@@ -12,7 +12,6 @@ import { RecorderServiceLive } from './recorder';
 import { PlaySoundServiceLive } from './sound';
 import { ToastServiceLive } from './toast';
 import * as transcriptions from './transcription';
-import { TrayIconServiceLive } from './tray';
 import { asDeviceIdentifier } from './types';
 import * as usageTracking from './usage-tracking';
 import { VadServiceLive } from './vad-recorder';
@@ -36,7 +35,6 @@ export {
 	PlaySoundServiceLive as sound,
 	ToastServiceLive as toast,
 	transcriptions,
-	TrayIconServiceLive as tray,
 	usageTracking,
 	VadServiceLive as vad,
 };

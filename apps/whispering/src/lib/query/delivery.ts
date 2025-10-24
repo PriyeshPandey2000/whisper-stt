@@ -156,16 +156,32 @@ export const delivery = {
 			}
 
 			// Try to paste at cursor - use different methods based on how recording was initiated
+			console.log('🎯 [DELIVERY] Starting paste operation, initiatedVia:', initiatedVia);
+			
+			// No delay needed since we use notifications instead of overlays
+			
 			let pasteError;
 			if (initiatedVia === 'global-shortcut') {
+				console.log('⌨️ [DELIVERY] Using typeAtCursor for global shortcut');
 				// For global shortcuts, type directly at cursor position to ensure it works
 				// regardless of focus changes during recording
 				const { error } = await rpc.clipboard.typeAtCursor.execute({ text });
 				pasteError = error;
+				if (pasteError) {
+					console.error('❌ [DELIVERY] typeAtCursor failed:', pasteError);
+				} else {
+					console.log('✅ [DELIVERY] typeAtCursor succeeded');
+				}
 			} else {
+				console.log('📋 [DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
 				pasteError = error;
+				if (pasteError) {
+					console.error('❌ [DELIVERY] pasteFromClipboard failed:', pasteError);
+				} else {
+					console.log('✅ [DELIVERY] pasteFromClipboard succeeded');
+				}
 			}
 
 			if (pasteError) {
@@ -329,16 +345,32 @@ export const delivery = {
 			}
 
 			// Try to paste at cursor - use different methods based on how recording was initiated
+			console.log('🎯 [DELIVERY] Starting paste operation, initiatedVia:', initiatedVia);
+			
+			// No delay needed since we use notifications instead of overlays
+			
 			let pasteError;
 			if (initiatedVia === 'global-shortcut') {
+				console.log('⌨️ [DELIVERY] Using typeAtCursor for global shortcut');
 				// For global shortcuts, type directly at cursor position to ensure it works
 				// regardless of focus changes during recording
 				const { error } = await rpc.clipboard.typeAtCursor.execute({ text });
 				pasteError = error;
+				if (pasteError) {
+					console.error('❌ [DELIVERY] typeAtCursor failed:', pasteError);
+				} else {
+					console.log('✅ [DELIVERY] typeAtCursor succeeded');
+				}
 			} else {
+				console.log('📋 [DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
 				pasteError = error;
+				if (pasteError) {
+					console.error('❌ [DELIVERY] pasteFromClipboard failed:', pasteError);
+				} else {
+					console.log('✅ [DELIVERY] pasteFromClipboard succeeded');
+				}
 			}
 
 			if (pasteError) {

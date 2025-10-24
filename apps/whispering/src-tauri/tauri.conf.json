@@ -9,6 +9,7 @@
 		"active": true,
 		"category": "Productivity",
 		"targets": "all",
+		"resources": ["recording-overlay.html"],
 		"icon": [
 			"icons/32x32.png",
 			"icons/128x128.png",
@@ -50,6 +51,7 @@
 		}
 	},
 	"app": {
+		"macOSPrivateApi": true,
 		"windows": [
 			{
 				"resizable": true,
@@ -57,7 +59,8 @@
 				"width": 800,
 				"height": 600,
 				"minHeight": 84,
-				"minWidth": 72
+				"minWidth": 72,
+				"transparent": true
 			}
 		],
 		"security": {
