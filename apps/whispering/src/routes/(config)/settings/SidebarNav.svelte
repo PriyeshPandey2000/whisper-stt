@@ -11,12 +11,12 @@
 		{ title: 'Transcription', href: '/settings/transcription' },
 		// { title: 'API Keys', href: '/settings/api-keys' },
 		{ title: 'Sound', href: '/settings/sound' },
-		{
-			title: 'Shortcuts',
-			activePathPrefix: '/settings/shortcuts',
-			href: '/settings/shortcuts/local',
-		},
-		{ title: 'Privacy & Analytics', href: '/settings/analytics' },
+		// {
+		// 	title: 'Shortcuts',
+		// 	activePathPrefix: '/settings/shortcuts',
+		// 	href: '/settings/shortcuts/local',
+		// },
+		// { title: 'Privacy & Analytics', href: '/settings/analytics' },
 	] satisfies {
 		/**
 		 * If provided, the item is considered active if the current pathname starts with this prefix.

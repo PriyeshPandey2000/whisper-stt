@@ -41,11 +41,10 @@ import {
 	DEFAULT_BITRATE_KBPS,
 	RECORDING_MODES,
 } from '$lib/constants/audio';
-import { CommandOrAlt, CommandOrControl } from '$lib/constants/keyboard';
 import { SUPPORTED_LANGUAGES } from '$lib/constants/languages';
 import { TRANSCRIPTION_SERVICE_IDS } from '$lib/constants/transcription';
 import { ALWAYS_ON_TOP_VALUES } from '$lib/constants/ui';
-import { asDeviceIdentifier, type DeviceIdentifier } from '$lib/services/types';
+import { asDeviceIdentifier } from '$lib/services/types';
 import { z, type ZodBoolean, type ZodString } from 'zod';
 
 /**
@@ -76,14 +75,14 @@ import { z, type ZodBoolean, type ZodString } from 'zod';
  */
 export const settingsSchema = z.object({
 	...({
-		'sound.playOn.manual-cancel': z.boolean().default(true),
-		'sound.playOn.manual-start': z.boolean().default(true),
-		'sound.playOn.manual-stop': z.boolean().default(true),
-		'sound.playOn.transcriptionComplete': z.boolean().default(true),
-		'sound.playOn.transformationComplete': z.boolean().default(true),
-		'sound.playOn.vad-capture': z.boolean().default(true),
-		'sound.playOn.vad-start': z.boolean().default(true),
-		'sound.playOn.vad-stop': z.boolean().default(true),
+		'sound.playOn.manual-cancel': z.boolean().default(false),
+		'sound.playOn.manual-start': z.boolean().default(false),
+		'sound.playOn.manual-stop': z.boolean().default(false),
+		'sound.playOn.transcriptionComplete': z.boolean().default(false),
+		'sound.playOn.transformationComplete': z.boolean().default(false),
+		'sound.playOn.vad-capture': z.boolean().default(false),
+		'sound.playOn.vad-start': z.boolean().default(false),
+		'sound.playOn.vad-stop': z.boolean().default(false),
 	} satisfies Record<
 		`sound.playOn.${NoteFluxSoundNames}`,
 		z.ZodDefault<ZodBoolean>
@@ -149,7 +148,7 @@ export const settingsSchema = z.object({
 	'transcription.groq.model': z
 		.string()
 		.transform((val) => val as GroqModel['name'] | (string & {}))
-		.default('whisper-large-v3-turbo' satisfies GroqModel['name']),
+		.default('Whisper Large V3 Turbo' satisfies GroqModel['name']),
 	// Service-specific settings
 	'transcription.openai.model': z
 		.string()
@@ -194,11 +193,11 @@ export const settingsSchema = z.object({
 		'shortcuts.global.cancelManualRecording': z
 			.string()
 			.nullable()
-			.default(`${CommandOrControl}+Shift+'`),
+			.default(null),
 		'shortcuts.global.pushToTalk': z
 			.string()
 			.nullable()
-			.default(`${CommandOrAlt}+Shift+D`),
+			.default(null),
 		'shortcuts.global.startManualRecording': z
 			.string()
 			.nullable()
@@ -209,7 +208,7 @@ export const settingsSchema = z.object({
 		'shortcuts.global.toggleManualRecording': z
 			.string()
 			.nullable()
-			.default(`${CommandOrControl}+Shift+;`),
+			.default('Option+Space'),
 		'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.global.${Command['id']}`,

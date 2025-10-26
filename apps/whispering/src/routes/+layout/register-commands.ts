@@ -78,6 +78,7 @@ export function resetLocalShortcutsToDefaultIfDuplicates(): boolean {
 
 /**
  * Synchronizes global keyboard shortcuts with the current settings.
+ * - Checks accessibility permissions on macOS before registering shortcuts
  * - Registers shortcuts that have key combinations defined in settings
  * - Unregisters shortcuts that don't have key combinations defined
  * - Shows error toast if any registration/unregistration fails
