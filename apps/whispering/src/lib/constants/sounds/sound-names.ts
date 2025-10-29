@@ -7,7 +7,8 @@ export type NoteFluxSoundNames =
 	| 'manual-start'
 	| 'manual-stop'
 	| 'transcriptionComplete'
-	| 'transformationComplete'
-	| 'vad-capture'
-	| 'vad-start'
-	| 'vad-stop';
+	| 'transformationComplete';
+	// VAD-related sound names (commented out since VAD mode is disabled)
+	// | 'vad-capture'
+	// | 'vad-start'
+	// | 'vad-stop';

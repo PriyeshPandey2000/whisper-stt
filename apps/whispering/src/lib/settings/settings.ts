@@ -76,14 +76,15 @@ import { z, type ZodBoolean, type ZodString } from 'zod';
  */
 export const settingsSchema = z.object({
 	...({
-		'sound.playOn.manual-cancel': z.boolean().default(true),
-		'sound.playOn.manual-start': z.boolean().default(true),
-		'sound.playOn.manual-stop': z.boolean().default(true),
-		'sound.playOn.transcriptionComplete': z.boolean().default(true),
-		'sound.playOn.transformationComplete': z.boolean().default(true),
-		'sound.playOn.vad-capture': z.boolean().default(true),
-		'sound.playOn.vad-start': z.boolean().default(true),
-		'sound.playOn.vad-stop': z.boolean().default(true),
+		'sound.playOn.manual-cancel': z.boolean().default(false),
+		'sound.playOn.manual-start': z.boolean().default(false),
+		'sound.playOn.manual-stop': z.boolean().default(false),
+		'sound.playOn.transcriptionComplete': z.boolean().default(false),
+		'sound.playOn.transformationComplete': z.boolean().default(false),
+		// VAD-related sound settings (commented out since VAD mode is disabled)
+		// 'sound.playOn.vad-capture': z.boolean().default(false),
+		// 'sound.playOn.vad-start': z.boolean().default(false),
+		// 'sound.playOn.vad-stop': z.boolean().default(false),
 	} satisfies Record<
 		`sound.playOn.${NoteFluxSoundNames}`,
 		z.ZodDefault<ZodBoolean>
@@ -149,7 +150,7 @@ export const settingsSchema = z.object({
 	'transcription.groq.model': z
 		.string()
 		.transform((val) => val as GroqModel['name'] | (string & {}))
-		.default('whisper-large-v3-turbo' satisfies GroqModel['name']),
+		.default('Whisper Large V3 Turbo' satisfies GroqModel['name']),
 	// Service-specific settings
 	'transcription.openai.model': z
 		.string()
