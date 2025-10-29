@@ -41,11 +41,10 @@ import {
 	DEFAULT_BITRATE_KBPS,
 	RECORDING_MODES,
 } from '$lib/constants/audio';
-import { CommandOrAlt, CommandOrControl } from '$lib/constants/keyboard';
 import { SUPPORTED_LANGUAGES } from '$lib/constants/languages';
 import { TRANSCRIPTION_SERVICE_IDS } from '$lib/constants/transcription';
 import { ALWAYS_ON_TOP_VALUES } from '$lib/constants/ui';
-import { asDeviceIdentifier, type DeviceIdentifier } from '$lib/services/types';
+import { asDeviceIdentifier } from '$lib/services/types';
 import { z, type ZodBoolean, type ZodString } from 'zod';
 
 /**
@@ -195,11 +194,11 @@ export const settingsSchema = z.object({
 		'shortcuts.global.cancelManualRecording': z
 			.string()
 			.nullable()
-			.default(`${CommandOrControl}+Shift+'`),
+			.default(null),
 		'shortcuts.global.pushToTalk': z
 			.string()
 			.nullable()
-			.default(`${CommandOrAlt}+Shift+D`),
+			.default(null),
 		'shortcuts.global.startManualRecording': z
 			.string()
 			.nullable()
@@ -210,7 +209,7 @@ export const settingsSchema = z.object({
 		'shortcuts.global.toggleManualRecording': z
 			.string()
 			.nullable()
-			.default(`${CommandOrControl}+Shift+;`),
+			.default('Option+Space'),
 		'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.global.${Command['id']}`,
