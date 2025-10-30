@@ -52,16 +52,16 @@
 			label: 'Toggle dark mode',
 			type: 'theme',
 		},
-		...(window.__TAURI_INTERNALS__
-			? ([
-					{
-						action: () => getCurrentWindow().setSize(new LogicalSize(72, 84)),
-						icon: Minimize2Icon,
-						label: 'Minimize',
-						type: 'button',
-					},
-				] as const)
-			: []),
+		// ...(window.__TAURI_INTERNALS__
+		// 	? ([
+		// 			{
+		// 				action: () => getCurrentWindow().setSize(new LogicalSize(72, 84)),
+		// 				icon: Minimize2Icon,
+		// 				label: 'Minimize',
+		// 				type: 'button',
+		// 			},
+		// 		] as const)
+		// 	: []),
 	] satisfies NavItem[];
 
 	type BaseNavItem = {

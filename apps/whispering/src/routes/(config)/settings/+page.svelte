@@ -110,7 +110,7 @@
 		/>
 	{/if}
 
-	{#if window.__TAURI_INTERNALS__}
+	<!-- {#if window.__TAURI_INTERNALS__}
 		<LabeledSelect
 			id="always-on-top"
 			label="Always On Top"
@@ -121,5 +121,5 @@
 			}}
 			placeholder="Select a language"
 		/>
-	{/if}
+	{/if} -->
 </div>

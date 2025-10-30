@@ -234,11 +234,11 @@
 		</div>
 
 		<!-- Authentication Section - Show first -->
-		<!-- {#if !auth.isAuthenticated}
+		{#if !auth.isAuthenticated}
 			<div class="mb-6">
 				<AuthSection />
 			</div>
-		{:else} -->
+		{:else}
 		<!-- Main App Content - Only show when authenticated -->
 		<ToggleGroup.Root
 			type="single"
@@ -398,7 +398,7 @@
 		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
 
 		<div class="xs:flex hidden flex-col items-center gap-3">
-			<p class="text-foreground/75 text-center text-sm">
+			<!-- <p class="text-foreground/75 text-center text-sm">
 				Click the microphone or press
 				{' '}<NoteFluxButton
 					tooltipContent="Go to local shortcut in settings"
@@ -413,7 +413,7 @@
 					</kbd>
 				</NoteFluxButton>{' '}
 				to start recording here.
-			</p>
+			</p> -->
 			{#if window.__TAURI_INTERNALS__}
 				<p class="text-foreground/75 text-sm">
 					Press
@@ -433,6 +433,6 @@
 				</p>
 			{/if}
 		</div>
-		<!-- {/if} -->
+		{/if}
 	</div>
 </main>

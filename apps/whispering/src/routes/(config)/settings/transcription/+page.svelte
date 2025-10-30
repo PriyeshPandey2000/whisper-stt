@@ -41,7 +41,7 @@
 	</div>
 	<Separator />
 
-	<LabeledSelect
+	<!-- <LabeledSelect
 		id="selected-transcription-service"
 		label="Transcription Service"
 		items={TRANSCRIPTION_SERVICE_OPTIONS}
@@ -50,7 +50,7 @@
 			settings.updateKey('transcription.selectedTranscriptionService', selected);
 		}}
 		placeholder="Select a transcription service"
-	/>
+	/> -->
 
 	{#if settings.value['transcription.selectedTranscriptionService'] === 'OpenAI'}
 		<LabeledSelect
@@ -83,7 +83,7 @@
 	{:else if settings.value['transcription.selectedTranscriptionService'] === 'Groq'}
 		<LabeledSelect
 			id="groq-model"
-			label="Groq Model"
+			label="Model"
 			items={GROQ_MODELS.map((model) => ({
 				label: model.name,
 				value: model.name,

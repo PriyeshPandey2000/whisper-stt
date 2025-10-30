@@ -93,7 +93,7 @@ export const settingsSchema = z.object({
 	'analytics.enabled': z.boolean().default(true),
 	
 	// Notifications settings
-	'notifications.enabled': z.boolean().default(true),
+	'notifications.enabled': z.boolean().default(false),
 	'apiKeys.anthropic': z.string().default(''),
 	'apiKeys.deepgram': z.string().default(''),
 	'apiKeys.elevenlabs': z.string().default(''),
