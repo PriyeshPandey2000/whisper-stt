@@ -144,6 +144,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}  # App-specific password
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          
+          # Don't wait for notarization to complete (saves GitHub Actions minutes)
+          TAURI_NOTARIZE_WAIT: "false"
 
         with:
           # Path to the Tauri project (where tauri.conf.json is located)
