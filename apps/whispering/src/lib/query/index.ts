@@ -4,6 +4,7 @@ import { clipboard } from './clipboard';
 import { commands } from './commands';
 import { delivery } from './delivery';
 import { download } from './download';
+import { feedback } from './feedback';
 import { notify } from './notify';
 import { recorder } from './recorder';
 import { recordings } from './recordings';
@@ -26,6 +27,7 @@ export const rpc = {
 	commands,
 	delivery,
 	download,
+	feedback,
 	notify,
 	recorder,
 	recordings,

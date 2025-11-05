@@ -3,12 +3,16 @@ import {
 	getSelectedTranscriptionService,
 	isTranscriptionServiceConfigured,
 } from '$lib/settings/transcription-validation';
+import { setupDefaultTransformation } from './setup-default-transformation';
 
 /**
  * Checks if the user has configured the necessary API keys/settings for their selected transcription service.
  * Shows an onboarding toast if configuration is missing.
+ * Also sets up default transformation for new users.
  */
 export function registerOnboarding() {
+	// Set up default transformation for new users
+	setupDefaultTransformation();
 	const selectedService = getSelectedTranscriptionService();
 
 	if (!selectedService) {

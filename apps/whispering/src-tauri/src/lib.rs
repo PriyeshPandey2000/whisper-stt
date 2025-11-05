@@ -310,6 +310,16 @@ pub async fn run() {
                 _ => {}
             }
         }
+        // Handle window events
+        tauri::RunEvent::WindowEvent { label, event, .. } => {
+            match event {
+                tauri::WindowEvent::CloseRequested { .. } if label == "main" => {
+                    // When user clicks X button, exit the entire app (including tray icon)
+                    handler.exit(0);
+                }
+                _ => {}
+            }
+        }
         // Handle menu events separately in Tauri 2.0
         tauri::RunEvent::MenuEvent(menu_event) => {
             match menu_event.id().as_ref() {

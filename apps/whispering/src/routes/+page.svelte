@@ -223,13 +223,13 @@
 	{/if} -->
 	
 	<!-- Container wrapper for consistent max-width -->
-	<div class="w-full max-w-2xl px-4 flex flex-col items-center gap-4">
+	<div class="w-full max-w-4xl px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden flex-col items-center gap-4">
 			<h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
 				NoteFlux
 			</h1>
 			<p class="text-muted-foreground text-center">
-				Press shortcut → speak → get text.
+				Press shortcut → speak → get error-free, formatted text.
 			</p>
 		</div>
 
@@ -240,7 +240,8 @@
 			</div>
 		{:else}
 		<!-- Main App Content - Only show when authenticated -->
-		<ToggleGroup.Root
+		<!-- Hidden toggle group - commenting out the UI but keeping the functionality -->
+		<!-- <ToggleGroup.Root
 			type="single"
 			value={settings.value['recording.mode']}
 			class="w-full"
@@ -258,146 +259,109 @@
 					{option.label}
 				</ToggleGroup.Item>
 			{/each}
-		</ToggleGroup.Root>
+		</ToggleGroup.Root> -->
 
-		<div class="w-full grid grid-cols-[1fr_auto_1fr] items-end gap-2 pt-1">
-			<!-- Empty left column for centering -->
-			<div></div>
-			{#if settings.value['recording.mode'] === 'manual'}
-				<!-- Center column: Recording button -->
-				<NoteFluxButton
-					tooltipContent={getRecorderStateQuery.data === 'IDLE'
-						? 'Start recording'
-						: 'Stop recording'}
-					onclick={commandCallbacks.toggleManualRecording}
-					variant="ghost"
-					class="shrink-0 size-32 sm:size-36 lg:size-40 xl:size-44 transform items-center justify-center overflow-hidden duration-300 ease-in-out"
-				>
-					<span
-						style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
-						class="text-[100px] sm:text-[110px] lg:text-[120px] xl:text-[130px] leading-none"
-					>
-						{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
-					</span>
-				</NoteFluxButton>
-				<!-- Right column: Selectors -->
-				<div class="flex justify-end items-center gap-1.5 mb-2">
-					{#if getRecorderStateQuery.data === 'RECORDING'}
-						<NoteFluxButton
-							tooltipContent="Cancel recording"
-							onclick={commandCallbacks.cancelManualRecording}
-							variant="ghost"
-							size="icon"
-							style="view-transition-name: cancel-icon;"
-						>
-							🚫
-						</NoteFluxButton>
-					{:else}
-						<DeviceSelector />
-						<TranscriptionSelector />
-						<TransformationSelector />
-					{/if}
-				</div>
-			{:else if settings.value['recording.mode'] === 'vad'}
-				<!-- Center column: Recording button -->
-				<NoteFluxButton
-					tooltipContent={getVadStateQuery.data === 'IDLE'
-						? 'Start voice activated session'
-						: 'Stop voice activated session'}
-					onclick={commandCallbacks.toggleVadRecording}
-					variant="ghost"
-					class="shrink-0 size-32 sm:size-36 lg:size-40 xl:size-44 transform items-center justify-center overflow-hidden duration-300 ease-in-out"
-				>
-					<span
-						style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
-						class="text-[100px] sm:text-[110px] lg:text-[120px] xl:text-[130px] leading-none"
-					>
-						{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
-					</span>
-				</NoteFluxButton>
-				<!-- Right column: Selectors -->
-				<div class="flex justify-end items-center gap-1.5 mb-2">
-					{#if getVadStateQuery.data === 'IDLE'}
-						<DeviceSelector />
-						<TranscriptionSelector />
-						<TransformationSelector />
-					{/if}
-				</div>
-			<!-- {:else if settings.value['recording.mode'] === 'upload'} -->
-				<!-- Full width spanning all columns -->
-				<!-- <div class="col-span-3 flex flex-col items-center gap-4 w-full">
-					<FileDropZone
-						accept="{ACCEPT_AUDIO}, {ACCEPT_VIDEO}"
-						maxFiles={10}
-						maxFileSize={25 * MEGABYTE}
-						onUpload={(files) => {
-							if (files.length > 0) {
-								rpc.commands.uploadRecordings.execute({ files });
-							}
-						}}
-						onFileRejected={({ file, reason }) => {
-							rpc.notify.error.execute({
-								title: '❌ File rejected',
-								description: `${file.name}: ${reason}`,
-							});
-						}}
-						class="h-32 sm:h-36 lg:h-40 xl:h-44 w-full"
-					/>
-					<div class="flex items-center gap-1.5">
-						<TranscriptionSelector />
-						<TransformationSelector />
-					</div>
-				</div> -->
-			{/if}
-		</div>
-
-		<div class="xxs:flex hidden w-full flex-col items-center gap-2">
-			<div class="flex w-full items-center gap-2">
-				<div class="flex-1">
-					<TranscribedTextDialog
-						recordingId={latestRecording.id}
-						transcribedText={latestRecording.transcriptionStatus ===
-						'TRANSCRIBING'
-							? '...'
-							: latestRecording.transcribedText}
-						rows={1}
-					/>
-				</div>
-				<CopyToClipboardButton
-					contentDescription="transcribed text"
-					textToCopy={latestRecording.transcribedText}
-					viewTransitionName={getRecordingTransitionId({
-						propertyName: 'transcribedText',
-						recordingId: latestRecording.id,
-					})}
-					size="default"
-					variant="secondary"
-					disabled={latestRecording.transcriptionStatus === 'TRANSCRIBING'}
-				>
-					{#if latestRecording.transcriptionStatus === 'TRANSCRIBING'}
-						<Loader2Icon class="size-6 animate-spin" />
-					{:else}
-						<ClipboardIcon class="size-6" />
-					{/if}
-				</CopyToClipboardButton>
+		<!-- Main Content Area: Large text display with recording controls -->
+		<div class="w-full flex flex-col gap-4">
+			<!-- Large Text Display Area -->
+			<div class="w-full">
+				<TranscribedTextDialog
+					recordingId={latestRecording.id}
+					transcribedText={latestRecording.transcriptionStatus === 'TRANSCRIBING'
+						? '...'
+						: latestRecording.transcribedText}
+					rows={16}
+				/>
 			</div>
 
-			<!-- {#if blobUrl}
-				<audio
-					style="view-transition-name: {getRecordingTransitionId({
-						propertyName: 'blob',
-						recordingId: latestRecording.id,
-					})}"
-					src={blobUrl}
-					controls
-					class="h-8 w-full"
-				></audio>
-			{/if} -->
+			<!-- Recording Controls Row -->
+			<div class="flex items-center justify-between gap-4">
+				<!-- Left: Recording Buttons -->
+				<div class="flex items-center gap-2">
+					{#if settings.value['recording.mode'] === 'manual'}
+						<NoteFluxButton
+							tooltipContent={getRecorderStateQuery.data === 'IDLE'
+								? 'Start recording'
+								: 'Stop recording'}
+							onclick={commandCallbacks.toggleManualRecording}
+							variant="ghost"
+							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out"
+						>
+							<span
+								style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
+								class="text-2xl leading-none"
+							>
+								{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
+							</span>
+						</NoteFluxButton>
+						{#if getRecorderStateQuery.data === 'RECORDING'}
+							<NoteFluxButton
+								tooltipContent="Cancel recording"
+								onclick={commandCallbacks.cancelManualRecording}
+								variant="ghost"
+								size="icon"
+								style="view-transition-name: cancel-icon;"
+							>
+								🚫
+							</NoteFluxButton>
+						{/if}
+					{:else if settings.value['recording.mode'] === 'vad'}
+						<NoteFluxButton
+							tooltipContent={getVadStateQuery.data === 'IDLE'
+								? 'Start voice activated session'
+								: 'Stop voice activated session'}
+							onclick={commandCallbacks.toggleVadRecording}
+							variant="ghost"
+							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out"
+						>
+							<span
+								style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
+								class="text-2xl leading-none"
+							>
+								{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
+							</span>
+						</NoteFluxButton>
+					{/if}
+
+					<!-- Copy Button -->
+					<CopyToClipboardButton
+						contentDescription="transcribed text"
+						textToCopy={latestRecording.transcribedText}
+						viewTransitionName={getRecordingTransitionId({
+							propertyName: 'transcribedText',
+							recordingId: latestRecording.id,
+						})}
+						size="icon"
+						variant="ghost"
+						disabled={latestRecording.transcriptionStatus === 'TRANSCRIBING'}
+					>
+						{#if latestRecording.transcriptionStatus === 'TRANSCRIBING'}
+							<Loader2Icon class="size-4 animate-spin" />
+						{:else}
+							<ClipboardIcon class="size-4" />
+						{/if}
+					</CopyToClipboardButton>
+				</div>
+
+				<!-- Right: Selectors -->
+				<div class="flex items-center gap-1.5">
+					{#if settings.value['recording.mode'] === 'manual' && getRecorderStateQuery.data === 'IDLE'}
+						<DeviceSelector />
+						<TranscriptionSelector />
+						<TransformationSelector />
+					{:else if settings.value['recording.mode'] === 'vad' && getVadStateQuery.data === 'IDLE'}
+						<DeviceSelector />
+						<TranscriptionSelector />
+						<TransformationSelector />
+					{/if}
+				</div>
+			</div>
 		</div>
+
 
 		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
 
-		<div class="xs:flex hidden flex-col items-center gap-3">
+		<div class="xs:flex hidden flex-col items-center gap-3 mt-8">
 			<!-- <p class="text-foreground/75 text-center text-sm">
 				Click the microphone or press
 				{' '}<NoteFluxButton
@@ -429,7 +393,10 @@
 							{settings.value['shortcuts.global.toggleManualRecording']}
 						</kbd>
 					</NoteFluxButton>{' '}
-					to start recording anywhere.
+					to start recording anywhere and then do Ctrl+V.
+				</p>
+				<p class="text-foreground/75 text-sm">
+					Or place cursor in any text field and press the same shortcut to paste directly.
 				</p>
 			{/if}
 		</div>

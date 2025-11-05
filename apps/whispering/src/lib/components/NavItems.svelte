@@ -1,9 +1,11 @@
 <script lang="ts">
+	import FeedbackDialog from '$lib/components/feedback/FeedbackDialog.svelte';
 	import { GithubIcon } from '$lib/components/icons';
 	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import * as DropdownMenu from '$lib/ui/dropdown-menu';
 	import { cn } from '$lib/ui/utils';
 	import {
+		BugIcon,
 		LayersIcon,
 		ListIcon,
 		Minimize2Icon,
@@ -19,6 +21,8 @@
 		class: className,
 		collapsed = false,
 	}: { class?: string; collapsed?: boolean } = $props();
+
+	let feedbackDialogOpen = $state(false);
 
 	const navItems = [
 		{
@@ -51,6 +55,12 @@
 			icon: SunIcon,
 			label: 'Toggle dark mode',
 			type: 'theme',
+		},
+		{
+			action: () => (feedbackDialogOpen = true),
+			icon: BugIcon,
+			label: 'Send feedback',
+			type: 'button',
 		},
 		// ...(window.__TAURI_INTERNALS__
 		// 	? ([
@@ -193,6 +203,8 @@
 		{/each}
 	</nav>
 {/if}
+
+<FeedbackDialog bind:open={feedbackDialogOpen} />
 
 <style>
 	@keyframes ping {

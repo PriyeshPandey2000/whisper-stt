@@ -260,13 +260,15 @@
 							</div>
 						{:else if step.type === 'prompt_transform'}
 							<div class="space-y-6">
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div class="grid grid-cols-1 gap-4">
 									<LabeledSelect
-										id="prompt_transform.inference.provider"
-										label="Provider"
-										items={INFERENCE_PROVIDER_OPTIONS}
-										selected={step['prompt_transform.inference.provider']}
-										placeholder="Select a provider"
+										id="prompt_transform.inference.provider.Groq.model"
+										label="Quality"
+										items={GROQ_INFERENCE_MODEL_OPTIONS}
+										selected={step[
+											'prompt_transform.inference.provider.Groq.model'
+										]}
+										placeholder="Select quality level"
 										onSelectedChange={(value) => {
 											transformation = {
 												...transformation,
@@ -274,111 +276,15 @@
 													i === index
 														? {
 																...s,
-																'prompt_transform.inference.provider': value,
+																'prompt_transform.inference.provider': 'Groq',
+																'prompt_transform.inference.provider.Groq.model':
+																	value,
 															}
 														: s,
 												),
 											};
 										}}
 									/>
-
-									{#if step['prompt_transform.inference.provider'] === 'OpenAI'}
-										<LabeledSelect
-											id="prompt_transform.inference.provider.OpenAI.model"
-											label="Model"
-											items={OPENAI_INFERENCE_MODEL_OPTIONS}
-											selected={step[
-												'prompt_transform.inference.provider.OpenAI.model'
-											]}
-											placeholder="Select a model"
-											onSelectedChange={(value) => {
-												transformation = {
-													...transformation,
-													steps: transformation.steps.map((s, i) =>
-														i === index
-															? {
-																	...s,
-																	'prompt_transform.inference.provider.OpenAI.model':
-																		value,
-																}
-															: s,
-													),
-												};
-											}}
-										/>
-									{:else if step['prompt_transform.inference.provider'] === 'Groq'}
-										<LabeledSelect
-											id="prompt_transform.inference.provider.Groq.model"
-											label="Model"
-											items={GROQ_INFERENCE_MODEL_OPTIONS}
-											selected={step[
-												'prompt_transform.inference.provider.Groq.model'
-											]}
-											placeholder="Select a model"
-											onSelectedChange={(value) => {
-												transformation = {
-													...transformation,
-													steps: transformation.steps.map((s, i) =>
-														i === index
-															? {
-																	...s,
-																	'prompt_transform.inference.provider.Groq.model':
-																		value,
-																}
-															: s,
-													),
-												};
-											}}
-										/>
-									{:else if step['prompt_transform.inference.provider'] === 'Anthropic'}
-										<LabeledSelect
-											id="prompt_transform.inference.provider.Anthropic.model"
-											label="Model"
-											items={ANTHROPIC_INFERENCE_MODEL_OPTIONS}
-											selected={step[
-												'prompt_transform.inference.provider.Anthropic.model'
-											]}
-											placeholder="Select a model"
-											onSelectedChange={(value) => {
-												transformation = {
-													...transformation,
-													steps: transformation.steps.map((s, i) =>
-														i === index
-															? {
-																	...s,
-																	'prompt_transform.inference.provider.Anthropic.model':
-																		value,
-																}
-															: s,
-													),
-												};
-											}}
-										/>
-									{:else if step['prompt_transform.inference.provider'] === 'Google'}
-										<LabeledSelect
-											id="prompt_transform.inference.provider.Google.model"
-											label="Model"
-											items={GOOGLE_INFERENCE_MODEL_OPTIONS}
-											selected={step[
-												'prompt_transform.inference.provider.Google.model'
-											]}
-											placeholder="Select a model"
-											onSelectedChange={(value) => {
-												transformation = {
-													...transformation,
-													steps: transformation.steps.map((s, i) =>
-														i === index
-															? {
-																	...s,
-																	'prompt_transform.inference.provider.Google.model':
-																		value,
-																}
-															: s,
-													),
-												};
-											}}
-										/>
-									{/if}
 								</div>
 
 								<LabeledTextarea
@@ -430,7 +336,8 @@
 										{/if}
 									{/snippet}
 								</LabeledTextarea>
-								<Accordion.Root type="single" class="w-full">
+								<!-- COMMENTED OUT: API key configuration for SaaS model -->
+								<!-- <Accordion.Root type="single" class="w-full">
 									<Accordion.Item class="border-none" value="advanced">
 										<Accordion.Trigger class="text-sm">
 											Advanced Options
@@ -447,7 +354,7 @@
 											{/if}
 										</Accordion.Content>
 									</Accordion.Item>
-								</Accordion.Root>
+								</Accordion.Root> -->
 							</div>
 						{/if}
 					</Card.Content>
