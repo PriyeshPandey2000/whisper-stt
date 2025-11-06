@@ -98,14 +98,12 @@
 	{@render children()}
 </div>
 
-{#if settings.value['notifications.enabled']}
-	<Toaster
-		offset={16}
-		class="xs:block hidden"
-		theme={mode.current}
-		{...TOASTER_SETTINGS}
-	/>
-{/if}
+<Toaster
+	offset={16}
+	class="xs:block hidden"
+	theme={mode.current}
+	{...TOASTER_SETTINGS}
+/>
 <ModeWatcher />
 <ConfirmationDialog />
 <MoreDetailsDialog />

@@ -398,6 +398,14 @@
 				<p class="text-foreground/75 text-sm">
 					Or place cursor in any text field and press the same shortcut to paste directly.
 				</p>
+				<p class="text-foreground/75 text-sm">
+					To cancel recording, press
+					{' '}<kbd
+						class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold"
+					>
+						Command+Escape
+					</kbd>.
+				</p>
 			{/if}
 		</div>
 		{/if}
