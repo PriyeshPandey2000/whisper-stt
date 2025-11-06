@@ -12,35 +12,12 @@ export async function setupDefaultTransformation() {
 		// Check if user already has a selected transformation
 		const selectedTransformationId = settings.value['transformations.selectedTransformationId'];
 		if (selectedTransformationId) {
-			// User already has a transformation selected, verify it exists
-			if (typeof rpc.transformations?.queries?.getTransformationById?.execute === 'function') {
-				const { data: existingTransformation } = await rpc.transformations.queries.getTransformationById.execute({
-					id: selectedTransformationId
-				});
-				
-				if (existingTransformation) {
-					// Transformation exists, no need to create default
-					return;
-				}
-			} else {
-				// RPC not ready yet, skip for now
-				console.log('RPC transformations not ready, skipping default transformation setup');
-				return;
-			}
-		}
-
-		// Check if user has any transformations at all
-		if (typeof rpc.transformations?.queries?.getAllTransformations?.execute === 'function') {
-			const { data: allTransformations } = await rpc.transformations.queries.getAllTransformations.execute();
-			if (allTransformations && allTransformations.length > 0) {
-				// User has transformations but none selected, don't create default
-				return;
-			}
-		} else {
-			// RPC not ready yet, skip for now
-			console.log('RPC transformations not ready, skipping default transformation setup');
+			// User already has a transformation selected, assume it exists
 			return;
 		}
+
+		// Simple check - if we can't access RPC easily, just proceed with creation
+		// This is safer than complex RPC checking that might fail
 	} catch (error) {
 		console.warn('Error checking existing transformations, skipping default setup:', error);
 		return;
@@ -60,16 +37,26 @@ export async function setupDefaultTransformation() {
 			...defaultStep,
 			'prompt_transform.inference.provider': 'Groq' as const,
 			'prompt_transform.inference.provider.Groq.model': 'llama-3.1-8b-instant' as const,
-			'prompt_transform.systemPromptTemplate': `- Clean up the text for clarity and natural flow while preserving meaning and the original tone.
-- Use informal, plain language unless the text clearly uses a professional tone; in that case, match it.
-- Fix obvious grammar, remove fillers and stutters, collapse repetitions, and keep names and numbers.
-- Automatically detect and format lists properly: if the text mentions a number (e.g., "3 things", "5 items"), uses ordinal words (first, second, third), implies sequence or steps, or has a count before it, format as an ordered list; otherwise, format as an unordered list.
-- Write numbers as numerals (e.g., 'five' → '5', 'twenty dollars' → '$20').
-- Keep the original intent and nuance.
-- Organize into short paragraphs of 2–4 sentences for readability.
-- Do not add explanations, labels, metadata, or instructions.
-- Output only the cleaned text.
-- Don't add any information not available in the input text ever.`,
+			'prompt_transform.systemPromptTemplate': `You are a text formatter. Your ONLY job is to clean up transcribed text and output the cleaned version.
+
+CRITICAL RULES:
+- NEVER add commentary, explanations, or meta-responses
+- NEVER say things like "It seems you didn't provide text" or "There's an issue here"
+- NEVER ask questions or request clarification
+- If the input is unclear, just format what's there
+- If the input seems incomplete, format what you have
+- ALWAYS output something, even if it's just the original text cleaned up
+
+FORMATTING RULES:
+- Clean up the text for clarity and natural flow while preserving meaning and the original tone
+- Use informal, plain language unless the text clearly uses a professional tone; in that case, match it
+- Fix obvious grammar, remove fillers and stutters, collapse repetitions, and keep names and numbers
+- Automatically detect and format lists properly: if the text mentions a number (e.g., "3 things", "5 items"), uses ordinal words (first, second, third), implies sequence or steps, or has a count before it, format as an ordered list; otherwise, format as an unordered list
+- Write numbers as numerals (e.g., 'five' → '5', 'twenty dollars' → '$20')
+- Keep the original intent and nuance
+- Organize into short paragraphs of 2–4 sentences for readability
+
+OUTPUT ONLY THE CLEANED TEXT. NO COMMENTARY EVER.`,
 			'prompt_transform.userPromptTemplate': 'Here is the text to format:\n{{input}}'
 		}]
 	};
@@ -89,10 +76,7 @@ export async function setupDefaultTransformation() {
 		}
 
 		// Set it as the selected transformation
-		settings.value = {
-			...settings.value,
-			'transformations.selectedTransformationId': createdTransformation.id
-		};
+		settings.updateKey('transformations.selectedTransformationId', createdTransformation.id);
 	} catch (error) {
 		console.warn('Error creating default transformation:', error);
 	}

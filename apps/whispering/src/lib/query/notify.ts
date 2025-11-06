@@ -19,8 +19,9 @@ const createNotifyMutation = (
 		) => {
 			const fullOptions: UnifiedNotificationOptions = { ...options, variant };
 
-			// Check if notifications are disabled
-			if (!settings.value['notifications.enabled']) {
+			// Check if notifications are disabled (except for critical notifications like updates)
+			const isCritical = fullOptions.title?.includes('Update') || fullOptions.persist;
+			if (!settings.value['notifications.enabled'] && !isCritical) {
 				// Still log in dev mode even if notifications are disabled
 				if (dev) {
 					console.log('[Notify] (disabled)', fullOptions);
