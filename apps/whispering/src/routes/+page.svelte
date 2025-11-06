@@ -229,7 +229,7 @@
 				NoteFlux
 			</h1>
 			<p class="text-muted-foreground text-center">
-				Press shortcut → speak → get error-free, formatted text.
+				Press shortcut → speak → get error-free , formatted text.
 			</p>
 		</div>
 
