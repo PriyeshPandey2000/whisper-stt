@@ -51,7 +51,9 @@
 				{:then v}
 					{#if v.isOutdated}
 						{@const { currentVersion, latestReleaseUrl, latestVersion } = v}
-						Customize your experience for NoteFlux {currentVersion} (latest
+						Customize your experience for NoteFlux {currentVersion}.
+						<!-- Commented out latest version display and GitHub link - users should use built-in updater instead
+						(latest {latestVersion} available).
 						<Button
 							class="px-0"
 							variant="link"
@@ -62,6 +64,7 @@
 						>
 							{latestVersion}
 						</Button>).
+						-->
 					{:else}
 						{@const { version } = v}
 						Customize your experience for NoteFlux {version}.

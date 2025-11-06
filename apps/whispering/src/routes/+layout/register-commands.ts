@@ -87,9 +87,16 @@ export async function syncGlobalShortcutsWithSettings() {
 	const results = await Promise.all(
 		commands
 			.map((command) => {
-				const accelerator = settings.value[
+				let accelerator = settings.value[
 					`shortcuts.global.${command.id}`
 				] as Accelerator | null;
+				
+				// Force update cancelManualRecording to new default if it's null
+				if (command.id === 'cancelManualRecording' && !accelerator) {
+					accelerator = 'Command+Escape' as Accelerator;
+					settings.updateKey('shortcuts.global.cancelManualRecording', accelerator);
+				}
+				
 				if (!accelerator) return;
 				return rpc.shortcuts.registerCommandGlobally.execute({
 					accelerator,

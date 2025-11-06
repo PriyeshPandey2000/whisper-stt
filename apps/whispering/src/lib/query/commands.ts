@@ -198,7 +198,7 @@ const startVadRecording = defineMutation({
 						id: toastId,
 					});
 					console.info('Voice activated speech captured');
-					sound.playSoundIfEnabled.execute('vad-capture');
+					// sound.playSoundIfEnabled.execute('vad-capture'); // Commented out until VAD mode is re-enabled
 
 					// Log VAD recording completion
 					rpc.analytics.logEvent.execute({
@@ -276,7 +276,7 @@ const startVadRecording = defineMutation({
 			}
 		}
 
-		sound.playSoundIfEnabled.execute('vad-start');
+		// sound.playSoundIfEnabled.execute('vad-start'); // Commented out until VAD mode is re-enabled
 		return Ok(undefined);
 	},
 });
@@ -311,7 +311,7 @@ const stopVadRecording = defineMutation({
 			description: 'Your voice activated capture has been stopped.',
 			id: toastId,
 		});
-		sound.playSoundIfEnabled.execute('vad-stop');
+		// sound.playSoundIfEnabled.execute('vad-stop'); // Commented out until VAD mode is re-enabled
 		return Ok(undefined);
 	},
 });
@@ -323,7 +323,7 @@ export const commands = {
 	// Cancel manual recording
 	cancelManualRecording: defineMutation({
 		mutationKey: ['commands', 'cancelManualRecording'] as const,
-		resultMutationFn: async () => {
+		resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 			const toastId = nanoid();
 			notify.loading.execute({
 				title: '⏸️ Canceling recording...',

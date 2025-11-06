@@ -94,6 +94,9 @@ export const settingsSchema = z.object({
 	
 	// Notifications settings
 	'notifications.enabled': z.boolean().default(false),
+
+	// Onboarding settings
+	'onboarding.hasSeenWelcome': z.boolean().default(false),
 	'apiKeys.anthropic': z.string().default(''),
 	'apiKeys.deepgram': z.string().default(''),
 	'apiKeys.elevenlabs': z.string().default(''),
@@ -194,7 +197,7 @@ export const settingsSchema = z.object({
 		'shortcuts.global.cancelManualRecording': z
 			.string()
 			.nullable()
-			.default(null),
+			.default('Command+Escape'),
 		'shortcuts.global.pushToTalk': z
 			.string()
 			.nullable()

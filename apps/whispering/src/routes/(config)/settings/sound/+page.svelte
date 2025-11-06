@@ -28,7 +28,7 @@
 	/>
 
 	<LabeledSwitch
-		id="sound.playOn.manual-start"
+		id="sound.playOn.manual-stop"
 		label="Play sound when stopping manual recording"
 		checked={settings.value['sound.playOn.manual-stop']}
 		onCheckedChange={(v) => {
@@ -37,7 +37,7 @@
 	/>
 
 	<LabeledSwitch
-		id="sound.playOn.manual-start"
+		id="sound.playOn.manual-cancel"
 		label="Play sound when canceling manual recording"
 		checked={settings.value['sound.playOn.manual-cancel']}
 		onCheckedChange={(v) => {
@@ -45,6 +45,7 @@
 		}}
 	/>
 
+	<!-- VAD sound settings - commented out until VAD mode is re-enabled
 	<Separator />
 
 	<LabeledSwitch
@@ -57,7 +58,7 @@
 	/>
 
 	<LabeledSwitch
-		id="sound.playOn.vad-start"
+		id="sound.playOn.vad-capture"
 		label="Play sound vad capture"
 		checked={settings.value['sound.playOn.vad-capture']}
 		onCheckedChange={(v) => {
@@ -66,13 +67,14 @@
 	/>
 
 	<LabeledSwitch
-		id="sound.playOn.vad-start"
+		id="sound.playOn.vad-stop"
 		label="Play sound when stopping vad recording session"
 		checked={settings.value['sound.playOn.vad-stop']}
 		onCheckedChange={(v) => {
 			settings.updateKey('sound.playOn.vad-stop', v);
 		}}
 	/>
+	-->
 
 	<Separator />
 

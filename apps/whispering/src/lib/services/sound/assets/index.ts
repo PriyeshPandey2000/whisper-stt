@@ -17,7 +17,8 @@ export const audioElements = {
 	'manual-stop': new Audio(stopManualSoundSrc),
 	transcriptionComplete: new Audio(transcriptionCompleteSoundSrc),
 	transformationComplete: new Audio(transformationCompleteSoundSrc),
-	'vad-capture': new Audio(captureVadSoundSrc),
-	'vad-start': new Audio(startVadSoundSrc),
-	'vad-stop': new Audio(stopVadSoundSrc),
+	// VAD sounds commented out until VAD mode is re-enabled
+	// 'vad-capture': new Audio(captureVadSoundSrc),
+	// 'vad-start': new Audio(startVadSoundSrc),
+	// 'vad-stop': new Audio(stopVadSoundSrc),
 } satisfies Record<NoteFluxSoundNames, HTMLAudioElement>;

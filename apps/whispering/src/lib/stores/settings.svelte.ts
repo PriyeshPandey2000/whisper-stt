@@ -112,6 +112,13 @@ export const settings = (() => {
 		 */
 		updateKey<K extends keyof Settings>(key: K, value: Settings[K]) {
 			_settings.value = { ..._settings.value, [key]: value };
+			
+			// Sync shortcuts when shortcut settings change
+			if (key.startsWith('shortcuts.global.')) {
+				syncGlobalShortcutsWithSettings();
+			} else if (key.startsWith('shortcuts.local.')) {
+				syncLocalShortcutsWithSettings();
+			}
 		},
 
 		/**
