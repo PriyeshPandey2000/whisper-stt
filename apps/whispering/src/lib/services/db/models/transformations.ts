@@ -73,7 +73,7 @@ export function generateDefaultTransformationStep(): TransformationStep {
 		'find_replace.replaceText': '',
 		'find_replace.useRegex': false,
 		id: nanoid(),
-		'prompt_transform.inference.provider': 'Google',
+		'prompt_transform.inference.provider': 'Groq',
 		'prompt_transform.inference.provider.Anthropic.model': 'claude-sonnet-4-0',
 		'prompt_transform.inference.provider.Google.model': 'gemini-2.5-flash',
 

@@ -12,8 +12,8 @@ export type CancelRecordingResult =
 export type NoteFluxRecordingState = z.infer<typeof recordingStateSchema>;
 
 export const recorderStateToIcons = {
-	IDLE: '🎙️',
-	RECORDING: '⏹️',
+	IDLE: '🟢',
+	RECORDING: '🔴',
 } as const satisfies Record<NoteFluxRecordingState, string>;
 
 export const vadStateSchema = z.enum(['IDLE', 'LISTENING', 'SPEECH_DETECTED']);

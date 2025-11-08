@@ -406,6 +406,9 @@
 						Command+Escape
 					</kbd>.
 				</p>
+				<p class="text-foreground/75 text-center text-sm">
+					✨ <strong>Tip:</strong> For instant results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
+				</p>
 			{/if}
 		</div>
 		{/if}
