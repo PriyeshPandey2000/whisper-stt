@@ -8,6 +8,7 @@ use accessibility::{is_macos_accessibility_enabled, open_apple_accessibility};
 
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder, menu::{Menu, MenuItem}, tray::{TrayIconBuilder, TrayIconEvent}};
 use tauri_plugin_aptabase::EventTracker;
+use tauri_plugin_clipboard_manager;
 
 #[cfg(target_os = "macos")]
 use cocoa::appkit::NSColor;
@@ -390,10 +391,47 @@ fn write_text(text: String, app_handle: tauri::AppHandle) -> Result<(), String> 
     
     let mut enigo = enigo.ok_or(last_error)?;
     
-    // Add a small delay before typing to ensure the target app has time to receive focus
-    std::thread::sleep(std::time::Duration::from_millis(50));
+    // Removed delay for maximum speed
     
-    enigo.text(&text).map_err(|e| format!("Failed to type text: {}", e))?;
+    // Use clipboard + paste approach instead of character simulation
+    // This works better with terminal applications and avoids duplication issues
+    
+    // First, copy text to clipboard using pbcopy on macOS
+    #[cfg(target_os = "macos")]
+    {
+        use std::process::{Command, Stdio};
+        use std::io::Write;
+        
+        let mut child = Command::new("pbcopy")
+            .stdin(Stdio::piped())
+            .spawn()
+            .map_err(|e| format!("Failed to spawn pbcopy: {}", e))?;
+        
+        if let Some(stdin) = child.stdin.as_mut() {
+            stdin.write_all(text.as_bytes())
+                .map_err(|e| format!("Failed to write to pbcopy: {}", e))?;
+        }
+        
+        child.wait()
+            .map_err(|e| format!("Failed to wait for pbcopy: {}", e))?;
+    }
+    
+    #[cfg(not(target_os = "macos"))]
+    {
+        return Err("Clipboard paste approach not implemented for non-macOS yet".to_string());
+    }
+    
+    // Removed clipboard delay for maximum speed
+    
+    // Then simulate paste (Cmd+V on macOS, Ctrl+V elsewhere)
+    #[cfg(target_os = "macos")]
+    let modifier = Key::Meta;
+    #[cfg(not(target_os = "macos"))]
+    let modifier = Key::Control;
+
+    enigo.key(modifier, Direction::Press).map_err(|e| format!("Failed to press modifier key: {}", e))?;
+    enigo.key(Key::Unicode('v'), Direction::Click).map_err(|e| format!("Failed to click 'v' key: {}", e))?;
+    enigo.key(modifier, Direction::Release).map_err(|e| format!("Failed to release modifier key: {}", e))?;
     
     Ok(())
 }
