@@ -15,6 +15,37 @@ const transcriptionKeys = {
 	isTranscribing: ['transcription', 'isTranscribing'] as const,
 } as const;
 
+// Track transcription count for periodic usage limit checks
+let transcriptionCount = 0;
+const CHECK_LIMIT_EVERY = 3; // Check usage limit every 3 transcriptions
+
+// Helper function to show blocked dialog with window management
+async function showBlockedDialog(totalMinutes: number, limitMinutes: number) {
+	// More aggressive window management
+	if (window.__TAURI_INTERNALS__) {
+		try {
+			const { getCurrentWindow } = await import('@tauri-apps/api/window');
+			const currentWindow = getCurrentWindow();
+			await currentWindow.show();
+			await currentWindow.setAlwaysOnTop(true);
+			await currentWindow.setFocus();
+			
+			setTimeout(() => {
+				currentWindow.setAlwaysOnTop(false).catch(() => {});
+			}, 2000);
+		} catch (windowError) {
+			console.warn('Failed to bring window to front:', windowError);
+		}
+	}
+
+	// Show usage limit dialog
+	const { usageLimitDialog } = await import('$lib/stores/usage-limit-dialog.svelte');
+	usageLimitDialog.open({
+		totalMinutes,
+		limitMinutes
+	});
+}
+
 export const transcription = {
 	isCurrentlyTranscribing() {
 		return (
@@ -116,6 +147,69 @@ export const transcription = {
 async function transcribeBlob(
 	blob: Blob,
 ): Promise<Result<string, NoteFluxError>> {
+	// Increment transcription count
+	transcriptionCount++;
+	
+	try {
+		const { supabase } = await import('$lib/services/auth/supabase-client');
+		const { data: { user } } = await supabase.auth.getUser();
+		
+		if (user) {
+			// First, check if this user needs frequent checking (lightweight query)
+			const { data: checkData } = await supabase
+				.from('total_usage_limit')
+				.select('needs_frequent_checks, is_blocked, total_minutes, limit_minutes')
+				.eq('user_id', user.id)
+				.single();
+			
+			// If user needs frequent checks, verify their blocked status on every transcription
+			if (checkData?.needs_frequent_checks) {
+				if (checkData.is_blocked) {
+					// Still blocked, show dialog
+					await showBlockedDialog(checkData.total_minutes, checkData.limit_minutes);
+					
+					return NoteFluxErr({
+						title: '⚠️ Account blocked',
+						description: 'Your account has been temporarily blocked. Contact support for assistance.',
+					});
+				} else {
+					// Admin unblocked them - immediately reset frequent checks flag
+					await supabase
+						.from('total_usage_limit')
+						.update({ needs_frequent_checks: false })
+						.eq('user_id', user.id);
+				}
+			}
+		}
+	} catch (error) {
+		console.warn('Frequent check failed, continuing:', error);
+	}
+	
+	// Normal periodic check for usage limits (every 3rd transcription)  
+	const shouldDoFullCheck = transcriptionCount % CHECK_LIMIT_EVERY === 0;
+	
+	if (shouldDoFullCheck) {
+		try {
+			// Import usage tracking dynamically to avoid circular imports
+			const { checkUsageLimitAndBlockStatus } = await import('$lib/services/usage-tracking');
+			const limitCheck = await checkUsageLimitAndBlockStatus();
+			
+			if (limitCheck && (limitCheck.isBlocked || limitCheck.isOverLimit)) {
+				// Show blocked dialog BEFORE returning error
+				await showBlockedDialog(limitCheck.totalMinutes, limitCheck.limitMinutes);
+				
+				// IMMEDIATELY return error - don't let this transcription complete
+				return NoteFluxErr({
+					title: '⚠️ Usage limit reached',
+					description: `You've used ${limitCheck.totalMinutes.toFixed(0)} out of ${limitCheck.limitMinutes} minutes.`,
+				});
+			}
+		} catch (error) {
+			console.warn('Usage limit check failed, continuing with transcription:', error);
+			// Don't block transcription if limit check fails
+		}
+	}
+
 	const selectedService =
 		settings.value['transcription.selectedTranscriptionService'];
 

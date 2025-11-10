@@ -34,7 +34,8 @@ export async function trackUsage({
         return;
       }
 
-      const { error } = await supabase.from('usage_logs').insert({
+      // Insert usage log
+      const { error: logError } = await supabase.from('usage_logs').insert({
         user_id: user.id,
         duration_minutes: durationMinutes,
         estimated_cost: estimatedCost,
@@ -42,11 +43,48 @@ export async function trackUsage({
         provider: provider
       });
 
-      if (error) {
-        console.error('Usage tracking failed:', error);
-      } else {
-        console.log(`✅ Usage tracked: ${durationMinutes.toFixed(2)} min, $${estimatedCost.toFixed(4)} (${provider})`);
+      if (logError) {
+        console.error('Usage tracking failed:', logError);
+        return;
       }
+
+      // Update total usage limit table
+      // Check if user record exists
+      const { data: existingRecord } = await supabase
+        .from('total_usage_limit')
+        .select('total_minutes')
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingRecord) {
+        // Update existing record - increment total_minutes
+        const newTotal = existingRecord.total_minutes + durationMinutes;
+        const { error: updateError } = await supabase
+          .from('total_usage_limit')
+          .update({ 
+            total_minutes: newTotal,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error('Failed to update usage limit:', updateError);
+        }
+      } else {
+        // Create new record
+        const { error: insertError } = await supabase.from('total_usage_limit').insert({
+          user_id: user.id,
+          email: user.email || 'unknown',
+          total_minutes: durationMinutes,
+          limit_minutes: 2000
+        });
+
+        if (insertError) {
+          console.error('Failed to create usage limit record:', insertError);
+        }
+      }
+
+      console.log(`✅ Usage tracked: ${durationMinutes.toFixed(2)} min, $${estimatedCost.toFixed(4)} (${provider})`);
     } catch (error) {
       console.error('Usage tracking error:', error);
     }
@@ -141,6 +179,133 @@ export async function getAudioDurationFromFile(filePath: string, fallbackBlob?: 
       reject(new Error(`Failed to create audio element from file: ${error}`));
     }
   });
+}
+
+/**
+ * Check if user has exceeded their usage limit OR is manually blocked
+ * Returns null if not authenticated, or object with limit info
+ */
+export async function checkUsageLimitAndBlockStatus(): Promise<{
+  isOverLimit: boolean;
+  isBlocked: boolean;
+  totalMinutes: number;
+  limitMinutes: number;
+  remainingMinutes: number;
+} | null> {
+  try {
+    // Get current user from Supabase auth directly
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      return null;
+    }
+
+    // Get user's current usage AND block status from total_usage_limit table
+    const { data: usageData, error: usageError } = await supabase
+      .from('total_usage_limit')
+      .select('total_minutes, limit_minutes, is_blocked, needs_frequent_checks')
+      .eq('user_id', user.id)
+      .single();
+
+    if (usageError || !usageData) {
+      // User doesn't have a record yet, they haven't used any minutes
+      return {
+        isOverLimit: false,
+        isBlocked: false,
+        totalMinutes: 0,
+        limitMinutes: 2000,
+        remainingMinutes: 2000
+      };
+    }
+
+    const { total_minutes, limit_minutes, is_blocked, needs_frequent_checks } = usageData;
+    const remainingMinutes = Math.max(0, limit_minutes - total_minutes);
+    const isOverLimit = total_minutes >= limit_minutes;
+
+    // If over limit, always ensure both flags are set
+    if (isOverLimit) {
+      // Only update if not already set to avoid unnecessary DB writes
+      if (!is_blocked || !needs_frequent_checks) {
+        await supabase
+          .from('total_usage_limit')
+          .update({ 
+            is_blocked: true,
+            needs_frequent_checks: true
+          })
+          .eq('user_id', user.id);
+      }
+    }
+
+    // If admin unblocked user (is_blocked = false) but still has frequent checks, reset it
+    if (!is_blocked && needs_frequent_checks) {
+      await supabase
+        .from('total_usage_limit')
+        .update({ needs_frequent_checks: false })
+        .eq('user_id', user.id);
+    }
+
+    return {
+      isOverLimit,
+      isBlocked: is_blocked || false,
+      totalMinutes: total_minutes,
+      limitMinutes: limit_minutes,
+      remainingMinutes
+    };
+  } catch (error) {
+    console.error('Error checking usage limit:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if user has exceeded their usage limit
+ * Returns null if not authenticated, or object with limit info
+ */
+export async function checkUsageLimit(): Promise<{
+  isOverLimit: boolean;
+  totalMinutes: number;
+  limitMinutes: number;
+  remainingMinutes: number;
+} | null> {
+  try {
+    // Get current user from Supabase auth directly
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      return null;
+    }
+
+    // Get user's current usage from total_usage_limit table
+    const { data: usageData, error: usageError } = await supabase
+      .from('total_usage_limit')
+      .select('total_minutes, limit_minutes')
+      .eq('user_id', user.id)
+      .single();
+
+    if (usageError || !usageData) {
+      // User doesn't have a record yet, they haven't used any minutes
+      return {
+        isOverLimit: false,
+        totalMinutes: 0,
+        limitMinutes: 2000,
+        remainingMinutes: 2000
+      };
+    }
+
+    const { total_minutes, limit_minutes } = usageData;
+    const remainingMinutes = Math.max(0, limit_minutes - total_minutes);
+    const isOverLimit = total_minutes >= limit_minutes;
+
+    return {
+      isOverLimit,
+      totalMinutes: total_minutes,
+      limitMinutes: limit_minutes,
+      remainingMinutes
+    };
+  } catch (error) {
+    console.error('Error checking usage limit:', error);
+    return null;
+  }
 }
 
 /**
