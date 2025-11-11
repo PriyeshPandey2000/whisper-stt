@@ -128,9 +128,8 @@
 										<span class="font-medium">{model.name}</span>
 									</div>
 									{#if !isConfigured}
-										<span class="text-sm text-amber-600 ml-6"
-											>API key required</span
-										>
+										<!-- <span class="text-sm text-amber-600 ml-6"
+											>API key required</span> -->
 									{/if}
 								</div>
 							</Command.Item>
