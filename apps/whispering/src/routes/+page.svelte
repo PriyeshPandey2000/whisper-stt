@@ -380,19 +380,21 @@
 			</p> -->
 			{#if window.__TAURI_INTERNALS__}
 				<p class="text-foreground/75 text-sm">
-					Press
-					{' '}<NoteFluxButton
-						tooltipContent="Go to global shortcut in settings"
-						href="/settings/shortcuts/global"
-						variant="link"
-						size="inline"
+				Press
+				{' '}
+				<!-- <NoteFluxButton
+					tooltipContent="Go to global shortcut in settings"
+					href="/settings/shortcuts/global"
+					variant="link"
+					size="inline"
+				> -->
+					<kbd
+						class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold"
 					>
-						<kbd
-							class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold"
-						>
-							{settings.value['shortcuts.global.toggleManualRecording']}
-						</kbd>
-					</NoteFluxButton>{' '}
+						{settings.value['shortcuts.global.toggleManualRecording']}
+					</kbd>
+				<!-- </NoteFluxButton> -->
+				{' '}
 					to start recording anywhere and then do Ctrl+V.
 				</p>
 				<p class="text-foreground/75 text-sm">

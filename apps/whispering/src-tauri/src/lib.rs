@@ -71,6 +71,49 @@ fn make_window_truly_transparent(window: &tauri::WebviewWindow) {
     }
 }
 
+#[cfg(target_os = "macos")]
+fn configure_overlay_for_fullscreen(window: &tauri::WebviewWindow) {
+    unsafe {
+        // Get the raw NSWindow handle
+        let ns_window = window.ns_window().unwrap() as *mut objc::runtime::Object;
+        
+        // Set an extremely high window level to appear above everything including fullscreen apps
+        // These are the macOS window level constants:
+        // kCGNormalWindowLevel = 0
+        // kCGFloatingWindowLevel = 3
+        // kCGModalPanelWindowLevel = 8
+        // kCGMainMenuWindowLevel = 24
+        // kCGStatusWindowLevel = 25
+        // kCGScreenSaverWindowLevel = 1000
+        // We'll use a level higher than screen saver to ensure visibility over fullscreen apps
+        let maximum_level: i32 = 2147483647; // CGWindowLevelForKey(kCGMaximumWindowLevelKey)
+        let _: () = msg_send![ns_window, setLevel: maximum_level];
+        
+        // Set collection behavior for fullscreen compatibility
+        // This is crucial for appearing in fullscreen spaces
+        let current_behavior: u64 = msg_send![ns_window, collectionBehavior];
+        
+        // NSWindowCollectionBehaviorCanJoinAllSpaces (1 << 0) = 1
+        // NSWindowCollectionBehaviorFullScreenAuxiliary (1 << 8) = 256
+        // NSWindowCollectionBehaviorIgnoresCycle (1 << 6) = 64
+        // NSWindowCollectionBehaviorParticipatesInCycle (1 << 5) = 32
+        let can_join_all_spaces: u64 = 1;
+        let fullscreen_auxiliary: u64 = 256;
+        let ignores_cycle: u64 = 64;
+        let new_behavior = can_join_all_spaces | fullscreen_auxiliary | ignores_cycle;
+        
+        let _: () = msg_send![ns_window, setCollectionBehavior: new_behavior];
+        
+        // Additional window properties for better overlay behavior
+        let _: () = msg_send![ns_window, setHidesOnDeactivate: 0u8]; // NO - don't hide when deactivated
+        let _: () = msg_send![ns_window, setCanHide: 0u8]; // NO - prevent hiding
+        let _: () = msg_send![ns_window, setExcludedFromWindowsMenu: 1u8]; // YES - exclude from windows menu
+        
+        // Make sure window stays visible and on top
+        let _: () = msg_send![ns_window, orderFrontRegardless]; // Force to front
+    }
+}
+
 /// Create the system tray with menu items
 fn create_system_tray(app: &tauri::App) -> Result<(), String> {
     // Create menu items
@@ -168,6 +211,7 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
     #[cfg(target_os = "macos")]
     {
         make_window_truly_transparent(&overlay_window);
+        configure_overlay_for_fullscreen(&overlay_window);
     }
 
     Ok(())
@@ -256,6 +300,7 @@ pub async fn run() {
         .expect("error while building tauri application");
 
     // Set activation policy to Accessory to hide from dock and run as menu bar app on macOS
+    // Note: LSUIElement is set in Info.plist which should handle this
     #[cfg(target_os = "macos")]
     app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 

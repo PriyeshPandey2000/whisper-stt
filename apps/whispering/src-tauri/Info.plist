@@ -4,5 +4,7 @@
 <dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Whispering to access your microphone so it can record and transcribe your speech.</string>
+	<key>LSUIElement</key>
+	<true/>
 </dict>
 </plist>
