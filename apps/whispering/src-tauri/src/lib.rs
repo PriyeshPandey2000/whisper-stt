@@ -109,8 +109,8 @@ fn configure_overlay_for_fullscreen(window: &tauri::WebviewWindow) {
         let _: () = msg_send![ns_window, setCanHide: 0u8]; // NO - prevent hiding
         let _: () = msg_send![ns_window, setExcludedFromWindowsMenu: 1u8]; // YES - exclude from windows menu
         
-        // Make sure window stays visible and on top
-        let _: () = msg_send![ns_window, orderFrontRegardless]; // Force to front
+        // Note: orderFrontRegardless is NOT called here during initialization
+        // It will be called when show_recording_overlay() is invoked to make window visible
     }
 }
 
