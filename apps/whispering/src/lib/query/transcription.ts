@@ -180,9 +180,62 @@ async function transcribeBlob(
 						.eq('user_id', user.id);
 				}
 			}
+		} else {
+			// User not authenticated - show dialog and block transcription
+			// More aggressive window management
+			if (window.__TAURI_INTERNALS__) {
+				try {
+					const { getCurrentWindow } = await import('@tauri-apps/api/window');
+					const currentWindow = getCurrentWindow();
+					await currentWindow.show();
+					await currentWindow.setAlwaysOnTop(true);
+					await currentWindow.setFocus();
+					
+					setTimeout(() => {
+						currentWindow.setAlwaysOnTop(false).catch(() => {});
+					}, 2000);
+				} catch (windowError) {
+					console.warn('Failed to bring window to front:', windowError);
+				}
+			}
+
+			// Show auth required dialog
+			const { authRequiredDialog } = await import('$lib/stores/auth-required-dialog.svelte');
+			authRequiredDialog.open();
+			
+			return NoteFluxErr({
+				title: '🔐 Authentication Required',
+				description: 'Please sign in to use transcription',
+			});
 		}
 	} catch (error) {
-		console.warn('Frequent check failed, continuing:', error);
+		console.error('Auth check failed:', error);
+		
+		// If auth check fails due to error, block transcription for security
+		// Show auth required dialog as we can't verify authentication
+		if (window.__TAURI_INTERNALS__) {
+			try {
+				const { getCurrentWindow } = await import('@tauri-apps/api/window');
+				const currentWindow = getCurrentWindow();
+				await currentWindow.show();
+				await currentWindow.setAlwaysOnTop(true);
+				await currentWindow.setFocus();
+				
+				setTimeout(() => {
+					currentWindow.setAlwaysOnTop(false).catch(() => {});
+				}, 2000);
+			} catch (windowError) {
+				console.warn('Failed to bring window to front:', windowError);
+			}
+		}
+
+		const { authRequiredDialog } = await import('$lib/stores/auth-required-dialog.svelte');
+		authRequiredDialog.open();
+		
+		return NoteFluxErr({
+			title: '🔐 Authentication check failed',
+			description: 'Unable to verify authentication. Please try again.',
+		});
 	}
 	
 	// Normal periodic check for usage limits (every 3rd transcription)  

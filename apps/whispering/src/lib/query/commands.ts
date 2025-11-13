@@ -1,6 +1,7 @@
 import { fromTaggedErr, fromTaggedError, NoteFluxErr } from '$lib/result';
 import { DbServiceErr } from '$lib/services/db';
 import { settings } from '$lib/stores/settings.svelte';
+import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
 import { nanoid } from 'nanoid/non-secure';
 import { Err, Ok } from 'wellcrafted/result';
 
@@ -27,11 +28,56 @@ let vadInitiatedVia: 'global-shortcut' | 'local' | null = null;
 let vadSessionActive = false;
 let vadDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
+// Helper function to check authentication and show dialog if not authenticated
+async function checkAuthAndShowDialog(): Promise<boolean> {
+	try {
+		const { supabase } = await import('$lib/services/auth/supabase-client');
+		const { data: { user } } = await supabase.auth.getUser();
+		
+		if (!user) {
+			// Show auth required dialog and bring window to front
+			if (window.__TAURI_INTERNALS__) {
+				try {
+					const { getCurrentWindow } = await import('@tauri-apps/api/window');
+					const currentWindow = getCurrentWindow();
+					await currentWindow.show();
+					await currentWindow.setAlwaysOnTop(true);
+					await currentWindow.setFocus();
+					
+					setTimeout(() => {
+						currentWindow.setAlwaysOnTop(false).catch(() => {});
+					}, 2000);
+				} catch (windowError) {
+					console.warn('Failed to bring window to front:', windowError);
+				}
+			}
+			
+			authRequiredDialog.open();
+			return false;
+		}
+		
+		return true;
+	} catch (error) {
+		console.error('Auth check failed:', error);
+		return false;
+	}
+}
+
 // Internal mutations for manual recording
 const startManualRecording = defineMutation({
 	mutationKey: ['commands', 'startManualRecording'] as const,
 	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 		console.log('🎙️ [COMMAND] startManualRecording called with initiatedVia:', initiatedVia);
+		
+		// Check authentication first
+		const isAuthenticated = await checkAuthAndShowDialog();
+		if (!isAuthenticated) {
+			return NoteFluxErr({
+				title: '🔐 Authentication Required',
+				description: 'Please sign in to start recording',
+			});
+		}
+		
 		const toastId = nanoid();
 		notify.loading.execute({
 			title: '🎙️ Preparing to record...',
@@ -156,6 +202,15 @@ const stopManualRecording = defineMutation({
 const startVadRecording = defineMutation({
 	mutationKey: ['commands', 'startVadRecording'] as const,
 	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
+		// Check authentication first
+		const isAuthenticated = await checkAuthAndShowDialog();
+		if (!isAuthenticated) {
+			return NoteFluxErr({
+				title: '🔐 Authentication Required',
+				description: 'Please sign in to start recording',
+			});
+		}
+		
 		// Store the initiation context
 		vadInitiatedVia = initiatedVia;
 		vadSessionActive = true;
