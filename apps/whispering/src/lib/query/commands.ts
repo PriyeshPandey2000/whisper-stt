@@ -29,6 +29,7 @@ let vadSessionActive = false;
 let vadDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // Helper function to check authentication and show dialog if not authenticated
+// This ensures users are authenticated before they can start recording
 async function checkAuthAndShowDialog(): Promise<boolean> {
 	try {
 		const { supabase } = await import('$lib/services/auth/supabase-client');
