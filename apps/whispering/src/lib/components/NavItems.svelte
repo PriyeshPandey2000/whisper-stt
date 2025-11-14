@@ -1,6 +1,6 @@
 <script lang="ts">
 	import FeedbackDialog from '$lib/components/feedback/FeedbackDialog.svelte';
-	import { GithubIcon } from '$lib/components/icons';
+	import { DiscordIcon, GithubIcon } from '$lib/components/icons';
 	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import * as DropdownMenu from '$lib/ui/dropdown-menu';
 	import { cn } from '$lib/ui/utils';
@@ -61,6 +61,13 @@
 			icon: BugIcon,
 			label: 'Send feedback',
 			type: 'button',
+		},
+		{
+			external: true,
+			href: 'https://discord.gg/T9nanY3aS',
+			icon: DiscordIcon,
+			label: 'Join Discord server',
+			type: 'anchor',
 		},
 		// ...(window.__TAURI_INTERNALS__
 		// 	? ([
@@ -134,7 +141,7 @@
 				{:else if item.type === 'button'}
 					<DropdownMenu.Item
 						onclick={item.action}
-						class="flex items-center gap-2"
+						class="flex items-center gap-2 cursor-pointer"
 					>
 						<Icon class="size-4" aria-hidden="true" />
 						<span>{item.label}</span>
@@ -142,7 +149,7 @@
 				{:else if item.type === 'theme'}
 					<DropdownMenu.Item
 						onclick={item.action}
-						class="flex items-center gap-2"
+						class="flex items-center gap-2 cursor-pointer"
 					>
 						<div class="relative size-4">
 							<SunIcon
@@ -182,6 +189,7 @@
 					onclick={item.action}
 					variant="ghost"
 					size="icon"
+					class="cursor-pointer"
 				>
 					<Icon class="size-4" aria-hidden="true" />
 				</NoteFluxButton>
@@ -191,6 +199,7 @@
 					onclick={item.action}
 					variant="ghost"
 					size="icon"
+					class="cursor-pointer"
 				>
 					<SunIcon
 						class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
