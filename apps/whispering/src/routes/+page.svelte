@@ -379,34 +379,14 @@
 				to start recording here.
 			</p> -->
 			{#if window.__TAURI_INTERNALS__}
-				<p class="text-foreground/75 text-sm">
-				Press
-				{' '}
-				<!-- <NoteFluxButton
-					tooltipContent="Go to global shortcut in settings"
-					href="/settings/shortcuts/global"
-					variant="link"
-					size="inline"
-				> -->
-					<kbd
-						class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold"
-					>
-						{settings.value['shortcuts.global.toggleManualRecording']}
-					</kbd>
-				<!-- </NoteFluxButton> -->
-				{' '}
-					to start recording anywhere and then do Ctrl+V.
+				<p class="text-foreground/75 text-sm text-center">
+					Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Option+Space</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Option+Space</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Cmd+V</kbd>.
 				</p>
-				<p class="text-foreground/75 text-sm">
-					Or place cursor in any text field and press the same shortcut to paste directly.
+				<p class="text-foreground/75 text-sm text-center">
+					💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again, and then allow accessibility permissions when prompted.
 				</p>
-				<p class="text-foreground/75 text-sm">
-					To cancel recording, press
-					{' '}<kbd
-						class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold"
-					>
-						Command+Escape
-					</kbd>.
+				<p class="text-foreground/75 text-sm text-center">
+					To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Command+Escape</kbd>
 				</p>
 				<p class="text-foreground/75 text-center text-sm">
 					✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
