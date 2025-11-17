@@ -42,13 +42,34 @@ export type LocalShortcutManager = ReturnType<
 type LocalShortcutServiceError = ReturnType<typeof LocalShortcutServiceError>;
 
 /**
+ * Normalize key names to user-friendly format
+ */
+function normalizeKeyName(key: KeyboardEventSupportedKey): string {
+	const normalized = key.toLowerCase();
+	
+	// Normalize modifier keys to user-friendly names
+	if (normalized === 'meta') {
+		return IS_MACOS ? 'cmd' : 'win';
+	}
+	if (normalized === 'alt') {
+		return IS_MACOS ? 'option' : 'alt';
+	}
+	if (normalized === 'control') {
+		return 'ctrl';
+	}
+	
+	return normalized;
+}
+
+/**
  * Join an array of keys into a shortcut string
- * @example ["ctrl", "shift", "a"] → "ctrl+shift+a"
+ * @example ["meta", "shift", "a"] → "cmd+shift+a" (on macOS)
+ * @example ["alt", "shift", "a"] → "option+shift+a" (on macOS)
  */
 export function arrayToShortcutString(
 	keys: KeyboardEventSupportedKey[],
 ): string {
-	return keys.map((key) => key.toLowerCase()).join('+');
+	return keys.map(normalizeKeyName).join('+');
 }
 
 export function createLocalShortcutManager() {

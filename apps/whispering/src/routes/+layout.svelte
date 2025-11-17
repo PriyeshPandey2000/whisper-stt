@@ -22,10 +22,11 @@
 		});
 	});
 
-	$effect(() => {
-		const unlisten = services.localShortcutManager.listen();
-		return () => unlisten();
-	});
+	// Commenting out local shortcuts - keeping global shortcuts only
+	// $effect(() => {
+	// 	const unlisten = services.localShortcutManager.listen();
+	// 	return () => unlisten();
+	// });
 
 	// Log app started event once on mount
 	$effect(() => {

@@ -11,11 +11,11 @@
 		{ title: 'Transcription', href: '/settings/transcription' },
 		// { title: 'API Keys', href: '/settings/api-keys' },
 		{ title: 'Sound', href: '/settings/sound' },
-		// {
-		// 	title: 'Shortcuts',
-		// 	activePathPrefix: '/settings/shortcuts',
-		// 	href: '/settings/shortcuts/local',
-		// },
+		{
+			title: 'Shortcuts',
+			activePathPrefix: '/settings/shortcuts',
+			href: '/settings/shortcuts/global', // Direct link to global shortcuts (local shortcuts disabled)
+		},
 		// { title: 'Privacy & Analytics', href: '/settings/analytics' },
 	] satisfies {
 		/**

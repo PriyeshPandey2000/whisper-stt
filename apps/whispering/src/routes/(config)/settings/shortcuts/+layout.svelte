@@ -13,7 +13,7 @@
 	});
 
 	const items = [
-		{ title: 'Local Shortcuts', href: '/settings/shortcuts/local' },
+		// { title: 'Local Shortcuts', href: '/settings/shortcuts/local' }, // Commented out - using global shortcuts only
 		{ title: 'Global Shortcuts', href: '/settings/shortcuts/global' },
 	] as const;
 </script>

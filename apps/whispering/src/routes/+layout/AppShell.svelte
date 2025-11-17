@@ -36,8 +36,9 @@
 	onMount(async () => {
 		window.commands = commandCallbacks;
 		window.goto = goto;
-		syncLocalShortcutsWithSettings();
-		resetLocalShortcutsToDefaultIfDuplicates();
+		// Commenting out local shortcuts - using global shortcuts only
+		// syncLocalShortcutsWithSettings();
+		// resetLocalShortcutsToDefaultIfDuplicates();
 		if (window.__TAURI_INTERNALS__) {
 			syncGlobalShortcutsWithSettings();
 			resetGlobalShortcutsToDefaultIfDuplicates();

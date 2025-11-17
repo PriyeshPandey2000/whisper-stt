@@ -3,10 +3,11 @@ import type { Settings } from '$lib/settings';
 
 import { commands } from '$lib/commands';
 import { rpc } from '$lib/query';
-import {
-	type CommandId,
-	shortcutStringToArray,
-} from '$lib/services/local-shortcut-manager';
+// Commented out - using global shortcuts only
+// import {
+// 	type CommandId,
+// 	shortcutStringToArray,
+// } from '$lib/services/local-shortcut-manager';
 import { settings } from '$lib/stores/settings.svelte';
 import { partitionResults } from 'wellcrafted/result';
 
@@ -46,35 +47,36 @@ export function resetGlobalShortcutsToDefaultIfDuplicates(): boolean {
 /**
  * Checks if any local shortcuts are duplicated and resets all to defaults if duplicates found.
  * Returns true if duplicates were found and reset, false otherwise.
+ * COMMENTED OUT - Using global shortcuts only
  */
-export function resetLocalShortcutsToDefaultIfDuplicates(): boolean {
-	const localShortcuts = new Map<string, string>();
+// export function resetLocalShortcutsToDefaultIfDuplicates(): boolean {
+// 	const localShortcuts = new Map<string, string>();
 
-	// Check for duplicates
-	for (const command of commands) {
-		const shortcut = settings.value[`shortcuts.local.${command.id}`];
-		if (shortcut) {
-			if (localShortcuts.has(shortcut)) {
-				// If duplicates found, reset all local shortcuts to defaults
-				settings.resetShortcuts('local');
-				rpc.notify.success.execute({
-					title: 'Shortcuts reset',
-					description:
-						'Duplicate local shortcuts detected. All local shortcuts have been reset to defaults.',
-					action: {
-						href: '/settings/shortcuts/local',
-						label: 'Configure shortcuts',
-						type: 'link',
-					},
-				});
+// 	// Check for duplicates
+// 	for (const command of commands) {
+// 		const shortcut = settings.value[`shortcuts.local.${command.id}`];
+// 		if (shortcut) {
+// 			if (localShortcuts.has(shortcut)) {
+// 				// If duplicates found, reset all local shortcuts to defaults
+// 				settings.resetShortcuts('local');
+// 				rpc.notify.success.execute({
+// 					title: 'Shortcuts reset',
+// 					description:
+// 						'Duplicate local shortcuts detected. All local shortcuts have been reset to defaults.',
+// 					action: {
+// 						href: '/settings/shortcuts/local',
+// 						label: 'Configure shortcuts',
+// 						type: 'link',
+// 					},
+// 				});
 
-				return true;
-			}
-			localShortcuts.set(shortcut, command.id);
-		}
-	}
-	return false;
-}
+// 				return true;
+// 			}
+// 			localShortcuts.set(shortcut, command.id);
+// 		}
+// 	}
+// 	return false;
+// }
 
 /**
  * Synchronizes global keyboard shortcuts with the current settings.
@@ -120,30 +122,31 @@ export async function syncGlobalShortcutsWithSettings() {
  * - Registers shortcuts that have key combinations defined in settings
  * - Unregisters shortcuts that don't have key combinations defined
  * - Shows error toast if any registration/unregistration fails
+ * COMMENTED OUT - Using global shortcuts only
  */
-export async function syncLocalShortcutsWithSettings() {
-	const results = await Promise.all(
-		commands
-			.map((command) => {
-				const keyCombination = settings.value[`shortcuts.local.${command.id}`];
-				if (!keyCombination) {
-					return rpc.shortcuts.unregisterCommandLocally.execute({
-						commandId: command.id as CommandId,
-					});
-				}
-				return rpc.shortcuts.registerCommandLocally.execute({
-					command,
-					keyCombination: shortcutStringToArray(keyCombination),
-				});
-			})
-			.filter((result) => result !== undefined),
-	);
-	const { errs } = partitionResults(results);
-	if (errs.length > 0) {
-		rpc.notify.error.execute({
-			title: 'Error registering local commands',
-			description: errs.map((err) => err.error.message).join('\n'),
-			action: { error: errs, type: 'more-details' },
-		});
-	}
-}
+// export async function syncLocalShortcutsWithSettings() {
+// 	const results = await Promise.all(
+// 		commands
+// 			.map((command) => {
+// 				const keyCombination = settings.value[`shortcuts.local.${command.id}`];
+// 				if (!keyCombination) {
+// 					return rpc.shortcuts.unregisterCommandLocally.execute({
+// 						commandId: command.id as CommandId,
+// 					});
+// 				}
+// 				return rpc.shortcuts.registerCommandLocally.execute({
+// 					command,
+// 					keyCombination: shortcutStringToArray(keyCombination),
+// 				});
+// 			})
+// 			.filter((result) => result !== undefined),
+// 	);
+// 	const { errs } = partitionResults(results);
+// 	if (errs.length > 0) {
+// 		rpc.notify.error.execute({
+// 			title: 'Error registering local commands',
+// 			description: errs.map((err) => err.error.message).join('\n'),
+// 			action: { error: errs, type: 'more-details' },
+// 		});
+// 	}
+// }

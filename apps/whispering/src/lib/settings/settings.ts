@@ -180,14 +180,14 @@ export const settingsSchema = z.object({
 		.default(null),
 
 	...({
-		'shortcuts.local.cancelManualRecording': z.string().nullable().default('c'),
-		'shortcuts.local.pushToTalk': z.string().nullable().default('p'),
-		'shortcuts.local.startManualRecording': z.string().nullable().default(null),
-		'shortcuts.local.startVadRecording': z.string().nullable().default(null),
-		'shortcuts.local.stopManualRecording': z.string().nullable().default(null),
-		'shortcuts.local.stopVadRecording': z.string().nullable().default(null),
-		'shortcuts.local.toggleManualRecording': z.string().nullable().default(' '),
-		'shortcuts.local.toggleVadRecording': z.string().nullable().default('v'),
+		'shortcuts.local.cancelManualRecording': z.string().nullable().default(null),
+		// 'shortcuts.local.pushToTalk': z.string().nullable().default(null),
+		// 'shortcuts.local.startManualRecording': z.string().nullable().default(null),
+		// 'shortcuts.local.startVadRecording': z.string().nullable().default(null),
+		// 'shortcuts.local.stopManualRecording': z.string().nullable().default(null),
+		// 'shortcuts.local.stopVadRecording': z.string().nullable().default(null),
+		'shortcuts.local.toggleManualRecording': z.string().nullable().default(null),
+		// 'shortcuts.local.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.local.${Command['id']}`,
 		z.ZodDefault<z.ZodNullable<ZodString>>
@@ -198,22 +198,22 @@ export const settingsSchema = z.object({
 			.string()
 			.nullable()
 			.default('Command+Escape'),
-		'shortcuts.global.pushToTalk': z
-			.string()
-			.nullable()
-			.default(null),
-		'shortcuts.global.startManualRecording': z
-			.string()
-			.nullable()
-			.default(null),
-		'shortcuts.global.startVadRecording': z.string().nullable().default(null),
-		'shortcuts.global.stopManualRecording': z.string().nullable().default(null),
-		'shortcuts.global.stopVadRecording': z.string().nullable().default(null),
+		// 'shortcuts.global.pushToTalk': z
+		// 	.string()
+		// 	.nullable()
+		// 	.default(null),
+		// 'shortcuts.global.startManualRecording': z
+		// 	.string()
+		// 	.nullable()
+		// 	.default(null),
+		// 'shortcuts.global.startVadRecording': z.string().nullable().default(null),
+		// 'shortcuts.global.stopManualRecording': z.string().nullable().default(null),
+		// 'shortcuts.global.stopVadRecording': z.string().nullable().default(null),
 		'shortcuts.global.toggleManualRecording': z
 			.string()
 			.nullable()
 			.default('Option+Space'),
-		'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
+		// 'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.global.${Command['id']}`,
 		z.ZodDefault<z.ZodNullable<ZodString>>

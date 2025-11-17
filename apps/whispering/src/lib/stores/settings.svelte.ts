@@ -10,7 +10,7 @@ import { createPersistedState } from '$lib/svelte-utils';
 
 import {
 	syncGlobalShortcutsWithSettings,
-	syncLocalShortcutsWithSettings,
+	// syncLocalShortcutsWithSettings, // Commented out - using global shortcuts only
 } from '../../routes/+layout/register-commands';
 
 /**
@@ -92,7 +92,7 @@ export const settings = (() => {
 					syncGlobalShortcutsWithSettings();
 					break;
 				case 'local':
-					syncLocalShortcutsWithSettings();
+					// syncLocalShortcutsWithSettings(); // Commented out - using global shortcuts only
 					break;
 			}
 		},
@@ -117,7 +117,7 @@ export const settings = (() => {
 			if (key.startsWith('shortcuts.global.')) {
 				syncGlobalShortcutsWithSettings();
 			} else if (key.startsWith('shortcuts.local.')) {
-				syncLocalShortcutsWithSettings();
+				// syncLocalShortcutsWithSettings(); // Commented out - using global shortcuts only
 			}
 		},
 

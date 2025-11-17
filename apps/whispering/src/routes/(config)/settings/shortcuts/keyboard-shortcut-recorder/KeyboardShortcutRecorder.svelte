@@ -5,10 +5,10 @@
 	import * as Alert from '$lib/ui/alert';
 	import { Badge } from '$lib/ui/badge';
 	import { Button } from '$lib/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
 	import { Input } from '$lib/ui/input';
-	import * as Popover from '$lib/ui/popover';
 	import { cn } from '$lib/ui/utils';
-	import { AlertTriangle, Keyboard, Pencil, XIcon } from '@lucide/svelte';
+	import { AlertTriangle, CheckCircle, Keyboard, Pencil, XIcon } from '@lucide/svelte';
 
 	import { type KeyRecorder } from './create-key-recorder.svelte';
 
@@ -26,13 +26,48 @@
 		title: string;
 	} = $props();
 
-	let isPopoverOpen = $state(false);
+	let isDialogOpen = $state(false);
 	let isManualMode = $state(false);
 	let manualValue = $state(rawKeyCombination ?? '');
+	let saveStatus = $state<'none' | 'saving' | 'saved' | 'error'>('none');
 
 	$effect(() => {
 		manualValue = rawKeyCombination ?? '';
 	});
+
+	function resetDialog() {
+		isManualMode = false;
+		saveStatus = 'none';
+		keyRecorder.stop(); // Force stop any active recording
+	}
+
+	function handlePresetShortcut(keys: KeyboardEventSupportedKey[]) {
+		saveStatus = 'saving';
+		keyRecorder.register(keys);
+		saveStatus = 'saved';
+		setTimeout(() => {
+			isDialogOpen = false;
+			resetDialog();
+		}, 1500);
+	}
+
+	function handleManualSave() {
+		if (manualValue) {
+			saveStatus = 'saving';
+			// Properly parse manual input by trimming spaces and normalizing
+			const keys = manualValue
+				.split('+')
+				.map(key => key.trim().toLowerCase())
+				.filter(key => key.length > 0);
+			keyRecorder.register(keys as KeyboardEventSupportedKey[]);
+			saveStatus = 'saved';
+			setTimeout(() => {
+				isDialogOpen = false;
+				resetDialog();
+			}, 1500);
+		}
+	}
+
 </script>
 
 <div class="flex items-center justify-end gap-2">
@@ -44,7 +79,10 @@
 			variant="ghost"
 			size="icon"
 			class="size-8 shrink-0"
-			onclick={() => keyRecorder.clear()}
+			onclick={() => {
+				keyRecorder.clear();
+				saveStatus = 'none';
+			}}
 		>
 			<XIcon class="size-4" />
 			<span class="sr-only">Clear shortcut</span>
@@ -53,185 +91,215 @@
 		<span class="text-sm text-muted-foreground">Not set</span>
 	{/if}
 
-	<Popover.Root
-		open={isPopoverOpen}
-		onOpenChange={(isOpen) => {
-			isPopoverOpen = isOpen;
-			if (!isOpen) {
-				keyRecorder.stop();
-				isManualMode = false;
+	<Dialog.Root
+		open={isDialogOpen}
+		onOpenChange={(open) => {
+			// Prevent closing if we're in recording mode
+			if (!open && keyRecorder.isListening) {
+				return;
 			}
-			if (isOpen && autoFocus && !isManualMode) {
-				keyRecorder.start();
+			isDialogOpen = open;
+			if (!open) {
+				resetDialog();
 			}
 		}}
 	>
-		<Popover.Trigger>
+		<Dialog.Trigger>
 			<Button variant="ghost" size="sm" class="h-8 font-normal">
 				{#if rawKeyCombination}
-					<span class="text-xs">Set shortcut</span>
+					<span class="text-xs">Change shortcut</span>
 				{:else}
-					<span class="text-xs text-muted-foreground">+ Add</span>
+					<span class="text-xs text-muted-foreground">+ Add shortcut</span>
 				{/if}
 			</Button>
-		</Popover.Trigger>
+		</Dialog.Trigger>
 
-		<Popover.Content
-			class="w-80"
-			align="end"
-			onEscapeKeydown={(e) => {
+		<Dialog.Content 
+			class="max-w-md z-[60]"
+			onPointerDownOutside={(e) => {
+				// Prevent closing only when actively recording
 				if (keyRecorder.isListening) {
 					e.preventDefault();
 				}
 			}}
+			onEscapeKeyDown={(e) => {
+				// Allow escape key to close even when testing
+				isDialogOpen = false;
+			}}
 		>
-			<div class="space-y-4">
-				<div>
-					<h4 class="mb-1 text-sm font-medium leading-none">{title}</h4>
-					<p class="text-xs text-muted-foreground">
-						{#if isManualMode}
-							Enter shortcut manually (e.g., ctrl+shift+a)
-						{:else}
-							Click to record or edit manually
-						{/if}
-					</p>
-				</div>
+			<Dialog.Header>
+				<Dialog.Title class="text-lg">{title}</Dialog.Title>
+				<Dialog.Description class="text-sm text-muted-foreground">
+					Choose a keyboard shortcut for this command.
+				</Dialog.Description>
+			</Dialog.Header>
 
-				{#if IS_MACOS && !isManualMode}
-					<Alert.Root variant="warning" class="text-xs">
-						<AlertTriangle class="size-4" />
-						<Alert.Title class="text-xs font-medium"
-							>macOS Option Key Note</Alert.Title
-						>
-						<Alert.Description class="text-xs">
-							Some Option+key combinations (E, I, N, U, `) may not record
-							properly. Try recording in reverse (press letter first, then
-							Option) or edit manually.
+			<div class="space-y-6 py-4">
+				<!-- Save Status -->
+				{#if saveStatus === 'saved'}
+					<Alert.Root variant="default" class="border-green-200 bg-green-50">
+						<CheckCircle class="size-4 text-green-600" />
+						<Alert.Description class="text-green-800">
+							Shortcut saved successfully!
 						</Alert.Description>
 					</Alert.Root>
 				{/if}
 
-				{#if !isManualMode}
-					<!-- Recording mode -->
-					<button
-						type="button"
-						class={cn(
-							'relative flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-							keyRecorder.isListening && 'ring-2 ring-ring ring-offset-2',
-						)}
-						onclick={(e) => {
-							e.stopPropagation();
-							keyRecorder.start();
-						}}
-						tabindex="0"
-						aria-label={keyRecorder.isListening
-							? 'Recording keyboard shortcut'
-							: 'Click to record keyboard shortcut'}
-					>
-						<div class="flex w-full items-center justify-between">
-							<div
-								class="flex grow items-center gap-1.5 overflow-x-auto pr-2 scrollbar-none"
-							>
-								{#if rawKeyCombination && !keyRecorder.isListening}
-									<Badge variant="secondary" class="font-mono text-xs">
-										{rawKeyCombination ?? ''}
-									</Badge>
-								{:else if !keyRecorder.isListening}
-									<span class="truncate text-muted-foreground"
-										>{placeholder}</span
-									>
-								{/if}
-							</div>
-							{#if !keyRecorder.isListening}
-								<Keyboard class="size-4 text-muted-foreground" />
-							{/if}
-						</div>
-
-						{#if keyRecorder.isListening}
-							<div
-								class="absolute inset-0 z-10 flex animate-in fade-in-0 zoom-in-95 items-center justify-center rounded-md border border-input bg-background/95 backdrop-blur-sm"
-								aria-live="polite"
-							>
-								<div class="flex flex-col items-center gap-1 px-4 py-2">
-									<p class="text-sm font-medium">Press key combination</p>
-									<p class="text-xs text-muted-foreground">Esc to cancel</p>
-								</div>
-							</div>
-						{/if}
-					</button>
-
-					<div class="flex items-center gap-2">
-						{#if rawKeyCombination}
-							<Button
-								variant="outline"
-								size="sm"
-								class="flex-1"
-								onclick={() => keyRecorder.clear()}
-							>
-								<XIcon class="mr-2 size-3" />
-								Clear
-							</Button>
-						{/if}
+				<!-- Main Method: Record Keys -->
+				<div>
+					<h4 class="mb-3 text-sm font-medium">Set Your Shortcut</h4>
+					<p class="mb-3 text-sm text-muted-foreground">Once your shortcut is registered correctly, it will appear in the "Current" section below. Then press that shortcut to test if you see the recording overlay.</p>
+					<div class="mb-3 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-2">
+						<p class="font-medium">💡 Recording Tips:</p>
+						<p>• Click "Record by pressing keys" below → Press the letter FIRST, then hold modifier keys (Cmd/Ctrl/Option)</p>
+						<p>• On macOS: Avoid Option+E, Option+I, Option+N, Option+U, Option+A, Option+` (create special characters: é, î, ñ, ü, å, etc.)</p>
+						<p>• Same shortcut will both START and STOP recording</p>
+						<p>• Once set: Press your shortcut to test → Look for recording overlay → If you see it, shortcut works!</p>
+					</div>
+					
+					<div class="flex gap-4">
 						<Button
 							variant="outline"
-							size="sm"
-							class={rawKeyCombination ? 'flex-1' : 'w-full'}
-							onclick={() => {
-								isManualMode = true;
-								manualValue = rawKeyCombination ?? '';
-								keyRecorder.stop();
-							}}
+							class="flex-1"
+							onclick={() => keyRecorder.start()}
+							disabled={keyRecorder.isListening || saveStatus === 'saving'}
 						>
-							<Pencil class="mr-2 size-3" />
-							Edit manually
+							<Keyboard class="mr-2 size-4" />
+							{keyRecorder.isListening ? 'Press keys now...' : 'Record by pressing keys'}
+						</Button>
+
+						{#if rawKeyCombination}
+							<div class="rounded-lg border bg-muted/50 p-3 flex flex-col items-center justify-center min-w-[120px]">
+								<span class="text-xs font-medium text-muted-foreground mb-1">Current:</span>
+								<Badge variant="secondary" class="font-mono text-xs">
+									{rawKeyCombination}
+								</Badge>
+								<p class="mt-2 text-xs text-muted-foreground text-center">
+									Press <strong>{rawKeyCombination}</strong><br />
+									<span class="text-xs opacity-75">Watch for recording indicator</span>
+								</p>
+							</div>
+						{/if}
+					</div>
+
+				</div>
+
+				<!-- Quick Presets -->
+				<div>
+					<h4 class="mb-3 text-sm font-medium">Or choose a common shortcut:</h4>
+					<div class="grid grid-cols-2 gap-2">
+						<Button
+							variant="outline"
+							class="h-10 font-mono"
+							onclick={() => handlePresetShortcut(['shift', 'z'])}
+							disabled={saveStatus === 'saving'}
+						>
+							{#if saveStatus === 'saving'}
+								Saving...
+							{:else}
+								Shift+Z
+							{/if}
+						</Button>
+						<Button
+							variant="outline"
+							class="h-10 font-mono"
+							onclick={() => handlePresetShortcut(['shift', 'x'])}
+							disabled={saveStatus === 'saving'}
+						>
+							Shift+X
+						</Button>
+						<Button
+							variant="outline"
+							class="h-10 font-mono"
+							onclick={() => handlePresetShortcut(['control', 'z'])}
+							disabled={saveStatus === 'saving'}
+						>
+							Ctrl+Z
+						</Button>
+						<Button
+							variant="outline"
+							class="h-10 font-mono"
+							onclick={() => handlePresetShortcut(['control', 'x'])}
+							disabled={saveStatus === 'saving'}
+						>
+							Ctrl+X
 						</Button>
 					</div>
-				{:else}
-					<!-- Manual mode -->
-					<form
-						onsubmit={(e) => {
-							e.preventDefault();
-							if (manualValue) {
-								keyRecorder.register(
-									manualValue.split('+') as KeyboardEventSupportedKey[],
-								);
-								isManualMode = false;
-							}
-						}}
-						class="space-y-3"
-					>
-						<Input
-							type="text"
-							placeholder="e.g., ctrl+shift+a"
-							bind:value={manualValue}
-							class="font-mono text-sm"
-							autofocus
-						/>
-						<div class="flex items-center gap-2">
+				</div>
+
+				<!-- Advanced: Manual Entry - DISABLED FOR NOW -->
+				<!-- <div class="border-t pt-4">
+					<div class="mb-3 flex items-center justify-between">
+						<div>
+							<h4 class="text-sm font-medium text-muted-foreground">Advanced: Type manually</h4>
+							<p class="text-xs text-muted-foreground">For complex shortcuts that don't record properly</p>
+						</div>
+						{#if !isManualMode}
 							<Button
-								type="button"
 								variant="outline"
 								size="sm"
-								class="flex-1"
 								onclick={() => {
-									isManualMode = false;
+									isManualMode = true;
 									manualValue = rawKeyCombination ?? '';
 								}}
 							>
-								Cancel
+								<Pencil class="mr-2 size-3" />
+								Type custom
 							</Button>
-							<Button
-								type="submit"
-								size="sm"
-								class="flex-1"
-								disabled={!manualValue}
-							>
-								Save
-							</Button>
+						{/if}
+					</div>
+
+					{#if isManualMode}
+						<div class="space-y-3">
+							<Input
+								type="text"
+								placeholder="e.g., ctrl+shift+r or cmd+option+t"
+								bind:value={manualValue}
+								class="font-mono"
+								autofocus
+							/>
+							<div class="flex gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									onclick={() => {
+										isManualMode = false;
+										manualValue = rawKeyCombination ?? '';
+									}}
+								>
+									Cancel
+								</Button>
+								<Button
+									size="sm"
+									onclick={handleManualSave}
+									disabled={!manualValue || saveStatus === 'saving'}
+								>
+									{saveStatus === 'saving' ? 'Saving...' : 'Save'}
+								</Button>
+							</div>
 						</div>
-					</form>
-				{/if}
+					{/if}
+				</div> -->
 			</div>
-		</Popover.Content>
-	</Popover.Root>
+
+			<Dialog.Footer>
+				<Button
+					variant="outline"
+					onclick={() => {
+						isDialogOpen = false;
+						resetDialog();
+					}}
+				>
+					{saveStatus === 'saved' ? 'Done' : 'Cancel'}
+				</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 </div>
+
+<style>
+	/* Override z-index for keyboard shortcut dialog to appear above header */
+	:global([data-slot="dialog-overlay"]) {
+		z-index: 60 !important;
+	}
+</style>

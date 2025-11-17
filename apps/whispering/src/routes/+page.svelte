@@ -379,18 +379,28 @@
 				to start recording here.
 			</p> -->
 			{#if window.__TAURI_INTERNALS__}
-				<p class="text-foreground/75 text-sm text-center">
-					Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Option+Space</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Option+Space</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Cmd+V</kbd>.
-				</p>
-				<p class="text-foreground/75 text-sm text-center">
-					💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again, and then allow accessibility permissions when prompted.
-				</p>
-				<p class="text-foreground/75 text-sm text-center">
-					To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Command+Escape</kbd>
-				</p>
-				<p class="text-foreground/75 text-center text-sm">
-					✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
-				</p>
+				<div class="flex flex-col items-center gap-3">
+					<p class="text-foreground/75 text-sm text-center">
+						Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Cmd+V</kbd>.
+					</p>
+					<p class="text-foreground/75 text-sm text-center">
+						💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again, and then allow accessibility permissions when prompted.
+					</p>
+					<p class="text-foreground/75 text-sm text-center">
+						To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.cancelManualRecording'] || 'Not set'}</kbd>
+					</p>
+					<NoteFluxButton
+						href="/settings/shortcuts/global"
+						variant="outline"
+						size="sm"
+						tooltipContent="Customize keyboard shortcuts"
+					>
+						⌨️ Change Shortcuts
+					</NoteFluxButton>
+					<p class="text-foreground/75 text-center text-sm">
+						✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
+					</p>
+				</div>
 			{/if}
 		</div>
 		{/if}

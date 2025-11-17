@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		goto('/settings/shortcuts/local', { replaceState: true });
+		// Redirect to global shortcuts since local shortcuts are disabled
+		goto('/settings/shortcuts/global', { replaceState: true });
 	});
 </script>
