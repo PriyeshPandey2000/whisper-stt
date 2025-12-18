@@ -2,8 +2,8 @@ import type { NoteFluxError } from '$lib/result';
 import type { ClipboardServiceError } from '$lib/services/clipboard';
 
 import { WHISPERING_RECORDINGS_PATHNAME } from '$lib/constants/app';
+import { ClipboardServiceErr } from '$lib/services/clipboard';
 import { settings } from '$lib/stores/settings.svelte';
-import { onboardingStore } from '$lib/stores/onboarding.svelte';
 import { Ok } from 'wellcrafted/result';
 
 import { defineMutation } from './_client';
@@ -173,39 +173,39 @@ export const delivery = {
 				const isPastingIntoApp = activeElement &&
 					(activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT');
 
-				// Check if we're actively in the onboarding flow (dialog open at usage-guide)
-				const isInOnboarding = onboardingStore.isOpen && onboardingStore.currentStep === 'usage-guide';
+				console.log(' [DELIVERY] Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp);
 
-				// Check if we're on the settings page (testing shortcut)
-				const isOnSettingsPage = window.location.pathname.includes('/settings/shortcuts');
-
-				// During onboarding, always refocus to ensure text goes to the right place
-				// After onboarding, only refocus on first paste test
-				const pasteTestCompleted = settings.value['onboarding.pasteTestCompleted'];
-				const shouldRefocus = isPastingIntoApp && (isInOnboarding || !pasteTestCompleted);
-
-				// Keep window visible if pasting into app OR on settings page (for testing shortcuts)
-				// Settings page should ALWAYS keep visible so users can see the indicator without losing focus
-				const shouldKeepVisible = isPastingIntoApp || isOnSettingsPage;
-
-				console.log('[DELIVERY] Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp, 'isInOnboarding:', isInOnboarding, 'isOnSettingsPage:', isOnSettingsPage, 'shouldKeepVisible:', shouldKeepVisible, 'shouldRefocus:', shouldRefocus);
-
-				const { error } = await rpc.clipboard.typeAtCursor.execute({
-				text,
-				keepWindowVisible: shouldKeepVisible || undefined,
-			refocusWindow: shouldRefocus || undefined,
-			});
-			pasteError = error;
-			if (pasteError) {
-				console.error('[DELIVERY] typeAtCursor failed:', pasteError);
-			} else {
-				console.log('[DELIVERY] typeAtCursor succeeded');
-				// Mark paste test as completed after first successful paste during onboarding
-				if (shouldRefocus) {
-					settings.updateKey('onboarding.pasteTestCompleted', true);
+				if (isPastingIntoApp) {
+					console.log('[DELIVERY] Pasting into app using direct DOM insertion');
+					try {
+						const element = activeElement as HTMLTextAreaElement | HTMLInputElement;
+						const start = element.selectionStart || 0;
+						const end = element.selectionEnd || 0;
+						const currentValue = element.value;
+						element.value = currentValue.slice(0, start) + text + currentValue.slice(end);
+						const newCursorPos = start + text.length;
+						element.selectionStart = newCursorPos;
+						element.selectionEnd = newCursorPos;
+						element.dispatchEvent(new Event('input'));
+						console.log('[DELIVERY] Direct DOM insertion succeeded');
+						pasteError = undefined;
+					} catch (error) {
+						console.error('[DELIVERY] Direct DOM insertion failed:', error);
+						pasteError = ClipboardServiceErr({ message: 'Failed to paste into text field', cause: error }).error;
+					}
+				} else {
+					const { error } = await rpc.clipboard.typeAtCursor.execute({
+						text,
+						keepWindowVisible: false
+					});
+					pasteError = error;
+					if (pasteError) {
+						console.error('[DELIVERY] typeAtCursor failed:', pasteError);
+					} else {
+						console.log('[DELIVERY] typeAtCursor succeeded');
+					}
 				}
-			}
-		} else {
+			} else {
 				console.log('[DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
@@ -394,39 +394,39 @@ export const delivery = {
 				const isPastingIntoApp = activeElement &&
 					(activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT');
 
-				// Check if we're actively in the onboarding flow (dialog open at usage-guide)
-				const isInOnboarding = onboardingStore.isOpen && onboardingStore.currentStep === 'usage-guide';
+				console.log(' [DELIVERY] Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp);
 
-				// Check if we're on the settings page (testing shortcut)
-				const isOnSettingsPage = window.location.pathname.includes('/settings/shortcuts');
-
-				// During onboarding, always refocus to ensure text goes to the right place
-				// After onboarding, only refocus on first paste test
-				const pasteTestCompleted = settings.value['onboarding.pasteTestCompleted'];
-				const shouldRefocus = isPastingIntoApp && (isInOnboarding || !pasteTestCompleted);
-
-				// Keep window visible if pasting into app OR on settings page (for testing shortcuts)
-				// Settings page should ALWAYS keep visible so users can see the indicator without losing focus
-				const shouldKeepVisible = isPastingIntoApp || isOnSettingsPage;
-
-				console.log(' [DELIVERY] Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp, 'isInOnboarding:', isInOnboarding, 'isOnSettingsPage:', isOnSettingsPage, 'shouldKeepVisible:', shouldKeepVisible, 'shouldRefocus:', shouldRefocus);
-
-			const { error } = await rpc.clipboard.typeAtCursor.execute({
-				text,
-			keepWindowVisible: shouldKeepVisible || undefined,
-				refocusWindow: shouldRefocus || undefined,
-			});
-			pasteError = error;
-			if (pasteError) {
-				console.error('[DELIVERY] typeAtCursor failed:', pasteError);
-			} else {
-				console.log('[DELIVERY] typeAtCursor succeeded');
-				// Mark paste test as completed after first successful paste during onboarding
-				if (shouldRefocus) {
-					settings.updateKey('onboarding.pasteTestCompleted', true);
+				if (isPastingIntoApp) {
+					console.log('[DELIVERY] Pasting into app using direct DOM insertion');
+					try {
+						const element = activeElement as HTMLTextAreaElement | HTMLInputElement;
+						const start = element.selectionStart || 0;
+						const end = element.selectionEnd || 0;
+						const currentValue = element.value;
+						element.value = currentValue.slice(0, start) + text + currentValue.slice(end);
+						const newCursorPos = start + text.length;
+						element.selectionStart = newCursorPos;
+						element.selectionEnd = newCursorPos;
+						element.dispatchEvent(new Event('input'));
+						console.log('[DELIVERY] Direct DOM insertion succeeded');
+						pasteError = undefined;
+					} catch (error) {
+						console.error('[DELIVERY] Direct DOM insertion failed:', error);
+						pasteError = ClipboardServiceErr({ message: 'Failed to paste into text field', cause: error }).error;
+					}
+				} else {
+					const { error } = await rpc.clipboard.typeAtCursor.execute({
+						text,
+						keepWindowVisible: false
+					});
+					pasteError = error;
+					if (pasteError) {
+						console.error(' [DELIVERY] typeAtCursor failed:', pasteError);
+					} else {
+						console.log('[DELIVERY] typeAtCursor succeeded');
+					}
 				}
-			}
-		} else {
+			} else {
 				console.log('[DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);

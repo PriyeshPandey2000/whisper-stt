@@ -109,8 +109,10 @@ pub async fn stop_recording(
         recorder.stop_recording()
     };
     
-    // Hide overlay
-    let _ = hide_recording_overlay(app_handle.clone()).await;
+    // Set overlay to processing state instead of hiding
+    // This shows the user that their text is being processed (transcribed/pasted)
+    // The overlay will be hidden later after delivery completes
+    let _ = set_overlay_processing(app_handle.clone(), true).await;
     
     result
 }
@@ -167,7 +169,18 @@ pub async fn show_recording_overlay(app_handle: tauri::AppHandle) -> Result<()> 
 #[tauri::command]
 pub async fn hide_recording_overlay(app_handle: tauri::AppHandle) -> Result<()> {
     if let Some(window) = app_handle.get_webview_window("recording-overlay") {
+        // Reset processing state before hiding
+        let _ = window.eval("window.setProcessingState(false)");
         window.hide().map_err(|e| format!("Failed to hide overlay: {}", e))?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn set_overlay_processing(app_handle: tauri::AppHandle, processing: bool) -> Result<()> {
+    if let Some(window) = app_handle.get_webview_window("recording-overlay") {
+        let js = format!("window.setProcessingState({})", processing);
+        window.eval(&js).map_err(|e| format!("Failed to set processing state: {}", e))?;
     }
     Ok(())
 }

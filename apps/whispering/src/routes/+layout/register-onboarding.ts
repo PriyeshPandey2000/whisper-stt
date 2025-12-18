@@ -7,14 +7,20 @@ import { settings } from '$lib/stores/settings.svelte';
 import { setupDefaultTransformation } from './setup-default-transformation';
 
 /**
- * Sets up default transformation for new users.
- * Onboarding toasts are disabled since API keys are embedded through build process.
+ * Sets up default transformation for new users and triggers onboarding for first-time users.
  */
 export function registerOnboarding() {
 	// Set up default transformation for new users
 	setupDefaultTransformation();
 	
-	// Onboarding toasts disabled - API keys are embedded through GitHub build
+	// Trigger onboarding flow for new users
+	const isCompleted = settings.value['app.onboardingCompleted'];
+	if (!isCompleted) {
+		// Onboarding will be shown by OnboardingFlow component
+		console.log('🎉 New user detected - onboarding will be shown');
+	}
+	
+	// Old onboarding toasts disabled - replaced with new OnboardingFlow component
 	
 	// const selectedService = getSelectedTranscriptionService();
 

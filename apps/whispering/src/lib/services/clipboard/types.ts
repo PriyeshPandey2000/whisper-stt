@@ -26,9 +26,14 @@ export type ClipboardService = {
 	 * - Desktop: Uses Enigo to simulate keyboard typing
 	 * - Web: Not implemented (falls back to paste)
 	 * - Mobile: Not implemented (falls back to paste)
+	 *
+	 * @param keepWindowVisible If true, keeps the main window visible
+	 * @param refocusWindow If true, refocuses the window before pasting (for onboarding)
 	 */
 	typeAtCursor: (
 		text: string,
+		keepWindowVisible?: boolean,
+		refocusWindow?: boolean,
 	) => Promise<Result<void, ClipboardServiceError>>;
 
 	/**

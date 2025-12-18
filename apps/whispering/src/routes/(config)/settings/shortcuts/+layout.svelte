@@ -19,14 +19,14 @@
 </script>
 
 <div class="mx-auto max-w-4xl space-y-6 py-6">
-	<header>
+	<!-- <header>
 		<h1 class="text-3xl font-bold tracking-tight">Keyboard Shortcuts</h1>
 		<p class="mt-2 text-muted-foreground">
 			Configure keyboard shortcuts to quickly access NoteFlux features.
 		</p>
-	</header>
+	</header> -->
 
-	<nav class="flex w-full gap-1 rounded-lg bg-muted p-1">
+	<!-- <nav class="flex w-full gap-1 rounded-lg bg-muted p-1">
 		{#each items as item (item.href)}
 			{@const isActive = page.url.pathname === item.href}
 			<Button
@@ -52,7 +52,7 @@
 				</span>
 			</Button>
 		{/each}
-	</nav>
+	</nav> -->
 
 	{@render children()}
 </div>

@@ -10,8 +10,8 @@ export const clipboard = {
 	}),
 	typeAtCursor: defineMutation({
 		mutationKey: ['clipboard', 'typeAtCursor'],
-		resultMutationFn: ({ text }: { text: string }) =>
-			services.clipboard.typeAtCursor(text),
+		resultMutationFn: ({ text, keepWindowVisible, refocusWindow }: { text: string; keepWindowVisible?: boolean; refocusWindow?: boolean }) =>
+			services.clipboard.typeAtCursor(text, keepWindowVisible, refocusWindow),
 	}),
 	pasteFromClipboard: defineMutation({
 		mutationKey: ['clipboard', 'pasteFromClipboard'],

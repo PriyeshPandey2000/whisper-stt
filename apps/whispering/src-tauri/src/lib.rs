@@ -21,7 +21,7 @@ pub mod recorder;
 use recorder::commands::{
     cancel_recording, close_recording_session, enumerate_recording_devices,
     get_current_recording_id, hide_recording_overlay, init_recording_session, 
-    show_recording_overlay, start_recording, stop_recording, AppData,
+    set_overlay_processing, show_recording_overlay, start_recording, stop_recording, AppData,
 };
 
 #[cfg(target_os = "macos")]
@@ -183,7 +183,7 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
         webview_url,
     )
     .title("Recording")
-    .inner_size(94.0, 30.0)    // Exactly the size of content including rounded corners
+    .inner_size(45.0, 45.0)    // Square size for circular orb
     .position(660.0, 800.0)    // Bottom center, shifted down
     .decorations(false)        // No window decorations
     .resizable(false)          // Not resizable
@@ -276,6 +276,7 @@ pub async fn run() {
         // UI commands
         show_recording_overlay,
         hide_recording_overlay,
+        set_overlay_processing,
     ]);
 
     #[cfg(not(target_os = "macos"))]
@@ -293,6 +294,7 @@ pub async fn run() {
         // UI commands
         show_recording_overlay,
         hide_recording_overlay,
+        set_overlay_processing,
     ]);
 
     let mut app = builder
@@ -404,12 +406,18 @@ use enigo::{Direction, Enigo, Key, Keyboard, Settings};
 /// **Note**: This method may have issues with non-ASCII characters in some applications
 /// and can appear slow for large text blocks.
 #[tauri::command]
-fn write_text(text: String, app_handle: tauri::AppHandle) -> Result<(), String> {
+fn write_text(text: String, app_handle: tauri::AppHandle, keep_window_visible: Option<bool>, refocus_window: Option<bool>) -> Result<(), String> {
     // Hide our main window if it's visible to avoid interfering with focus
-    if let Some(main_window) = app_handle.get_webview_window("main") {
-        if let Ok(is_visible) = main_window.is_visible() {
-            if is_visible {
-                let _ = main_window.hide();
+    // Unless keep_window_visible is true (used during onboarding when pasting into the app itself)
+    let should_hide = !keep_window_visible.unwrap_or(false);
+    let should_refocus = refocus_window.unwrap_or(false);
+
+    if should_hide {
+        if let Some(main_window) = app_handle.get_webview_window("main") {
+            if let Ok(is_visible) = main_window.is_visible() {
+                if is_visible {
+                    let _ = main_window.hide();
+                }
             }
         }
     }
@@ -466,8 +474,15 @@ fn write_text(text: String, app_handle: tauri::AppHandle) -> Result<(), String> 
         return Err("Clipboard paste approach not implemented for non-macOS yet".to_string());
     }
     
-    // Removed clipboard delay for maximum speed
-    
+    // When pasting into the app itself (onboarding), refocus the window
+    if should_refocus {
+        if let Some(main_window) = app_handle.get_webview_window("main") {
+            let _ = main_window.set_focus();
+            // Give focus time to settle
+            std::thread::sleep(std::time::Duration::from_millis(200));
+        }
+    }
+
     // Then simulate paste (Cmd+V on macOS, Ctrl+V elsewhere)
     #[cfg(target_os = "macos")]
     let modifier = Key::Meta;

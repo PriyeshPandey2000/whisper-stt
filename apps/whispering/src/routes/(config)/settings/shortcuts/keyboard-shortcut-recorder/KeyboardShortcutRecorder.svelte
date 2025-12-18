@@ -18,12 +18,14 @@
 		keyRecorder,
 		placeholder = 'Press a key combination',
 		rawKeyCombination,
+		onDialogClose,
 	}: {
 		autoFocus?: boolean;
 		keyRecorder: KeyRecorder;
 		placeholder?: string;
 		rawKeyCombination: null | string;
 		title: string;
+		onDialogClose?: () => void;
 	} = $props();
 
 	let isDialogOpen = $state(false);
@@ -35,20 +37,27 @@
 		manualValue = rawKeyCombination ?? '';
 	});
 
-	function resetDialog() {
+	async function resetDialog() {
 		isManualMode = false;
 		saveStatus = 'none';
 		keyRecorder.stop(); // Force stop any active recording
+
+		// Force hide recording overlay if it's stuck
+		if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__) {
+			try {
+				const { invoke } = await import('@tauri-apps/api/core');
+				await invoke('hide_recording_overlay');
+			} catch (error) {
+				// Silently fail if overlay is not visible
+			}
+		}
 	}
 
 	function handlePresetShortcut(keys: KeyboardEventSupportedKey[]) {
 		saveStatus = 'saving';
 		keyRecorder.register(keys);
 		saveStatus = 'saved';
-		setTimeout(() => {
-			isDialogOpen = false;
-			resetDialog();
-		}, 1500);
+		// Dialog stays open - user must click Done/Cancel to close
 	}
 
 	function handleManualSave() {
@@ -101,6 +110,7 @@
 			isDialogOpen = open;
 			if (!open) {
 				resetDialog();
+				onDialogClose?.();
 			}
 		}}
 	>
@@ -114,8 +124,8 @@
 			</Button>
 		</Dialog.Trigger>
 
-		<Dialog.Content 
-			class="max-w-md z-[60]"
+		<Dialog.Content
+			class="max-w-[90vw] sm:max-w-[90vw] z-[60]"
 			onPointerDownOutside={(e) => {
 				// Prevent closing only when actively recording
 				if (keyRecorder.isListening) {
@@ -129,9 +139,6 @@
 		>
 			<Dialog.Header>
 				<Dialog.Title class="text-lg">{title}</Dialog.Title>
-				<Dialog.Description class="text-sm text-muted-foreground">
-					Choose a keyboard shortcut for this command.
-				</Dialog.Description>
 			</Dialog.Header>
 
 			<div class="space-y-6 py-4">
@@ -152,7 +159,7 @@
 					<div class="mb-3 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-2">
 						<p class="font-medium">💡 Recording Tips:</p>
 						<p>• Click "Record by pressing keys" below → Press the letter FIRST, then hold modifier keys (Cmd/Ctrl/Option)</p>
-						<p>• On macOS: Avoid Option+E, Option+I, Option+N, Option+U, Option+A, Option+` (create special characters: é, î, ñ, ü, å, etc.)</p>
+						<p>• Note: Fn key is not currently supported for shortcuts</p>
 						<p>• Same shortcut will both START and STOP recording</p>
 						<p>• Once set: Press your shortcut to test → Look for recording overlay → If you see it, shortcut works!</p>
 					</div>
@@ -288,6 +295,7 @@
 					onclick={() => {
 						isDialogOpen = false;
 						resetDialog();
+						onDialogClose?.();
 					}}
 				>
 					{saveStatus === 'saved' ? 'Done' : 'Cancel'}

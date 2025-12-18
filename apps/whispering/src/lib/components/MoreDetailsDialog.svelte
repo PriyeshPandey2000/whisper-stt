@@ -63,7 +63,7 @@
 </script>
 
 <Dialog.Root bind:open={moreDetailsDialog.isOpen}>
-	<Dialog.Content class="sm:max-w-xl">
+	<Dialog.Content class="sm:max-w-xl" trapFocus={true}>
 		<Dialog.Header>
 			<Dialog.Title>{moreDetailsDialog.title}</Dialog.Title>
 			<Dialog.Description>{moreDetailsDialog.description}</Dialog.Description>

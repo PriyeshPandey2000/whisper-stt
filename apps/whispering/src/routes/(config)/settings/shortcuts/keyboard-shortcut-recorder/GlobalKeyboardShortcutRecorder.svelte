@@ -2,6 +2,8 @@
 	import type { Command } from '$lib/commands';
 	import type { KeyboardEventSupportedKey } from '$lib/constants/keyboard';
 
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { rpc } from '$lib/query';
 	import { fromTaggedError } from '$lib/result';
 	import {
@@ -9,6 +11,7 @@
 		pressedKeysToTauriAccelerator,
 	} from '$lib/services/global-shortcut-manager';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { onboardingStore } from '$lib/stores/onboarding.svelte';
 	import { type PressedKeys } from '$lib/utils/createPressedKeys.svelte';
 
 	import { createKeyRecorder } from './create-key-recorder.svelte';
@@ -29,6 +32,9 @@
 	const shortcutValue = $derived(
 		settings.value[`shortcuts.global.${command.id}`],
 	);
+
+	// Check if coming from onboarding - only read once on mount
+	let shouldRedirectToOnboarding = $state($page.url.searchParams.get('from') === 'onboarding');
 
 	const keyRecorder = createKeyRecorder({
 		onClear: async () => {
@@ -114,9 +120,27 @@
 				title: `Global shortcut set to ${accelerator}`,
 				description: `Press the shortcut to trigger "${command.title}"`,
 			});
+
+			// Shortcut changed successfully - redirect will happen on dialog close
+			// (shouldRedirectToOnboarding is already set if coming from onboarding)
 		},
 		pressedKeys,
 	});
+
+	function handleDialogClose() {
+		if (shouldRedirectToOnboarding) {
+			shouldRedirectToOnboarding = false;
+			// Small delay to allow dialog cleanup before navigating
+			setTimeout(() => {
+				// Ensure body styles are reset before navigation
+				if (typeof document !== 'undefined') {
+					document.body.style.overflow = '';
+					document.body.style.pointerEvents = '';
+				}
+				goto('/?reopenOnboarding=usage-guide');
+			}, 150);
+		}
+	}
 </script>
 
 <KeyboardShortcutRecorder
@@ -125,4 +149,5 @@
 	{autoFocus}
 	rawKeyCombination={shortcutValue}
 	{keyRecorder}
+	onDialogClose={handleDialogClose}
 />

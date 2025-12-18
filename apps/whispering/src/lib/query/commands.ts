@@ -2,6 +2,7 @@ import { fromTaggedErr, fromTaggedError, NoteFluxErr } from '$lib/result';
 import { DbServiceErr } from '$lib/services/db';
 import { settings } from '$lib/stores/settings.svelte';
 import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
+import { invoke } from '@tauri-apps/api/core';
 import { nanoid } from 'nanoid/non-secure';
 import { Err, Ok } from 'wellcrafted/result';
 
@@ -16,6 +17,19 @@ import { transcription } from './transcription';
 import { transformations } from './transformations';
 import { transformer } from './transformer';
 import { vadRecorder } from './vad-recorder';
+
+/**
+ * Hides the recording overlay indicator.
+ * Called after transcription/transformation/delivery is complete.
+ */
+async function hideRecordingOverlay() {
+	if (!window.__TAURI_INTERNALS__) return;
+	try {
+		await invoke('hide_recording_overlay');
+	} catch (error) {
+		console.error('Failed to hide recording overlay:', error);
+	}
+}
 
 // Track manual recording start time for duration calculation
 let manualRecordingStartTime: null | number = null;
@@ -161,6 +175,8 @@ const stopManualRecording = defineMutation({
 			await recorder.stopRecording.execute({ toastId });
 		if (stopRecordingError) {
 			notify.error.execute({ id: toastId, ...stopRecordingError });
+			// Ensure overlay is hidden even if stopping fails
+			await hideRecordingOverlay();
 			return Err(stopRecordingError);
 		}
 
@@ -187,13 +203,20 @@ const stopManualRecording = defineMutation({
 			type: 'manual_recording_completed',
 		});
 
-		await processRecordingPipeline({
-			blob,
-			completionDescription: 'Recording saved and session closed successfully',
-			completionTitle: '✨ Recording Complete!',
-			toastId,
-			initiatedVia,
-		});
+		try {
+			await processRecordingPipeline({
+				blob,
+				completionDescription: 'Recording saved and session closed successfully',
+				completionTitle: '✨ Recording Complete!',
+				toastId,
+				initiatedVia,
+			});
+		} catch (error) {
+			// Ensure overlay is hidden even if pipeline fails unexpectedly
+			console.error('Unexpected error in recording pipeline:', error);
+			await hideRecordingOverlay();
+			throw error;
+		}
 
 		return Ok(undefined);
 	},
@@ -566,6 +589,7 @@ async function processRecordingPipeline({
 			action: { error: createRecordingError, type: 'more-details' },
 			id: toastId,
 		});
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -588,6 +612,7 @@ async function processRecordingPipeline({
 	if (transcribeError) {
 		if (transcribeError.name === 'NoteFluxError') {
 			notify.error.execute({ id: transcribeToastId, ...transcribeError });
+			await hideRecordingOverlay();
 			return;
 		}
 		notify.error.execute({
@@ -596,6 +621,7 @@ async function processRecordingPipeline({
 			action: { error: transcribeError, type: 'more-details' },
 			id: transcribeToastId,
 		});
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -620,6 +646,8 @@ async function processRecordingPipeline({
 			toastId: transcribeToastId,
 			initiatedVia,
 		});
+		// Hide the recording overlay after delivery is complete
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -639,6 +667,7 @@ async function processRecordingPipeline({
 				action: { error: getTransformationError, type: 'more-details' },
 			}),
 		);
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -654,6 +683,7 @@ async function processRecordingPipeline({
 				type: 'link',
 			},
 		});
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -671,6 +701,7 @@ async function processRecordingPipeline({
 		});
 	if (transformError) {
 		notify.error.execute({ id: transformToastId, ...transformError });
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -681,6 +712,7 @@ async function processRecordingPipeline({
 			action: { error: transformationRun.error, type: 'more-details' },
 			id: transformToastId,
 		});
+		await hideRecordingOverlay();
 		return;
 	}
 
@@ -691,4 +723,7 @@ async function processRecordingPipeline({
 		toastId: transformToastId,
 		initiatedVia,
 	});
+
+	// Hide the recording overlay after delivery is complete
+	await hideRecordingOverlay();
 }

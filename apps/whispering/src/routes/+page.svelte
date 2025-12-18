@@ -21,21 +21,26 @@
 	} from '$lib/constants/audio';
 	import { rpc } from '$lib/query';
 	import { auth } from '$lib/stores/auth.svelte';
+	import { onboardingStore } from '$lib/stores/onboarding.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { Button } from '$lib/ui/button';
 	import {
 		ACCEPT_AUDIO,
 		ACCEPT_VIDEO,
 		FileDropZone,
 		MEGABYTE,
 	} from '$lib/ui/file-drop-zone';
+	import * as Popover from '$lib/ui/popover';
 	import * as ToggleGroup from '$lib/ui/toggle-group';
 	import { createBlobUrlManager } from '$lib/utils/blobUrlManager';
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
-	import { Loader2Icon } from '@lucide/svelte';
+	import { InfoIcon, Loader2Icon } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onDestroy, onMount } from 'svelte';
 
 	import TranscribedTextDialog from './(config)/recordings/TranscribedTextDialog.svelte';
+
+	let isHelpPopoverOpen = $state(false);
 
 	const getRecorderStateQuery = createQuery(
 		rpc.recorder.getRecorderState.options,
@@ -327,10 +332,10 @@
 					<CopyToClipboardButton
 						contentDescription="transcribed text"
 						textToCopy={latestRecording.transcribedText}
-						viewTransitionName={getRecordingTransitionId({
+						viewTransitionName={latestRecording.id && settings.value['onboarding.pasteTestCompleted'] ? getRecordingTransitionId({
 							propertyName: 'transcribedText',
 							recordingId: latestRecording.id,
-						})}
+						}) : undefined}
 						size="icon"
 						variant="ghost"
 						disabled={latestRecording.transcriptionStatus === 'TRANSCRIBING'}
@@ -380,26 +385,50 @@
 			</p> -->
 			{#if window.__TAURI_INTERNALS__}
 				<div class="flex flex-col items-center gap-3">
-					<p class="text-foreground/75 text-sm text-center">
-						Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">Cmd+V</kbd>.
-					</p>
-					<p class="text-foreground/75 text-sm text-center">
-						💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again, and then allow accessibility permissions when prompted.
-					</p>
-					<p class="text-foreground/75 text-sm text-center">
-						To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.cancelManualRecording'] || 'Not set'}</kbd>
-					</p>
-					<NoteFluxButton
-						href="/settings/shortcuts/global"
-						variant="outline"
-						size="sm"
-						tooltipContent="Customize keyboard shortcuts"
-					>
-						⌨️ Change Shortcuts
-					</NoteFluxButton>
-					<p class="text-foreground/75 text-center text-sm">
-						✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
-					</p>
+					<div class="flex items-center gap-2">
+						<NoteFluxButton
+							href="/settings/shortcuts/global"
+							variant="outline"
+							size="sm"
+							tooltipContent="Customize keyboard shortcuts"
+						>
+							⌨️ Change Shortcuts
+						</NoteFluxButton>
+
+						<Popover.Root bind:open={isHelpPopoverOpen}>
+							<Popover.Trigger>
+								<Button
+									variant="ghost"
+									size="icon"
+									class="size-8 cursor-pointer"
+									onmouseenter={() => isHelpPopoverOpen = true}
+									onmouseleave={() => isHelpPopoverOpen = false}
+								>
+									<InfoIcon class="size-4" />
+								</Button>
+							</Popover.Trigger>
+							<Popover.Content
+								class="w-[500px]"
+								onmouseenter={() => isHelpPopoverOpen = true}
+								onmouseleave={() => isHelpPopoverOpen = false}
+							>
+								<div class="space-y-3">
+									<p class="text-sm">
+										Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">Cmd+V</kbd>.
+									</p>
+									<p class="text-sm">
+										💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again.
+									</p>
+									<p class="text-sm">
+										To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.cancelManualRecording'] || 'Not set'}</kbd>
+									</p>
+									<p class="text-sm">
+										✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
+									</p>
+								</div>
+							</Popover.Content>
+						</Popover.Root>
+					</div>
 				</div>
 			{/if}
 		</div>

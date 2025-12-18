@@ -22,8 +22,8 @@ export function createClipboardServiceDesktop(): ClipboardService {
 				try: () => writeText(text),
 			}),
 
-		typeAtCursor: (text) => {
-			console.log('🚀 [CLIPBOARD] typeAtCursor called with text length:', text.length);
+		typeAtCursor: (text, keepWindowVisible = false, refocusWindow = false) => {
+			console.log('🚀 [CLIPBOARD] typeAtCursor called with text length:', text.length, 'keepWindowVisible:', keepWindowVisible, 'refocusWindow:', refocusWindow);
 			return tryAsync({
 				mapErr: (error) => {
 					console.error('❌ [CLIPBOARD] typeAtCursor failed:', error);
@@ -35,8 +35,8 @@ export function createClipboardServiceDesktop(): ClipboardService {
 					});
 				},
 				try: async () => {
-					console.log('⌨️ [CLIPBOARD] Invoking write_text command');
-					const result = await invoke<void>('write_text', { text });
+					console.log('⌨️ [CLIPBOARD] Invoking write_text command with keepWindowVisible:', keepWindowVisible, 'refocusWindow:', refocusWindow);
+					const result = await invoke<void>('write_text', { text, keepWindowVisible, refocusWindow });
 					console.log('✅ [CLIPBOARD] write_text completed successfully');
 					return result;
 				},

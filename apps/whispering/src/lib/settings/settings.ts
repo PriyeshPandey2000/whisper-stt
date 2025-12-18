@@ -97,6 +97,8 @@ export const settingsSchema = z.object({
 
 	// Onboarding settings
 	'onboarding.hasSeenWelcome': z.boolean().default(false),
+	'onboarding.pasteTestCompleted': z.boolean().default(false),
+	'app.onboardingCompleted': z.boolean().default(false),
 	'apiKeys.anthropic': z.string().default(''),
 	'apiKeys.deepgram': z.string().default(''),
 	'apiKeys.elevenlabs': z.string().default(''),

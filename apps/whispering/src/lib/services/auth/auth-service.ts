@@ -125,13 +125,21 @@ class AuthService {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
       const signInUrl = `https://noteflux.app/sign-in?redirect_to=${encodeURIComponent(redirectTo)}`;
-      
+
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {
+        // Disable always-on-top so browser is visible
+        try {
+          const { getCurrentWindow } = await import('@tauri-apps/api/window');
+          await getCurrentWindow().setAlwaysOnTop(false);
+        } catch (e) {
+          console.log('Could not disable always on top:', e);
+        }
+
         // Use Tauri opener
         try {
           const openerModule = await import('@tauri-apps/plugin-opener');
-          
+
           if (openerModule.openUrl) {
             await openerModule.openUrl(signInUrl);
           } else {
@@ -155,13 +163,21 @@ class AuthService {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
       const signUpUrl = `https://noteflux.app/sign-up?redirect_to=${encodeURIComponent(redirectTo)}`;
-      
+
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {
+        // Disable always-on-top so browser is visible
+        try {
+          const { getCurrentWindow } = await import('@tauri-apps/api/window');
+          await getCurrentWindow().setAlwaysOnTop(false);
+        } catch (e) {
+          console.log('Could not disable always on top:', e);
+        }
+
         // Use Tauri opener
         try {
           const openerModule = await import('@tauri-apps/plugin-opener');
-          
+
           if (openerModule.openUrl) {
             await openerModule.openUrl(signUpUrl);
           } else {

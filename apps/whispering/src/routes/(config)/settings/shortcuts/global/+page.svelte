@@ -1,12 +1,57 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
 	import { Layers2Icon, RotateCcw } from '@lucide/svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import ShortcutFormatHelp from '../keyboard-shortcut-recorder/ShortcutFormatHelp.svelte';
 	import ShortcutTable from '../keyboard-shortcut-recorder/ShortcutTable.svelte';
+
+	// Force hide recording overlay with timeout to prevent hanging
+	function hideOverlayNonBlocking() {
+		if (window.__TAURI_INTERNALS__) {
+			// Fire and forget with timeout - don't block the UI
+			Promise.race([
+				(async () => {
+					try {
+						const { invoke } = await import('@tauri-apps/api/core');
+						await invoke('hide_recording_overlay');
+					} catch (error) {
+						// Silently fail
+					}
+				})(),
+				new Promise((resolve) => setTimeout(resolve, 100)) // 100ms timeout
+			]).catch(() => {
+				// Ignore all errors
+			});
+		}
+	}
+
+	// Use $effect to ensure body styles are reset on every page load/navigation
+	// By depending on $page, this effect runs every time we navigate to this route
+	$effect(() => {
+		// Access $page to create a reactive dependency on navigation
+		$page.url;
+
+		// Reset body styles immediately when this page is active
+		if (typeof document !== 'undefined') {
+			document.body.style.overflow = '';
+			document.body.style.pointerEvents = '';
+			document.documentElement.style.overflow = '';
+		}
+	});
+
+	onMount(() => {
+		// Non-blocking cleanup
+		hideOverlayNonBlocking();
+	});
+
+	onDestroy(() => {
+		hideOverlayNonBlocking();
+	});
 </script>
 
 <svelte:head>
