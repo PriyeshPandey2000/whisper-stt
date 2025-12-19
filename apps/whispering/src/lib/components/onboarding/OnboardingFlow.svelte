@@ -4,6 +4,7 @@
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { onboardingStore } from '$lib/stores/onboarding.svelte';
+	import { analytics } from '$lib/services/posthog';
 	import { Button } from '$lib/ui/button';
 	import * as Dialog from '$lib/ui/dialog';
 	import { tryAsync } from 'wellcrafted/result';
@@ -20,14 +21,17 @@
 	function nextStep() {
 		switch (onboardingStore.currentStep) {
 			case 'welcome':
+				analytics.trackOnboardingStepCompleted('welcome');
 				onboardingStore.currentStep = 'permissions';
 				break;
 			case 'permissions':
 				if (permissionsComplete) {
+					analytics.trackOnboardingStepCompleted('permissions');
 					onboardingStore.currentStep = 'usage-guide';
 				}
 				break;
 			case 'usage-guide':
+				analytics.trackOnboardingStepCompleted('usage-guide');
 				onboardingStore.currentStep = 'complete';
 				completeOnboarding();
 				break;
@@ -35,6 +39,7 @@
 	}
 
 	function skipOnboarding() {
+		analytics.trackOnboardingSkipped(onboardingStore.currentStep);
 		completeOnboarding();
 	}
 
@@ -51,6 +56,7 @@
 		}
 
 		// Track completion
+		analytics.trackOnboardingCompleted();
 		rpc.analytics.logEvent.execute({
 			type: 'onboarding_completed'
 		});
@@ -76,6 +82,8 @@
 
 		if (!isCompleted) {
 			onboardingStore.isOpen = true;
+			// Track onboarding started with user email
+			analytics.trackOnboardingStarted();
 		}
 	});
 
