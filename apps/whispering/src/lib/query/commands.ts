@@ -1,5 +1,6 @@
 import { fromTaggedErr, fromTaggedError, NoteFluxErr } from '$lib/result';
 import { DbServiceErr } from '$lib/services/db';
+import { analytics } from '$lib/services/posthog';
 import { settings } from '$lib/stores/settings.svelte';
 import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
 import { invoke } from '@tauri-apps/api/core';
@@ -33,6 +34,9 @@ async function hideRecordingOverlay() {
 
 // Track manual recording start time for duration calculation
 let manualRecordingStartTime: null | number = null;
+
+// Track transcription start time for duration calculation
+let transcriptionStartTime: null | number = null;
 
 // Track how the current recording was initiated
 let recordingInitiatedVia: 'global-shortcut' | 'local' | null = null;
@@ -158,6 +162,10 @@ const startManualRecording = defineMutation({
 		recordingInitiatedVia = initiatedVia;
 		console.info('Recording started');
 		sound.playSoundIfEnabled.execute('manual-start');
+
+		// Track recording started in PostHog
+		analytics.trackRecordingStarted('manual');
+
 		return Ok(undefined);
 	},
 });
@@ -203,6 +211,9 @@ const stopManualRecording = defineMutation({
 			type: 'manual_recording_completed',
 		});
 
+		// Track recording completion in PostHog
+		analytics.trackRecordingCompleted('manual');
+
 		try {
 			await processRecordingPipeline({
 				blob,
@@ -238,13 +249,16 @@ const startVadRecording = defineMutation({
 		// Store the initiation context
 		vadInitiatedVia = initiatedVia;
 		vadSessionActive = true;
-		
+
+		// Track VAD recording started in PostHog
+		analytics.trackRecordingStarted('vad');
+
 		// Clear any existing debounce timeout
 		if (vadDebounceTimeout) {
 			clearTimeout(vadDebounceTimeout);
 			vadDebounceTimeout = null;
 		}
-		
+
 		const toastId = nanoid();
 		console.info('Starting voice activated capture');
 		notify.loading.execute({
@@ -285,6 +299,9 @@ const startVadRecording = defineMutation({
 						type: 'vad_recording_completed',
 						// VAD doesn't track duration by default
 					});
+
+					// Track recording completion in PostHog
+					analytics.trackRecordingCompleted('vad');
 
 					await processRecordingPipeline({
 						blob,
@@ -515,12 +532,16 @@ export const commands = {
 				validFiles.map(async (file) => {
 					const arrayBuffer = await file.arrayBuffer();
 					const audioBlob = new Blob([arrayBuffer], { type: file.type });
-					
+
 					// Log file upload event
 					rpc.analytics.logEvent.execute({
 						blob_size: audioBlob.size,
 						type: 'file_uploaded',
 					});
+
+					// Track file upload as manual recording
+					analytics.trackRecordingStarted('manual');
+					analytics.trackRecordingCompleted('manual');
 
 					// Each file gets its own toast notification
 					const toastId = nanoid();
@@ -600,6 +621,11 @@ async function processRecordingPipeline({
 	});
 
 	const transcribeToastId = nanoid();
+
+	// Track transcription started
+	transcriptionStartTime = Date.now();
+	analytics.trackTranscriptionStarted('groq');
+
 	notify.loading.execute({
 		title: '📋 Transcribing...',
 		description: 'Your recording is being transcribed...',
@@ -610,6 +636,8 @@ async function processRecordingPipeline({
 		await transcription.transcribeRecording.execute(createdRecording);
 
 	if (transcribeError) {
+		transcriptionStartTime = null; // Reset on error
+
 		if (transcribeError.name === 'NoteFluxError') {
 			notify.error.execute({ id: transcribeToastId, ...transcribeError });
 			await hideRecordingOverlay();
@@ -624,6 +652,11 @@ async function processRecordingPipeline({
 		await hideRecordingOverlay();
 		return;
 	}
+
+	// Track transcription completion with actual duration
+	const transcriptionDuration = transcriptionStartTime ? Date.now() - transcriptionStartTime : 0;
+	transcriptionStartTime = null;
+	analytics.trackTranscriptionCompleted('groq', transcriptionDuration);
 
 	sound.playSoundIfEnabled.execute('transcriptionComplete');
 
@@ -646,6 +679,10 @@ async function processRecordingPipeline({
 			toastId: transcribeToastId,
 			initiatedVia,
 		});
+
+		// Track text delivery
+		analytics.trackTextDelivered('clipboard');
+
 		// Hide the recording overlay after delivery is complete
 		await hideRecordingOverlay();
 		return;
@@ -723,6 +760,9 @@ async function processRecordingPipeline({
 		toastId: transformToastId,
 		initiatedVia,
 	});
+
+	// Track text delivery for transformed text
+	analytics.trackTextDelivered('clipboard');
 
 	// Hide the recording overlay after delivery is complete
 	await hideRecordingOverlay();
