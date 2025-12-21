@@ -177,6 +177,11 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
         }
     };
 
+    // Calculate horizontal center based on screen width (accounting for scale factor)
+    let monitor = app.primary_monitor().ok().flatten();
+    let screen_width = monitor.as_ref().map(|m| m.size().width as f64 / m.scale_factor()).unwrap_or(1440.0);
+    let x = (screen_width - 45.0) / 2.0;
+
     let overlay_window = WebviewWindowBuilder::new(
         app,
         "recording-overlay",
@@ -184,7 +189,7 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
     )
     .title("Recording")
     .inner_size(45.0, 45.0)    // Square size for circular orb
-    .position(660.0, 800.0)    // Bottom center, shifted down
+    .position(x, 800.0)    // Horizontally centered
     .decorations(false)        // No window decorations
     .resizable(false)          // Not resizable
     .skip_taskbar(true)        // Don't show in taskbar

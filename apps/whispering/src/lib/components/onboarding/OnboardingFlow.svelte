@@ -141,12 +141,20 @@
 		}
 	});
 
-	// Debug function - expose to window for manual testing
+	// Debug functions - expose to window for manual testing
 	if (typeof window !== 'undefined') {
 		(window as any).showOnboarding = (step?: OnboardingStep) => {
 			onboardingStore.currentStep = step || 'welcome';
 			permissionsComplete = false; // Reset to prevent auto-advance
 			onboardingStore.isOpen = true;
+		};
+
+		(window as any).resetOnboarding = () => {
+			settings.updateKey('app.onboardingCompleted', false);
+			settings.updateKey('onboarding.pasteTestCompleted', false);
+			onboardingStore.currentStep = 'welcome';
+			permissionsComplete = false;
+			console.log('✅ Onboarding reset! Refresh the page to see the automatic onboarding flow.');
 		};
 	}
 </script>
