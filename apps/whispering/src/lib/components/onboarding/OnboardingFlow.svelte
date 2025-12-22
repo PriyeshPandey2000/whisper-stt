@@ -18,6 +18,41 @@
 	let permissionsComplete = $state(false);
 	let hasProcessedReopen = $state(false);
 
+	const isDesktop = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
+
+	/**
+	 * Check if microphone permission is currently granted
+	 */
+	async function checkMicrophonePermission(): Promise<boolean> {
+		try {
+			if ('permissions' in navigator) {
+				const permissionStatus = await navigator.permissions.query({
+					name: 'microphone' as PermissionName,
+				});
+				return permissionStatus.state === 'granted';
+			}
+			return false;
+		} catch {
+			return false;
+		}
+	}
+
+	/**
+	 * Check if accessibility permission is currently granted (desktop only)
+	 */
+	async function checkAccessibilityPermission(): Promise<boolean> {
+		if (!isDesktop) return true;
+
+		try {
+			const { invoke } = await import('@tauri-apps/api/core');
+			return await invoke<boolean>('is_macos_accessibility_enabled', {
+				askIfNotAllowed: false,
+			});
+		} catch {
+			return false;
+		}
+	}
+
 	function nextStep() {
 		switch (onboardingStore.currentStep) {
 			case 'welcome':
@@ -75,14 +110,35 @@
 	// Check if onboarding should be shown
 	onMount(async () => {
 		const isCompleted = settings.value['app.onboardingCompleted'];
-		console.log('Onboarding completed:', isCompleted); // Debug log
+
+		// Check actual system permission state (source of truth)
+		const hasMicPermission = await checkMicrophonePermission();
+		const hasAccessibilityPermission = await checkAccessibilityPermission();
+		const allPermissionsGranted = hasMicPermission && hasAccessibilityPermission;
+
+		console.log('Onboarding check:', {
+			isCompleted,
+			hasMicPermission,
+			hasAccessibilityPermission,
+			allPermissionsGranted
+		});
 
 		// Force onboarding for development/fresh builds (uncomment for testing)
 		// settings.updateKey('app.onboardingCompleted', false);
 
-		if (!isCompleted) {
+		// Show onboarding if:
+		// 1. User has never completed onboarding, OR
+		// 2. Permissions are missing (handles fresh installs, bundle ID migrations, etc.)
+		if (!isCompleted || !allPermissionsGranted) {
 			onboardingStore.isOpen = true;
-			// Track onboarding started with user email
+
+			// If onboarding was marked complete but permissions are missing,
+			// skip directly to permissions screen (e.g., after bundle ID change or uninstall/reinstall)
+			if (isCompleted && !allPermissionsGranted) {
+				onboardingStore.currentStep = 'permissions';
+			}
+
+			// Track onboarding started
 			analytics.trackOnboardingStarted();
 		}
 	});
