@@ -24,6 +24,17 @@
 	 * Check if microphone permission is currently granted
 	 */
 	async function checkMicrophonePermission(): Promise<boolean> {
+		// On desktop, use native macOS API to check actual system permissions
+		if (isDesktop) {
+			try {
+				const { invoke } = await import('@tauri-apps/api/core');
+				return await invoke<boolean>('is_macos_microphone_enabled');
+			} catch {
+				return false;
+			}
+		}
+
+		// On web, use browser permissions API
 		try {
 			if ('permissions' in navigator) {
 				const permissionStatus = await navigator.permissions.query({
@@ -112,6 +123,8 @@
 		const isCompleted = settings.value['app.onboardingCompleted'];
 
 		// Check actual system permission state (source of truth)
+		// On desktop, uses native macOS APIs to check real system permissions
+		// On web, uses browser permissions API
 		const hasMicPermission = await checkMicrophonePermission();
 		const hasAccessibilityPermission = await checkAccessibilityPermission();
 		const allPermissionsGranted = hasMicPermission && hasAccessibilityPermission;

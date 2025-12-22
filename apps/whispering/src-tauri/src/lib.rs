@@ -2,9 +2,15 @@
 #[cfg(target_os = "macos")]
 mod accessibility;
 
+#[cfg(target_os = "macos")]
+mod microphone;
+
 // Re-export platform-specific functions
 #[cfg(target_os = "macos")]
 use accessibility::{is_macos_accessibility_enabled, open_apple_accessibility};
+
+#[cfg(target_os = "macos")]
+use microphone::{is_macos_microphone_enabled, request_macos_microphone_permission};
 
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder, menu::{Menu, MenuItem}, tray::{TrayIconBuilder, TrayIconEvent}};
 use tauri_plugin_aptabase::EventTracker;
@@ -270,6 +276,8 @@ pub async fn run() {
         paste,
         open_apple_accessibility,
         is_macos_accessibility_enabled,
+        is_macos_microphone_enabled,
+        request_macos_microphone_permission,
         // Audio recorder commands
         get_current_recording_id,
         enumerate_recording_devices,
