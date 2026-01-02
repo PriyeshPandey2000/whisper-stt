@@ -5,6 +5,9 @@ mod accessibility;
 #[cfg(target_os = "macos")]
 mod microphone;
 
+// Keyboard handling module (Fn key support)
+mod keyboard;
+
 // Re-export platform-specific functions
 #[cfg(target_os = "macos")]
 use accessibility::{is_macos_accessibility_enabled, open_apple_accessibility};
@@ -230,6 +233,115 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
 
 // Removed native overlay imports
 
+// ============================================================================
+// FN SHORTCUT MANAGER COMMANDS
+// ============================================================================
+
+use std::sync::Mutex as StdMutex;
+
+#[cfg(target_os = "macos")]
+type FnShortcutManager = StdMutex<Option<keyboard::macos::MacOSFnShortcutManager>>;
+
+#[cfg(target_os = "windows")]
+type FnShortcutManager = StdMutex<keyboard::windows::WindowsFnShortcutManager>;
+
+#[cfg(target_os = "linux")]
+type FnShortcutManager = StdMutex<keyboard::linux::LinuxFnShortcutManager>;
+
+#[tauri::command]
+fn register_fn_shortcut(
+    manager: tauri::State<FnShortcutManager>,
+    accelerator: String,
+    command_id: String,
+) -> Result<(), String> {
+    println!(
+        "[FnShortcut] Command: register_fn_shortcut({}, {})",
+        accelerator, command_id
+    );
+
+    let mgr_guard = manager.lock().map_err(|_| "Failed to lock manager")?;
+    match mgr_guard.as_ref() {
+        Some(mgr) => mgr.register(&accelerator, &command_id),
+        None => Err("Fn shortcut manager not initialized (check Accessibility permissions)".to_string()),
+    }
+}
+
+#[tauri::command]
+fn unregister_fn_shortcut(
+    manager: tauri::State<FnShortcutManager>,
+    accelerator: String,
+) -> Result<(), String> {
+    println!("[FnShortcut] Command: unregister_fn_shortcut({})", accelerator);
+
+    let mgr_guard = manager.lock().map_err(|_| "Failed to lock manager")?;
+    match mgr_guard.as_ref() {
+        Some(mgr) => mgr.unregister(&accelerator),
+        None => Err("Fn shortcut manager not initialized (check Accessibility permissions)".to_string()),
+    }
+}
+
+#[tauri::command]
+fn enable_fn_recording_mode(manager: tauri::State<FnShortcutManager>) -> Result<(), String> {
+    println!("[FnShortcut] Command: enable_fn_recording_mode");
+
+    let mgr_guard = manager.lock().map_err(|_| "Failed to lock manager")?;
+    match mgr_guard.as_ref() {
+        Some(mgr) => mgr.enable_recording_mode(),
+        None => Err("Fn shortcut manager not initialized (check Accessibility permissions)".to_string()),
+    }
+}
+
+#[tauri::command]
+fn disable_fn_recording_mode(manager: tauri::State<FnShortcutManager>) -> Result<(), String> {
+    println!("[FnShortcut] Command: disable_fn_recording_mode");
+
+    let mgr_guard = manager.lock().map_err(|_| "Failed to lock manager")?;
+    match mgr_guard.as_ref() {
+        Some(mgr) => mgr.disable_recording_mode(),
+        None => Err("Fn shortcut manager not initialized (check Accessibility permissions)".to_string()),
+    }
+}
+
+#[tauri::command]
+fn reinitialize_fn_manager(app: tauri::AppHandle) -> Result<(), String> {
+    println!("[FnShortcut] Command: reinitialize_fn_manager");
+
+    #[cfg(target_os = "macos")]
+    {
+        println!("[FnShortcut] Attempting to create new manager...");
+        match keyboard::macos::MacOSFnShortcutManager::new(app.clone()) {
+            Ok(new_manager) => {
+                println!("[FnShortcut] ✓ New manager created successfully");
+
+                // Get the existing manager state and replace the inner Option
+                println!("[FnShortcut] Getting existing manager state...");
+                let manager_state: tauri::State<FnShortcutManager> = app.state();
+
+                println!("[FnShortcut] Locking manager state...");
+                let mut mgr_guard = manager_state.lock().map_err(|e| {
+                    eprintln!("[FnShortcut] ERROR: Failed to lock manager: {:?}", e);
+                    "Failed to lock manager".to_string()
+                })?;
+
+                println!("[FnShortcut] Replacing None with Some(new_manager)...");
+                *mgr_guard = Some(new_manager);
+
+                println!("[FnShortcut] ✓ Manager replaced successfully - Fn shortcuts should now work!");
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("[FnShortcut] ERROR: Failed to create new manager: {}", e);
+                Err(format!("Failed to reinitialize Fn manager: {}", e))
+            }
+        }
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    Ok(())
+}
+
+// ============================================================================
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
 pub async fn run() {
@@ -290,6 +402,12 @@ pub async fn run() {
         show_recording_overlay,
         hide_recording_overlay,
         set_overlay_processing,
+        // Fn shortcut commands
+        register_fn_shortcut,
+        unregister_fn_shortcut,
+        enable_fn_recording_mode,
+        disable_fn_recording_mode,
+        reinitialize_fn_manager,
     ]);
 
     #[cfg(not(target_os = "macos"))]
@@ -308,9 +426,53 @@ pub async fn run() {
         show_recording_overlay,
         hide_recording_overlay,
         set_overlay_processing,
+        // Fn shortcut commands
+        register_fn_shortcut,
+        unregister_fn_shortcut,
+        enable_fn_recording_mode,
+        disable_fn_recording_mode,
+        reinitialize_fn_manager,
     ]);
 
     let mut app = builder
+        .setup(|app| {
+            println!("[FnShortcut] Initializing Fn shortcut manager...");
+
+            // Initialize Fn shortcut manager based on platform
+            #[cfg(target_os = "macos")]
+            {
+                match keyboard::macos::MacOSFnShortcutManager::new(app.handle().clone()) {
+                    Ok(manager) => {
+                        println!("[FnShortcut] macOS manager initialized successfully");
+                        app.manage(StdMutex::new(Some(manager)));
+                    }
+                    Err(e) => {
+                        eprintln!("[FnShortcut] ERROR: Failed to initialize macOS manager: {}", e);
+                        eprintln!("[FnShortcut] Please check Accessibility permissions in System Settings");
+                        // Store None so the state exists, will be initialized later
+                        app.manage(StdMutex::new(None::<keyboard::macos::MacOSFnShortcutManager>));
+                    }
+                }
+            }
+
+            #[cfg(target_os = "windows")]
+            {
+                // Windows stub - will return error when trying to use
+                println!("[FnShortcut] Windows platform detected (Fn shortcuts not supported)");
+                let manager = keyboard::windows::WindowsFnShortcutManager;
+                app.manage(StdMutex::new(manager));
+            }
+
+            #[cfg(target_os = "linux")]
+            {
+                // Linux stub - will return error when trying to use
+                println!("[FnShortcut] Linux platform detected (Fn shortcuts not supported)");
+                let manager = keyboard::linux::LinuxFnShortcutManager;
+                app.manage(StdMutex::new(manager));
+            }
+
+            Ok(())
+        })
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
 

@@ -44,6 +44,8 @@
 			syncGlobalShortcutsWithSettings();
 			resetGlobalShortcutsToDefaultIfDuplicates();
 			await checkForUpdates();
+			// Start global permission monitoring for Fn key functionality
+			await services.permissionMonitor.start();
 		} else {
 			// const _notifyNoteFluxTabReadyResult =
 			// await extension.notifyNoteFluxTabReady(undefined);

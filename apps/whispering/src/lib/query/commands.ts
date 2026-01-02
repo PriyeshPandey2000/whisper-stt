@@ -1,8 +1,10 @@
 import { fromTaggedErr, fromTaggedError, NoteFluxErr } from '$lib/result';
-import { DbServiceErr } from '$lib/services/db';
+import { checkAnonymousGate } from '$lib/services/anonymous-gate';
 import { analytics } from '$lib/services/posthog';
+import { auth } from '$lib/stores/auth.svelte';
 import { settings } from '$lib/stores/settings.svelte';
 import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
+import { signupRequiredDialog } from '$lib/stores/signup-required-dialog.svelte';
 import { invoke } from '@tauri-apps/api/core';
 import { nanoid } from 'nanoid/non-secure';
 import { Err, Ok } from 'wellcrafted/result';
@@ -40,6 +42,10 @@ let transcriptionStartTime: null | number = null;
 
 // Track how the current recording was initiated
 let recordingInitiatedVia: 'global-shortcut' | 'local' | null = null;
+
+// Track whether window was focused when recording started
+// Used to determine if we should keep window visible during delivery
+let wasWindowFocusedAtRecordingStart: boolean = false;
 
 // Track VAD recording state for debouncing and initiation context
 let vadInitiatedVia: 'global-shortcut' | 'local' | null = null;
@@ -87,8 +93,22 @@ const startManualRecording = defineMutation({
 	mutationKey: ['commands', 'startManualRecording'] as const,
 	resultMutationFn: async ({ initiatedVia = 'local' }: { initiatedVia?: 'global-shortcut' | 'local' } = {}) => {
 		console.log('🎙️ [COMMAND] startManualRecording called with initiatedVia:', initiatedVia);
-		
-		// Check authentication first
+
+		// Capture whether window is focused at recording start
+		// This will be used later during delivery to determine if we should keep window visible
+		if (window.__TAURI_INTERNALS__) {
+			try {
+				const { getCurrentWindow } = await import('@tauri-apps/api/window');
+				wasWindowFocusedAtRecordingStart = await getCurrentWindow().isFocused();
+			} catch (error) {
+				console.error('[COMMAND] Failed to check window focus:', error);
+				wasWindowFocusedAtRecordingStart = false;
+			}
+		} else {
+			wasWindowFocusedAtRecordingStart = false;
+		}
+
+		// Check authentication first (anonymous users have session from onboarding start)
 		const isAuthenticated = await checkAuthAndShowDialog();
 		if (!isAuthenticated) {
 			return NoteFluxErr({
@@ -96,7 +116,35 @@ const startManualRecording = defineMutation({
 				description: 'Please sign in to start recording',
 			});
 		}
-		
+
+		// Check if anonymous user has reached the 5-minute gate
+		// Only apply gate to anonymous users - permanent users have unlimited usage
+		const gateStatus = await checkAnonymousGate();
+		if (gateStatus?.needsSignup && auth.isAnonymous) {
+			// Bring window to focus when showing signup modal
+			if (window.__TAURI_INTERNALS__) {
+				try {
+					const { getCurrentWindow } = await import('@tauri-apps/api/window');
+					const currentWindow = getCurrentWindow();
+					await currentWindow.show();
+					await currentWindow.setAlwaysOnTop(true);
+					await currentWindow.setFocus();
+
+					setTimeout(() => {
+						currentWindow.setAlwaysOnTop(false).catch(() => {});
+					}, 2000);
+				} catch (windowError) {
+					console.warn('Failed to bring window to front:', windowError);
+				}
+			}
+
+			signupRequiredDialog.open();
+			return NoteFluxErr({
+				title: '📝 Sign up to continue recording',
+				description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,
+			});
+		}
+
 		const toastId = nanoid();
 		notify.loading.execute({
 			title: '🎙️ Preparing to record...',
@@ -245,7 +293,35 @@ const startVadRecording = defineMutation({
 				description: 'Please sign in to start recording',
 			});
 		}
-		
+
+		// Check if anonymous user has reached the 5-minute gate
+		// Only apply gate to anonymous users - permanent users have unlimited usage
+		const gateStatus = await checkAnonymousGate();
+		if (gateStatus?.needsSignup && auth.isAnonymous) {
+			// Bring window to focus when showing signup modal
+			if (window.__TAURI_INTERNALS__) {
+				try {
+					const { getCurrentWindow } = await import('@tauri-apps/api/window');
+					const currentWindow = getCurrentWindow();
+					await currentWindow.show();
+					await currentWindow.setAlwaysOnTop(true);
+					await currentWindow.setFocus();
+
+					setTimeout(() => {
+						currentWindow.setAlwaysOnTop(false).catch(() => {});
+					}, 2000);
+				} catch (windowError) {
+					console.warn('Failed to bring window to front:', windowError);
+				}
+			}
+
+			signupRequiredDialog.open();
+			return NoteFluxErr({
+				title: '📝 Sign up to continue recording',
+				description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,
+			});
+		}
+
 		// Store the initiation context
 		vadInitiatedVia = initiatedVia;
 		vadSessionActive = true;
@@ -498,6 +574,26 @@ export const commands = {
 	uploadRecordings: defineMutation({
 		mutationKey: ['recordings', 'uploadRecordings'] as const,
 		resultMutationFn: async ({ files }: { files: File[] }) => {
+			// Check authentication first
+			const isAuthenticated = await checkAuthAndShowDialog();
+			if (!isAuthenticated) {
+				return NoteFluxErr({
+					title: '🔐 Authentication Required',
+					description: 'Please sign in to upload files',
+				});
+			}
+
+			// Check if anonymous user has reached the 5-minute gate
+			// Only apply gate to anonymous users - permanent users have unlimited usage
+			const gateStatus = await checkAnonymousGate();
+			if (gateStatus?.needsSignup && auth.isAnonymous) {
+				signupRequiredDialog.open();
+				return NoteFluxErr({
+					title: '📝 Sign up to continue',
+					description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,
+				});
+			}
+
 			// Partition files into valid and invalid in a single pass
 			const { invalid: invalidFiles, valid: validFiles } = files.reduce<{
 				invalid: File[];
@@ -513,10 +609,9 @@ export const commands = {
 			);
 
 			if (validFiles.length === 0) {
-				return DbServiceErr({
-					cause: undefined,
-					context: { providedFiles: files.length },
-					message: 'No valid audio or video files found.',
+				return NoteFluxErr({
+					title: '⚠️ No valid files',
+					description: 'No valid audio or video files found.',
 				});
 			}
 
@@ -678,6 +773,7 @@ async function processRecordingPipeline({
 			text: transcribedText,
 			toastId: transcribeToastId,
 			initiatedVia,
+			wasWindowFocusedAtStart: wasWindowFocusedAtRecordingStart,
 		});
 
 		// Track text delivery
@@ -759,6 +855,7 @@ async function processRecordingPipeline({
 		text: transformationRun.output,
 		toastId: transformToastId,
 		initiatedVia,
+		wasWindowFocusedAtStart: wasWindowFocusedAtRecordingStart,
 	});
 
 	// Track text delivery for transformed text

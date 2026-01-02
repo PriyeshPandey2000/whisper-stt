@@ -27,6 +27,7 @@ export const shortcuts = {
 				IS_MACOS ? 'Command' : 'Control',
 			) as Accelerator;
 
+			console.log('[Shortcuts] Registering globally:', accelerator, command.id);
 
 			// Use hybrid manager to automatically route Fn shortcuts to CGEventTap
 			return services.hybridShortcutManager.register({
@@ -57,6 +58,7 @@ export const shortcuts = {
 	unregisterCommandGlobally: defineMutation({
 		mutationKey: ['shortcuts', 'unregisterCommandGlobally'] as const,
 		resultMutationFn: async ({ accelerator }: { accelerator: Accelerator }) => {
+			console.log('[Shortcuts] Unregistering globally:', accelerator);
 			// Use hybrid manager to automatically route Fn shortcuts
 			return await services.hybridShortcutManager.unregister(accelerator);
 		},

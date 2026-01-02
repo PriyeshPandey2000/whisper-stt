@@ -72,6 +72,8 @@ export function createGlobalShortcutManager() {
 					}),
 				try: () =>
 					tauriRegister(accelerator, (event) => {
+						// For 'Both', always fire callback regardless of press/release
+						// The callback itself handles the state logic
 						if (on === 'Both') {
 							callback();
 							return;
@@ -274,6 +276,8 @@ function convertToKeyCode(
 		enter: 'Enter',
 		// Special keys
 		escape: 'Escape',
+		// Fn key (Globe key on macOS) - handled by our hybrid shortcut manager
+		fn: 'Fn',
 		home: 'Home',
 		insert: 'Insert',
 		mediaplaypause: 'MediaPlayPause',

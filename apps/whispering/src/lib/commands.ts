@@ -10,14 +10,25 @@ type SatisfiedCommand = {
 };
 
 export const commands = [
-	// {
-	// 	title: 'Push to talk',
-	// 	callback: () => rpc.commands.toggleManualRecording.execute(undefined),
-	// 	id: 'pushToTalk',
-	// 	on: 'Both',
-	// },
 	{
-		title: 'Start/Stop recording',
+		title: 'Push to talk (hold to record)',
+		callback: async () => {
+			// Check if currently recording
+			const { data: currentRecordingId } = await rpc.recorder.getCurrentRecordingId.fetch();
+
+			if (currentRecordingId) {
+				// Currently recording → stop on release
+				await rpc.commands.stopManualRecording.execute(undefined);
+			} else {
+				// Not recording → start on press
+				await rpc.commands.startManualRecording.execute({ initiatedVia: 'local' });
+			}
+		},
+		id: 'pushToTalk',
+		on: 'Both',
+	},
+	{
+		title: 'Start/Stop recording (tap to toggle)',
 		callback: () => rpc.commands.toggleManualRecording.execute(undefined),
 		id: 'toggleManualRecording',
 		on: 'Pressed',
@@ -74,6 +85,18 @@ export const commandCallbacks = commands.reduce<CommandCallbacks>(
 
 // Global shortcut callbacks - these pass 'global-shortcut' as the initiation method
 export const globalCommandCallbacks: CommandCallbacks = {
+	pushToTalk: async () => {
+		// Check if currently recording
+		const { data: currentRecordingId } = await rpc.recorder.getCurrentRecordingId.fetch();
+
+		if (currentRecordingId) {
+			// Currently recording → stop on release
+			await rpc.commands.stopManualRecording.execute(undefined);
+		} else {
+			// Not recording → start on press
+			await rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' });
+		}
+	},
 	toggleManualRecording: () => rpc.commands.toggleManualRecording.execute({ initiatedVia: 'global-shortcut' }),
 	cancelManualRecording: () => rpc.commands.cancelManualRecording.execute({ initiatedVia: 'global-shortcut' }),
 	// startManualRecording: () => rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' }),

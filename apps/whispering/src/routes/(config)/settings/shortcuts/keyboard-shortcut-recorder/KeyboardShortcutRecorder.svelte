@@ -66,7 +66,11 @@
 			// Properly parse manual input by trimming spaces and normalizing
 			const keys = manualValue
 				.split('+')
-				.map(key => key.trim().toLowerCase())
+				.map(key => {
+					const trimmed = key.trim();
+					// Preserve "Fn" capitalization, lowercase everything else
+					return trimmed.toLowerCase() === 'fn' ? 'Fn' : trimmed.toLowerCase();
+				})
 				.filter(key => key.length > 0);
 			keyRecorder.register(keys as KeyboardEventSupportedKey[]);
 			saveStatus = 'saved';
@@ -159,7 +163,7 @@
 					<div class="mb-3 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-2">
 						<p class="font-medium">💡 Recording Tips:</p>
 						<p>• Click "Record by pressing keys" below → Press the letter FIRST, then hold modifier keys (Cmd/Ctrl/Option)</p>
-						<p>• Note: Fn key is not currently supported for shortcuts</p>
+						<p>• For Fn key shortcuts: Use the "Type manually" option below and enter "Fn" or "Fn+A", etc.</p>
 						<p>• Same shortcut will both START and STOP recording</p>
 						<p>• Once set: Press your shortcut to test → Look for recording overlay → If you see it, shortcut works!</p>
 					</div>
@@ -195,6 +199,20 @@
 				<div>
 					<h4 class="mb-3 text-sm font-medium">Or choose a common shortcut:</h4>
 					<div class="grid grid-cols-2 gap-2">
+						{#if IS_MACOS}
+							<Button
+								variant="outline"
+								class="h-10 font-mono bg-blue-50 hover:bg-blue-100 border-blue-200"
+								onclick={() => handlePresetShortcut(['fn'])}
+								disabled={saveStatus === 'saving'}
+							>
+								{#if saveStatus === 'saving'}
+									Saving...
+								{:else}
+									Fn (Globe key)
+								{/if}
+							</Button>
+						{/if}
 						<Button
 							variant="outline"
 							class="h-10 font-mono"
@@ -234,12 +252,12 @@
 					</div>
 				</div>
 
-				<!-- Advanced: Manual Entry - DISABLED FOR NOW -->
-				<!-- <div class="border-t pt-4">
+				<!-- Advanced: Manual Entry -->
+				<div class="border-t pt-4">
 					<div class="mb-3 flex items-center justify-between">
 						<div>
 							<h4 class="text-sm font-medium text-muted-foreground">Advanced: Type manually</h4>
-							<p class="text-xs text-muted-foreground">For complex shortcuts that don't record properly</p>
+							<p class="text-xs text-muted-foreground">For Fn key shortcuts or complex combinations that don't record properly</p>
 						</div>
 						{#if !isManualMode}
 							<Button
@@ -260,7 +278,7 @@
 						<div class="space-y-3">
 							<Input
 								type="text"
-								placeholder="e.g., ctrl+shift+r or cmd+option+t"
+								placeholder="e.g., Fn, Fn+A, ctrl+shift+r, cmd+option+t"
 								bind:value={manualValue}
 								class="font-mono"
 								autofocus
@@ -286,7 +304,7 @@
 							</div>
 						</div>
 					{/if}
-				</div> -->
+				</div>
 			</div>
 
 			<Dialog.Footer>

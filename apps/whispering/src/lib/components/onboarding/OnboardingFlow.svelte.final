@@ -152,6 +152,7 @@
 			if (!auth.isAuthenticated) {
 				try {
 					await auth.signInAnonymously();
+					console.log('Anonymous session created for onboarding');
 				} catch (error) {
 					console.error('Failed to create anonymous session:', error);
 				}

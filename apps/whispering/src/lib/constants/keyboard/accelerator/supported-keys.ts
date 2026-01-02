@@ -20,6 +20,7 @@ export const ACCELERATOR_SECTIONS = [
 			'Shift', // Shift key
 			'Super',
 			'Meta', // Windows/Linux Super key
+			'Fn', // Function/Globe key (macOS only)
 		] as const satisfies AcceleratorPossibleKey[],
 	},
 	{
@@ -164,6 +165,7 @@ export const ACCELERATOR_SECTIONS = [
 			'PageDown',
 			'Escape',
 			'Esc',
+			'Fn', // Function/Globe key - can be used standalone or as modifier on macOS
 			'VolumeUp',
 			'VolumeDown',
 			'VolumeMute',

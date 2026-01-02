@@ -159,11 +159,13 @@ export const delivery = {
 			}
 
 			// Try to paste at cursor - use different methods based on how recording was initiated
+			console.log('[DELIVERY] Starting paste operation, initiatedVia:', initiatedVia);
 
 			// No delay needed since we use notifications instead of overlays
 
 			let pasteError: ClipboardServiceError | NoteFluxError | null | undefined;
 			if (initiatedVia === 'global-shortcut') {
+				console.log('[DELIVERY] Using typeAtCursor for global shortcut');
 				// For global shortcuts, type directly at cursor position to ensure it works
 				// regardless of focus changes during recording
 
@@ -190,6 +192,7 @@ export const delivery = {
 				// 3. On settings page (testing shortcuts)
 				const shouldKeepVisible = wasWindowFocusedAtStart || isPastingIntoApp || isOnSettingsPage;
 
+				console.log('[DELIVERY] Window focused at start:', wasWindowFocusedAtStart, 'Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp, 'isInOnboarding:', isInOnboarding, 'isOnSettingsPage:', isOnSettingsPage, 'shouldKeepVisible:', shouldKeepVisible, 'shouldRefocus:', shouldRefocus);
 
 				const { error } = await rpc.clipboard.typeAtCursor.execute({
 				text,
@@ -200,18 +203,21 @@ export const delivery = {
 			if (pasteError) {
 				console.error('[DELIVERY] typeAtCursor failed:', pasteError);
 			} else {
+				console.log('[DELIVERY] typeAtCursor succeeded');
 				// Mark paste test as completed after first successful paste during onboarding
 				if (shouldRefocus) {
 					settings.updateKey('onboarding.pasteTestCompleted', true);
 				}
 			}
 		} else {
+				console.log('[DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
 				pasteError = error;
 				if (pasteError) {
 					console.error('[DELIVERY] pasteFromClipboard failed:', pasteError);
 				} else {
+					console.log('[DELIVERY] pasteFromClipboard succeeded');
 				}
 			}
 
@@ -378,11 +384,13 @@ export const delivery = {
 			}
 
 			// Try to paste at cursor - use different methods based on how recording was initiated
+			console.log('[DELIVERY] Starting paste operation, initiatedVia:', initiatedVia);
 
 			// No delay needed since we use notifications instead of overlays
 
 			let pasteError: ClipboardServiceError | NoteFluxError | null | undefined;
 			if (initiatedVia === 'global-shortcut') {
+				console.log(' [DELIVERY] Using typeAtCursor for global shortcut');
 				// For global shortcuts, type directly at cursor position to ensure it works
 				// regardless of focus changes during recording
 
@@ -409,6 +417,7 @@ export const delivery = {
 				// 3. On settings page (testing shortcuts)
 				const shouldKeepVisible = wasWindowFocusedAtStart || isPastingIntoApp || isOnSettingsPage;
 
+				console.log(' [DELIVERY] Window focused at start:', wasWindowFocusedAtStart, 'Active element:', activeElement?.tagName, 'isPastingIntoApp:', isPastingIntoApp, 'isInOnboarding:', isInOnboarding, 'isOnSettingsPage:', isOnSettingsPage, 'shouldKeepVisible:', shouldKeepVisible, 'shouldRefocus:', shouldRefocus);
 
 			const { error } = await rpc.clipboard.typeAtCursor.execute({
 				text,
@@ -419,18 +428,21 @@ export const delivery = {
 			if (pasteError) {
 				console.error('[DELIVERY] typeAtCursor failed:', pasteError);
 			} else {
+				console.log('[DELIVERY] typeAtCursor succeeded');
 				// Mark paste test as completed after first successful paste during onboarding
 				if (shouldRefocus) {
 					settings.updateKey('onboarding.pasteTestCompleted', true);
 				}
 			}
 		} else {
+				console.log('[DELIVERY] Using pasteFromClipboard for local action');
 				// For local shortcuts, use standard paste (Cmd+V/Ctrl+V)
 				const { error } = await rpc.clipboard.pasteFromClipboard.execute(undefined);
 				pasteError = error;
 				if (pasteError) {
 					console.error('[DELIVERY] pasteFromClipboard failed:', pasteError);
 				} else {
+					console.log(' [DELIVERY] pasteFromClipboard succeeded');
 				}
 			}
 
