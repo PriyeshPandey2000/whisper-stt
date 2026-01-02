@@ -28,15 +28,23 @@ export const auth = {
   get isLoading() {
     return authState.loading;
   },
-  
+
+  get isAnonymous() {
+    return authState.user?.isAnonymous || false;
+  },
+
   async signIn() {
     return authService.signIn();
   },
-  
+
   async signUp() {
     return authService.signUp();
   },
-  
+
+  async signInAnonymously() {
+    return authService.signInAnonymously();
+  },
+
   async signOut() {
     return authService.signOut();
   }

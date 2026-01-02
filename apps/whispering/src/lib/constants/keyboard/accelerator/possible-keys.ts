@@ -16,6 +16,7 @@ const ACCELERATOR_POSSIBLE_KEYS = [
 	'Shift', // Shift key
 	'Super',
 	'Meta', // Windows/Linux Super key
+	'Fn', // Function/Globe key (macOS only)
 
 	'0',
 	'1',

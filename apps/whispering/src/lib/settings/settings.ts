@@ -183,7 +183,7 @@ export const settingsSchema = z.object({
 
 	...({
 		'shortcuts.local.cancelManualRecording': z.string().nullable().default(null),
-		// 'shortcuts.local.pushToTalk': z.string().nullable().default(null),
+		'shortcuts.local.pushToTalk': z.string().nullable().default(null),
 		// 'shortcuts.local.startManualRecording': z.string().nullable().default(null),
 		// 'shortcuts.local.startVadRecording': z.string().nullable().default(null),
 		// 'shortcuts.local.stopManualRecording': z.string().nullable().default(null),
@@ -200,10 +200,10 @@ export const settingsSchema = z.object({
 			.string()
 			.nullable()
 			.default('Command+Escape'),
-		// 'shortcuts.global.pushToTalk': z
-		// 	.string()
-		// 	.nullable()
-		// 	.default(null),
+		'shortcuts.global.pushToTalk': z
+			.string()
+			.nullable()
+			.default(null),
 		// 'shortcuts.global.startManualRecording': z
 		// 	.string()
 		// 	.nullable()

@@ -2857,8 +2857,11 @@ version = "0.0.6"
 dependencies = [
  "accessibility-sys",
  "cocoa",
+ "core-foundation 0.9.4",
  "core-foundation-sys",
+ "core-graphics 0.23.2",
  "cpal",
+ "crossbeam-channel",
  "dotenvy",
  "enigo",
  "objc",

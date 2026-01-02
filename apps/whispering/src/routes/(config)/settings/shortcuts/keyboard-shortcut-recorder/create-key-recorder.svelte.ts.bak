@@ -149,6 +149,7 @@ export function createKeyRecorder({
 
 					// Listen for Fn key presses from Rust
 					fnEventUnlisten = await listen('fn-key-pressed-for-recording', () => {
+						console.log('[KeyRecorder] Fn key detected from Rust backend');
 						capturedKeys.add('fn' as KeyboardEventSupportedKey);
 
 						// Extend capture window

@@ -1,14 +1,28 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { rpc } from '$lib/query';
+	import * as services from '$lib/services';
 	import { settings } from '$lib/stores/settings.svelte';
+	import * as Alert from '$lib/ui/alert';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
-	import { Layers2Icon, RotateCcw } from '@lucide/svelte';
+	import { Layers2Icon, RotateCcw, LoaderCircle } from '@lucide/svelte';
 	import { onDestroy, onMount } from 'svelte';
 
 	import ShortcutFormatHelp from '../keyboard-shortcut-recorder/ShortcutFormatHelp.svelte';
 	import ShortcutTable from '../keyboard-shortcut-recorder/ShortcutTable.svelte';
+
+	// Check if Fn manager is currently initializing
+	let isFnInitializing = $state(false);
+	let checkInterval: ReturnType<typeof setInterval> | null = null;
+
+	onMount(() => {
+		// Check initialization status periodically
+		isFnInitializing = services.permissionMonitor.isInitializing;
+		checkInterval = setInterval(() => {
+			isFnInitializing = services.permissionMonitor.isInitializing;
+		}, 500);
+	});
 
 	// Force hide recording overlay with timeout to prevent hanging
 	function hideOverlayNonBlocking() {
@@ -51,6 +65,9 @@
 
 	onDestroy(() => {
 		hideOverlayNonBlocking();
+		if (checkInterval) {
+			clearInterval(checkInterval);
+		}
 	});
 </script>
 
@@ -94,6 +111,15 @@
 		</div>
 
 		<Separator class="my-6" />
+
+		{#if isFnInitializing}
+			<Alert.Root variant="default" class="mb-6 border-blue-200 bg-blue-50">
+				<LoaderCircle class="size-4 animate-spin text-blue-600" />
+				<Alert.Description class="text-blue-800">
+					Initializing Fn key support... This usually takes less than a second.
+				</Alert.Description>
+			</Alert.Root>
+		{/if}
 
 		<ShortcutTable type="global" />
 	</section>

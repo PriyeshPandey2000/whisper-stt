@@ -5,6 +5,7 @@ export type AuthUser = {
   id: string;
   email: string;
   name?: string;
+  isAnonymous: boolean;
 };
 
 export type AuthState = {
@@ -81,6 +82,7 @@ class AuthService {
       id: user.id,
       email: user.email || '',
       name: user.user_metadata?.name || user.email,
+      isAnonymous: user.is_anonymous || false,
     };
   }
 
@@ -117,6 +119,28 @@ class AuthService {
   // Check if user is authenticated
   isAuthenticated(): boolean {
     return !!this.authState.session;
+  }
+
+  // Check if current user is anonymous
+  isAnonymous(): boolean {
+    return this.authState.user?.isAnonymous || false;
+  }
+
+  // Sign in anonymously
+  async signInAnonymously() {
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+
+      if (error) {
+        console.error('Error signing in anonymously:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error during anonymous sign in:', error);
+      throw new Error('Failed to sign in anonymously');
+    }
   }
 
   // Sign in by opening browser to web app

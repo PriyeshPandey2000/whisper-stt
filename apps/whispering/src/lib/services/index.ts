@@ -5,9 +5,11 @@ import * as completions from './completion';
 import { DbServiceLive } from './db';
 import { DownloadServiceLive } from './download';
 import { GlobalShortcutManagerLive } from './global-shortcut-manager';
+import { HybridShortcutManagerLive } from './hybrid-shortcut-manager';
 import { LocalShortcutManagerLive } from './local-shortcut-manager';
 import { NotificationServiceLive } from './notifications';
 import { OsServiceLive } from './os';
+import { PermissionMonitorLive } from './permission-monitor';
 import { RecorderServiceLive } from './recorder';
 import { PlaySoundServiceLive } from './sound';
 import { ToastServiceLive } from './toast';
@@ -28,9 +30,11 @@ export {
 	DbServiceLive as db,
 	DownloadServiceLive as download,
 	GlobalShortcutManagerLive as globalShortcutManager,
+	HybridShortcutManagerLive as hybridShortcutManager,
 	LocalShortcutManagerLive as localShortcutManager,
 	NotificationServiceLive as notification,
 	OsServiceLive as os,
+	PermissionMonitorLive as permissionMonitor,
 	RecorderServiceLive as recorder,
 	PlaySoundServiceLive as sound,
 	ToastServiceLive as toast,
