@@ -133,12 +133,12 @@
 		const hasAccessibilityPermission = await checkAccessibilityPermission();
 		const allPermissionsGranted = hasMicPermission && hasAccessibilityPermission;
 
-		console.log('Onboarding check:', {
-			isCompleted,
-			hasMicPermission,
-			hasAccessibilityPermission,
-			allPermissionsGranted
-		});
+		// console.log('Onboarding check:', {
+		// 	isCompleted,
+		// 	hasMicPermission,
+		// 	hasAccessibilityPermission,
+		// 	allPermissionsGranted
+		// });
 
 		// Force onboarding for development/fresh builds (uncomment for testing)
 		// settings.updateKey('app.onboardingCompleted', false);

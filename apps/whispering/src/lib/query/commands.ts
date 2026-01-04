@@ -4,6 +4,7 @@ import { analytics } from '$lib/services/posthog';
 import { auth } from '$lib/stores/auth.svelte';
 import { settings } from '$lib/stores/settings.svelte';
 import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
+import { onboardingStore } from '$lib/stores/onboarding.svelte';
 import { signupRequiredDialog } from '$lib/stores/signup-required-dialog.svelte';
 import { invoke } from '@tauri-apps/api/core';
 import { nanoid } from 'nanoid/non-secure';
@@ -138,7 +139,7 @@ const startManualRecording = defineMutation({
 				}
 			}
 
-			signupRequiredDialog.open();
+			signupRequiredDialog.open(onboardingStore.isOpen);
 			return NoteFluxErr({
 				title: '📝 Sign up to continue recording',
 				description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,
@@ -315,7 +316,7 @@ const startVadRecording = defineMutation({
 				}
 			}
 
-			signupRequiredDialog.open();
+			signupRequiredDialog.open(onboardingStore.isOpen);
 			return NoteFluxErr({
 				title: '📝 Sign up to continue recording',
 				description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,
@@ -587,7 +588,7 @@ export const commands = {
 			// Only apply gate to anonymous users - permanent users have unlimited usage
 			const gateStatus = await checkAnonymousGate();
 			if (gateStatus?.needsSignup && auth.isAnonymous) {
-				signupRequiredDialog.open();
+				signupRequiredDialog.open(onboardingStore.isOpen);
 				return NoteFluxErr({
 					title: '📝 Sign up to continue',
 					description: `You've transcribed ${gateStatus.totalMinutes.toFixed(1)} minutes. Sign up (free) to continue.`,

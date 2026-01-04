@@ -4,17 +4,24 @@
  */
 
 let isOpen = $state(false);
+let wasOnboardingOpen = $state(false);
 
 export const signupRequiredDialog = {
   get isOpen() {
     return isOpen;
   },
 
-  open() {
+  get wasOnboardingOpen() {
+    return wasOnboardingOpen;
+  },
+
+  open(onboardingWasOpen: boolean = false) {
     isOpen = true;
+    wasOnboardingOpen = onboardingWasOpen;
   },
 
   close() {
     isOpen = false;
+    wasOnboardingOpen = false;
   },
 };

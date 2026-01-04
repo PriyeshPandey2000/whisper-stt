@@ -21,7 +21,7 @@ export async function setupDefaultTransformation() {
 		// If user has any transformations, don't create default
 		const hasAnyTransformations = existingTransformations && existingTransformations.length > 0;
 		if (hasAnyTransformations) {
-			console.log('User already has transformations, skipping default creation');
+			// console.log('User already has transformations, skipping default creation');
 			return;
 		}
 	} catch (error) {

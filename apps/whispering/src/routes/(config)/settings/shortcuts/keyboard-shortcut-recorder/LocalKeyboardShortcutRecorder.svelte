@@ -18,11 +18,13 @@
 		command,
 		placeholder,
 		pressedKeys,
+		disabled = false,
 	}: {
 		autoFocus?: boolean;
 		command: Command;
 		placeholder?: string;
 		pressedKeys: PressedKeys;
+		disabled?: boolean;
 	} = $props();
 
 	const shortcutValue = $derived(
@@ -93,4 +95,5 @@
 	{autoFocus}
 	rawKeyCombination={shortcutValue}
 	{keyRecorder}
+	{disabled}
 />

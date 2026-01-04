@@ -17,9 +17,12 @@
 
 	const isDesktop = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
 
-	// Parse the shortcut into individual keys
+	// Get the active shortcut based on recording mode
+	const recordingMode = $derived(settings.value['shortcuts.recordingMode']);
 	const shortcut = $derived(
-		settings.value['shortcuts.global.toggleManualRecording'] || 'Option+Space'
+		recordingMode === 'hold'
+			? (settings.value['shortcuts.global.pushToTalk'] || 'Fn')
+			: (settings.value['shortcuts.global.toggleManualRecording'] || 'Option+Space')
 	);
 
 	const shortcutKeys = $derived(shortcut.split('+').map((key) => key.trim()));
@@ -164,7 +167,11 @@
 		<h2 class="text-xl font-semibold text-white/95">Try It Now</h2>
 		<p class="text-sm text-white/50">
 			{#if isDesktop}
-				Press <span class="text-white/70 font-medium">{shortcut}</span> and speak to see the magic
+				{#if recordingMode === 'hold'}
+					Hold <span class="text-white/70 font-medium">{shortcut}</span>, speak, then release
+				{:else}
+					Press <span class="text-white/70 font-medium">{shortcut}</span>, speak, then press again
+				{/if}
 			{:else}
 				Press the shortcut and speak to see the magic
 			{/if}

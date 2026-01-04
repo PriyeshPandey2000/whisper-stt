@@ -55,16 +55,16 @@ export function createPermissionMonitor() {
 		 */
 		async attemptReinitialize(): Promise<Result<void, PermissionMonitorError>> {
 			if (reinitializeInProgress) {
-				console.log(
-					'[PermissionMonitor] ⏭️ Reinitialize already in progress, skipping duplicate attempt',
-				);
+				// console.log(
+				// 	'[PermissionMonitor] ⏭️ Reinitialize already in progress, skipping duplicate attempt',
+				// );
 				return Ok(undefined);
 			}
 
 			reinitializeInProgress = true;
 
 			try {
-				console.log('[PermissionMonitor] 🔄 Attempting immediate reinitialize...');
+				// console.log('[PermissionMonitor] 🔄 Attempting immediate reinitialize...');
 
 				// Try immediately first (0 latency in best case)
 				let attempt = 0;
@@ -101,9 +101,9 @@ export function createPermissionMonitor() {
 
 					if (!reinitializeError) {
 						// Success!
-						console.log(
-							`[PermissionMonitor] ✓ Fn manager initialized successfully on attempt ${attempt + 1}`,
-						);
+						// console.log(
+						// 	`[PermissionMonitor] ✓ Fn manager initialized successfully on attempt ${attempt + 1}`,
+						// );
 						break;
 					}
 
@@ -113,9 +113,9 @@ export function createPermissionMonitor() {
 
 					if (attempt < maxAttempts) {
 						const backoffMs = Math.pow(2, attempt - 1) * 100; // Exponential backoff
-						console.log(
-							`[PermissionMonitor] ⏳ Attempt ${attempt} failed, retrying in ${backoffMs}ms...`,
-						);
+						// console.log(
+						// 	`[PermissionMonitor] ⏳ Attempt ${attempt} failed, retrying in ${backoffMs}ms...`,
+						// );
 						await new Promise((resolve) => setTimeout(resolve, backoffMs));
 					} else {
 						console.error(
@@ -128,20 +128,20 @@ export function createPermissionMonitor() {
 				}
 
 				// Re-register all shortcuts with the newly initialized manager
-				console.log(
-					'[PermissionMonitor] 🔄 Re-registering shortcuts with new manager...',
-				);
+				// console.log(
+				// 	'[PermissionMonitor] 🔄 Re-registering shortcuts with new manager...',
+				// );
 				const { syncGlobalShortcutsWithSettings } = await import(
 					'../../routes/+layout/register-commands'
 				);
 				await syncGlobalShortcutsWithSettings();
-				console.log('[PermissionMonitor] ✓ Shortcuts re-registered');
+				// console.log('[PermissionMonitor] ✓ Shortcuts re-registered');
 
-				console.log(
-					'[PermissionMonitor] ✅ Fn keys are now operational! (latency: ~' +
-						(attempt * 100) +
-						'ms)',
-				);
+				// console.log(
+				// 	'[PermissionMonitor] ✅ Fn keys are now operational! (latency: ~' +
+				// 		(attempt * 100) +
+				// 		'ms)',
+				// );
 
 				reinitializeInProgress = false;
 				return Ok(undefined);
@@ -174,9 +174,9 @@ export function createPermissionMonitor() {
 			const currentStatus: PermissionStatus = isGranted ? 'granted' : 'denied';
 
 			// DEBUG: Log every check to see if it's actually running
-			console.log(
-				`[PermissionMonitor] 🔍 Check: previous=${previousStatus}, current=${currentStatus}, reinitInProgress=${reinitializeInProgress}`,
-			);
+			// console.log(
+			// 	`[PermissionMonitor] 🔍 Check: previous=${previousStatus}, current=${currentStatus}, reinitInProgress=${reinitializeInProgress}`,
+			// );
 
 			// Detect permission state changes
 			if (previousStatus === 'granted' && currentStatus === 'denied') {
@@ -188,9 +188,9 @@ export function createPermissionMonitor() {
 			}
 
 			if (previousStatus !== 'granted' && currentStatus === 'granted') {
-				console.log(
-					'[PermissionMonitor] 🎉 Accessibility permission just granted! Reinitializing Fn manager...',
-				);
+				// console.log(
+				// 	'[PermissionMonitor] 🎉 Accessibility permission just granted! Reinitializing Fn manager...',
+				// );
 				// Run reinitialize in background, don't block periodic check
 				this.attemptReinitialize();
 			}
@@ -203,11 +203,11 @@ export function createPermissionMonitor() {
 		 */
 		async start(): Promise<Result<void, PermissionMonitorError>> {
 			if (intervalId !== null) {
-				console.log('[PermissionMonitor] Already started, skipping');
+				// console.log('[PermissionMonitor] Already started, skipping');
 				return Ok(undefined);
 			}
 
-			console.log('[PermissionMonitor] Starting permission monitoring...');
+			// console.log('[PermissionMonitor] Starting permission monitoring...');
 
 			// Initial check
 			await this.checkPermissionChange();
@@ -217,7 +217,7 @@ export function createPermissionMonitor() {
 				this.checkPermissionChange();
 			}, 2000);
 
-			console.log('[PermissionMonitor] ✓ Permission monitoring started');
+			// console.log('[PermissionMonitor] ✓ Permission monitoring started');
 			return Ok(undefined);
 		},
 

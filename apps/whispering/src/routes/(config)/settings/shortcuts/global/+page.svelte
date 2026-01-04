@@ -6,11 +6,13 @@
 	import * as Alert from '$lib/ui/alert';
 	import { Button } from '$lib/ui/button';
 	import { Separator } from '$lib/ui/separator';
+	import * as ToggleGroup from '$lib/ui/toggle-group';
 	import { Layers2Icon, RotateCcw, LoaderCircle } from '@lucide/svelte';
 	import { onDestroy, onMount } from 'svelte';
 
 	import ShortcutFormatHelp from '../keyboard-shortcut-recorder/ShortcutFormatHelp.svelte';
 	import ShortcutTable from '../keyboard-shortcut-recorder/ShortcutTable.svelte';
+	import { syncGlobalShortcutsWithSettings } from '../../../../+layout/register-commands';
 
 	// Check if Fn manager is currently initializing
 	let isFnInitializing = $state(false);
@@ -120,6 +122,45 @@
 				</Alert.Description>
 			</Alert.Root>
 		{/if}
+
+		<!-- Recording Mode Toggle -->
+		<div class="mb-6 space-y-3">
+			<div class="space-y-1">
+				<h3 class="text-sm font-medium">Recording Mode</h3>
+				<p class="text-sm text-muted-foreground">
+					Choose how you want to control recording with keyboard shortcuts.
+				</p>
+			</div>
+			<ToggleGroup.Root
+				type="single"
+				value={settings.value['shortcuts.recordingMode']}
+				onValueChange={async (value) => {
+					if (value) {
+						settings.updateKey('shortcuts.recordingMode', value as 'hold' | 'toggle');
+						// Re-sync shortcuts to activate the selected mode
+						await syncGlobalShortcutsWithSettings();
+					}
+				}}
+				class="justify-start grid grid-cols-1 sm:grid-cols-2 gap-3 w-full"
+			>
+				<ToggleGroup.Item
+					value="hold"
+					aria-label="Hold to record"
+					class="flex-col h-auto py-3 px-4 gap-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+				>
+					<span class="font-medium">Push to Talk</span>
+					<span class="text-xs font-normal opacity-80">Hold key, speak, release to transcribe</span>
+				</ToggleGroup.Item>
+				<ToggleGroup.Item
+					value="toggle"
+					aria-label="Press to toggle"
+					class="flex-col h-auto py-3 px-4 gap-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+				>
+					<span class="font-medium">Toggle Mode</span>
+					<span class="text-xs font-normal opacity-80">Press to start, press again to stop</span>
+				</ToggleGroup.Item>
+			</ToggleGroup.Root>
+		</div>
 
 		<ShortcutTable type="global" />
 	</section>
