@@ -86,19 +86,50 @@ export function resetGlobalShortcutsToDefaultIfDuplicates(): boolean {
  * - Shows error toast if any registration/unregistration fails
  */
 export async function syncGlobalShortcutsWithSettings() {
+	const recordingMode = settings.value['shortcuts.recordingMode'];
+
+	// First, unregister inactive mode's shortcut to prevent conflicts
+	if (recordingMode === 'hold') {
+		// In hold mode, unregister toggleManualRecording if it has a shortcut
+		const toggleShortcut = settings.value['shortcuts.global.toggleManualRecording'];
+		if (toggleShortcut) {
+			await rpc.shortcuts.unregisterCommandGlobally.execute({
+				accelerator: toggleShortcut as Accelerator,
+			});
+		}
+	} else {
+		// In toggle mode, unregister pushToTalk if it has a shortcut
+		const pushToTalkShortcut = settings.value['shortcuts.global.pushToTalk'];
+		if (pushToTalkShortcut) {
+			await rpc.shortcuts.unregisterCommandGlobally.execute({
+				accelerator: pushToTalkShortcut as Accelerator,
+			});
+		}
+	}
+
 	const results = await Promise.all(
 		commands
 			.map((command) => {
+				// Skip pushToTalk if in toggle mode
+				if (command.id === 'pushToTalk' && recordingMode === 'toggle') {
+					return;
+				}
+
+				// Skip toggleManualRecording if in hold mode
+				if (command.id === 'toggleManualRecording' && recordingMode === 'hold') {
+					return;
+				}
+
 				let accelerator = settings.value[
 					`shortcuts.global.${command.id}`
 				] as Accelerator | null;
-				
+
 				// Force update cancelManualRecording to new default if it's null
 				if (command.id === 'cancelManualRecording' && !accelerator) {
 					accelerator = 'Command+Escape' as Accelerator;
 					settings.updateKey('shortcuts.global.cancelManualRecording', accelerator);
 				}
-				
+
 				if (!accelerator) return;
 				return rpc.shortcuts.registerCommandGlobally.execute({
 					accelerator,

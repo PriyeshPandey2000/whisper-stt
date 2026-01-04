@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import type { Command } from '$lib/commands';
+import type { ShortcutTriggerState } from './_shortcut-trigger-state';
 import { createTaggedError } from 'wellcrafted/error';
 import { Err, Ok, type Result } from 'wellcrafted/result';
 
@@ -14,11 +14,17 @@ type FnShortcutServiceError = ReturnType<typeof FnShortcutServiceError>;
 const { FnNotSupportedErr, FnNotSupportedError } = createTaggedError('FnNotSupportedError');
 type FnNotSupportedError = ReturnType<typeof FnNotSupportedError>;
 
-export function createFnShortcutManager() {
-	// Track registered shortcuts with their trigger state
-	const shortcuts = new Map<Accelerator, Command>();
+type RegisteredShortcut = {
+	callback: () => void;
+	commandId: string;
+	on: ShortcutTriggerState;
+};
 
-	console.log('[FnShortcut] Creating Fn shortcut manager');
+export function createFnShortcutManager() {
+	// Track registered shortcuts with their callbacks and trigger state
+	const shortcuts = new Map<Accelerator, RegisteredShortcut>();
+
+	// console.log('[FnShortcut] Creating Fn shortcut manager');
 
 	// Listen for Fn tap events (quick press and release)
 	listen<string>('fn-shortcut-triggered', (event) => {
@@ -26,10 +32,10 @@ export function createFnShortcutManager() {
 		console.log('[FnShortcut] Event received: fn-shortcut-triggered (tap)', commandId);
 
 		// Find the matching shortcut
-		for (const [accelerator, command] of shortcuts.entries()) {
-			if (command.id === commandId && command.on === 'Pressed') {
-				console.log(`[FnShortcut] Executing tap command: ${command.id} (${accelerator})`);
-				command.callback();
+		for (const [accelerator, shortcut] of shortcuts.entries()) {
+			if (shortcut.commandId === commandId && shortcut.on === 'Pressed') {
+				// console.log(`[FnShortcut] Executing tap command: ${shortcut.commandId} (${accelerator})`);
+				shortcut.callback();
 				break;
 			}
 		}
@@ -43,10 +49,10 @@ export function createFnShortcutManager() {
 		console.log('[FnShortcut] Event received: fn-shortcut-pressed', commandId);
 
 		// Find the matching shortcut
-		for (const [accelerator, command] of shortcuts.entries()) {
-			if (command.id === commandId && command.on === 'Both') {
-				console.log(`[FnShortcut] Executing press for push-to-talk: ${command.id} (${accelerator})`);
-				command.callback();
+		for (const [accelerator, shortcut] of shortcuts.entries()) {
+			if (shortcut.commandId === commandId && shortcut.on === 'Both') {
+				// console.log(`[FnShortcut] Executing press for push-to-talk: ${shortcut.commandId} (${accelerator})`);
+				shortcut.callback();
 				break;
 			}
 		}
@@ -60,10 +66,10 @@ export function createFnShortcutManager() {
 		console.log('[FnShortcut] Event received: fn-shortcut-released', commandId);
 
 		// Find the matching shortcut
-		for (const [accelerator, command] of shortcuts.entries()) {
-			if (command.id === commandId && command.on === 'Both') {
-				console.log(`[FnShortcut] Executing release for push-to-talk: ${command.id} (${accelerator})`);
-				command.callback();
+		for (const [accelerator, shortcut] of shortcuts.entries()) {
+			if (shortcut.commandId === commandId && shortcut.on === 'Both') {
+				// console.log(`[FnShortcut] Executing release for push-to-talk: ${shortcut.commandId} (${accelerator})`);
+				shortcut.callback();
 				break;
 			}
 		}
@@ -74,22 +80,26 @@ export function createFnShortcutManager() {
 	return {
 		async register({
 			accelerator,
-			command
+			commandId,
+			callback,
+			on
 		}: {
 			accelerator: Accelerator;
-			command: Command;
+			callback: () => void;
+			commandId: string;
+			on: ShortcutTriggerState;
 		}): Promise<Result<void, FnShortcutServiceError | FnNotSupportedError>> {
 			try {
-				console.log(`[FnShortcut] Registering: ${accelerator} -> ${command.id}`);
+				// console.log(`[FnShortcut] Registering: ${accelerator} -> ${commandId}`);
 
 				// Call Rust backend to register the Fn shortcut
 				await invoke('register_fn_shortcut', {
 					accelerator,
-					commandId: command.id
+					commandId
 				});
 
-				shortcuts.set(accelerator, command);
-				console.log('[FnShortcut] Registration successful');
+				shortcuts.set(accelerator, { callback, commandId, on });
+				// console.log('[FnShortcut] Registration successful');
 				return Ok(undefined);
 			} catch (error: any) {
 				console.error('[FnShortcut] Registration failed:', error);
@@ -103,7 +113,7 @@ export function createFnShortcutManager() {
 
 				return FnShortcutServiceErr({
 					cause: error,
-					context: { accelerator, command },
+					context: { accelerator, commandId },
 					message: `Failed to register Fn shortcut: ${error}`
 				});
 			}
@@ -113,14 +123,14 @@ export function createFnShortcutManager() {
 			accelerator: Accelerator
 		): Promise<Result<void, FnShortcutServiceError>> {
 			try {
-				console.log(`[FnShortcut] Unregistering: ${accelerator}`);
+				// console.log(`[FnShortcut] Unregistering: ${accelerator}`);
 
 				await invoke('unregister_fn_shortcut', {
 					accelerator
 				});
 
 				shortcuts.delete(accelerator);
-				console.log('[FnShortcut] Unregistration successful');
+				// console.log('[FnShortcut] Unregistration successful');
 				return Ok(undefined);
 			} catch (error: any) {
 				console.error('[FnShortcut] Unregistration failed:', error);

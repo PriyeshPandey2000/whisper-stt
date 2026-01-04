@@ -22,11 +22,13 @@
 		command,
 		placeholder,
 		pressedKeys,
+		disabled = false,
 	}: {
 		autoFocus?: boolean;
 		command: Command;
 		placeholder?: string;
 		pressedKeys: PressedKeys;
+		disabled?: boolean;
 	} = $props();
 
 	const shortcutValue = $derived(
@@ -150,4 +152,5 @@
 	rawKeyCombination={shortcutValue}
 	{keyRecorder}
 	onDialogClose={handleDialogClose}
+	{disabled}
 />

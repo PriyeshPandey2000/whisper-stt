@@ -19,6 +19,7 @@
 		placeholder = 'Press a key combination',
 		rawKeyCombination,
 		onDialogClose,
+		disabled = false,
 	}: {
 		autoFocus?: boolean;
 		keyRecorder: KeyRecorder;
@@ -26,6 +27,7 @@
 		rawKeyCombination: null | string;
 		title: string;
 		onDialogClose?: () => void;
+		disabled?: boolean;
 	} = $props();
 
 	let isDialogOpen = $state(false);
@@ -96,6 +98,7 @@
 				keyRecorder.clear();
 				saveStatus = 'none';
 			}}
+			{disabled}
 		>
 			<XIcon class="size-4" />
 			<span class="sr-only">Clear shortcut</span>
@@ -105,8 +108,9 @@
 	{/if}
 
 	<Dialog.Root
-		open={isDialogOpen}
+		open={isDialogOpen && !disabled}
 		onOpenChange={(open) => {
+			if (disabled) return;
 			// Prevent closing if we're in recording mode
 			if (!open && keyRecorder.isListening) {
 				return;
@@ -119,7 +123,7 @@
 		}}
 	>
 		<Dialog.Trigger>
-			<Button variant="ghost" size="sm" class="h-8 font-normal">
+			<Button variant="ghost" size="sm" class="h-8 font-normal" {disabled}>
 				{#if rawKeyCombination}
 					<span class="text-xs">Change shortcut</span>
 				{:else}

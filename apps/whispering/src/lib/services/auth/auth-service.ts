@@ -148,7 +148,18 @@ class AuthService {
     try {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
-      const signInUrl = `https://noteflux.app/sign-in?redirect_to=${encodeURIComponent(redirectTo)}`;
+
+      // Get current session to check if anonymous
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Build signin URL with anonymous session tokens if present
+      let signInUrl = `https://noteflux.app/sign-in?redirect_to=${encodeURIComponent(redirectTo)}`;
+
+      // If user is anonymous, pass tokens so website can link the data
+      if (session?.user?.is_anonymous && session.access_token && session.refresh_token) {
+        signInUrl += `&anon_token=${encodeURIComponent(session.access_token)}`;
+        signInUrl += `&anon_refresh=${encodeURIComponent(session.refresh_token)}`;
+      }
 
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {
@@ -186,7 +197,18 @@ class AuthService {
     try {
       // Add redirect parameter for desktop app
       const redirectTo = 'noteflux://auth/callback';
-      const signUpUrl = `https://noteflux.app/sign-up?redirect_to=${encodeURIComponent(redirectTo)}`;
+
+      // Get current session to check if anonymous
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Build signup URL with anonymous session tokens if present
+      let signUpUrl = `https://noteflux.app/sign-up?redirect_to=${encodeURIComponent(redirectTo)}`;
+
+      // If user is anonymous, pass tokens so website can convert instead of creating new user
+      if (session?.user?.is_anonymous && session.access_token && session.refresh_token) {
+        signUpUrl += `&anon_token=${encodeURIComponent(session.access_token)}`;
+        signUpUrl += `&anon_refresh=${encodeURIComponent(session.refresh_token)}`;
+      }
 
       // Check if we're in Tauri environment
       if ((window as any).__TAURI_INTERNALS__) {

@@ -4,7 +4,6 @@
 
 	import { commandCallbacks } from '$lib/commands';
 	import AuthSection from '$lib/components/auth/AuthSection.svelte';
-	import SignupRequiredDialog from '$lib/components/auth/SignupRequiredDialog.svelte';
 	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import { ClipboardIcon } from '$lib/components/icons';
 	import NavItems from '$lib/components/NavItems.svelte';
@@ -436,5 +435,3 @@
 		{/if}
 	</div>
 </main>
-
-<SignupRequiredDialog />

@@ -39,6 +39,31 @@
 			})();
 		}
 	});
+
+	// Auto-close dialog when user successfully authenticates and is no longer anonymous
+	$effect(() => {
+		if (signupRequiredDialog.isOpen && auth.isAuthenticated && !auth.isAnonymous) {
+			// Check if onboarding was open before closing the dialog
+			const shouldReopenOnboarding = signupRequiredDialog.wasOnboardingOpen;
+
+			signupRequiredDialog.close();
+
+			// If user was in onboarding flow, reopen it at the usage guide step
+			if (shouldReopenOnboarding) {
+				// Small delay to let the signup dialog close smoothly
+				setTimeout(async () => {
+					const { onboardingStore } = await import('$lib/stores/onboarding.svelte');
+					const { goto } = await import('$app/navigation');
+
+					// Navigate back to home
+					await goto('/');
+
+					// Reopen onboarding at usage guide step
+					onboardingStore.openAt('usage-guide');
+				}, 300);
+			}
+		}
+	});
 </script>
 
 <Dialog.Root bind:open={signupRequiredDialog.isOpen}>

@@ -1,4 +1,5 @@
 import type { Command } from '$lib/commands';
+import { globalCommandCallbacks } from '$lib/commands';
 import type { Result } from 'wellcrafted/result';
 import type { ShortcutTriggerState } from './_shortcut-trigger-state';
 import {
@@ -22,7 +23,7 @@ function containsFnModifier(accelerator: Accelerator): boolean {
  * - Fn shortcuts (Fn, Fn+A, Fn+Cmd+P) → FnShortcutManager (CGEventTap)
  */
 export function createHybridShortcutManager() {
-	console.log('[HybridShortcut] Creating hybrid shortcut manager');
+	// console.log('[HybridShortcut] Creating hybrid shortcut manager');
 
 	return {
 		async register({
@@ -34,20 +35,28 @@ export function createHybridShortcutManager() {
 			command: Command;
 			on?: ShortcutTriggerState;
 		}): Promise<Result<void, any>> {
+			// Get the global callback that passes initiatedVia: 'global-shortcut'
+			const globalCallback = globalCommandCallbacks[command.id];
+
 			// Route based on Fn presence
 			if (containsFnModifier(accelerator)) {
-				console.log(`[HybridShortcut] Routing ${accelerator} to Fn manager with on=${on}`);
+				// console.log(`[HybridShortcut] Routing ${accelerator} to Fn manager with on=${on}`);
 				// Use Fn shortcut manager (CGEventTap)
 				// Now supports 'on' parameter for push-to-talk
-				return FnShortcutManagerLive.register({ accelerator, command });
+				return FnShortcutManagerLive.register({
+					accelerator,
+					commandId: command.id,
+					callback: globalCallback,
+					on: command.on
+				});
 			} else {
-				console.log(`[HybridShortcut] Routing ${accelerator} to global manager`);
-				// Use standard global shortcut manager
+				// console.log(`[HybridShortcut] Routing ${accelerator} to global manager`);
+				// Use standard global shortcut manager with global callback
 				return GlobalShortcutManagerLive.register({
 					accelerator,
 					callback: () => {
-						console.log(`[HybridShortcut] Executing ${accelerator} -> ${command.id}`);
-						command.callback();
+						// console.log(`[HybridShortcut] Executing ${accelerator} -> ${command.id}`);
+						globalCallback();
 					},
 					on
 				});
@@ -57,12 +66,10 @@ export function createHybridShortcutManager() {
 		async unregister(accelerator: Accelerator): Promise<Result<void, any>> {
 			// Route based on Fn presence
 			if (containsFnModifier(accelerator)) {
-				console.log(`[HybridShortcut] Unregistering ${accelerator} from Fn manager`);
+				// console.log(`[HybridShortcut] Unregistering ${accelerator} from Fn manager`);
 				return FnShortcutManagerLive.unregister(accelerator);
 			} else {
-				console.log(
-					`[HybridShortcut] Unregistering ${accelerator} from global manager`
-				);
+				// console.log(`[HybridShortcut] Unregistering ${accelerator} from global manager`);
 				return GlobalShortcutManagerLive.unregister(accelerator);
 			}
 		}

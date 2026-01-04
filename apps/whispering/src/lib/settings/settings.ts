@@ -181,6 +181,9 @@ export const settingsSchema = z.object({
 		.nullable()
 		.default(null),
 
+	// Recording mode: hold (push-to-talk) vs toggle (press to start/stop)
+	'shortcuts.recordingMode': z.enum(['hold', 'toggle']).default('hold'),
+
 	...({
 		'shortcuts.local.cancelManualRecording': z.string().nullable().default(null),
 		'shortcuts.local.pushToTalk': z.string().nullable().default(null),
@@ -203,7 +206,7 @@ export const settingsSchema = z.object({
 		'shortcuts.global.pushToTalk': z
 			.string()
 			.nullable()
-			.default(null),
+			.default('Fn'),
 		// 'shortcuts.global.startManualRecording': z
 		// 	.string()
 		// 	.nullable()
@@ -214,7 +217,7 @@ export const settingsSchema = z.object({
 		'shortcuts.global.toggleManualRecording': z
 			.string()
 			.nullable()
-			.default('Option+Space'),
+			.default(null),
 		// 'shortcuts.global.toggleVadRecording': z.string().nullable().default(null),
 	} satisfies Record<
 		`shortcuts.global.${Command['id']}`,

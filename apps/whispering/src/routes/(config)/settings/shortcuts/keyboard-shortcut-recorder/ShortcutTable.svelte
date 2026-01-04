@@ -2,6 +2,7 @@
 	import { commands } from '$lib/commands';
 	import { rpc } from '$lib/query';
 	import { getDefaultSettings } from '$lib/settings';
+	import { settings } from '$lib/stores/settings.svelte';
 	import { Input } from '$lib/ui/input';
 	import * as Table from '$lib/ui/table';
 	import { createPressedKeys } from '$lib/utils/createPressedKeys.svelte';
@@ -30,6 +31,23 @@
 			});
 		},
 	});
+
+	// Determine if a command should be disabled based on recording mode
+	function isCommandDisabled(commandId: string): boolean {
+		const recordingMode = settings.value['shortcuts.recordingMode'];
+
+		// Disable pushToTalk when in toggle mode
+		if (commandId === 'pushToTalk' && recordingMode === 'toggle') {
+			return true;
+		}
+
+		// Disable toggleManualRecording when in hold mode
+		if (commandId === 'toggleManualRecording' && recordingMode === 'hold') {
+			return true;
+		}
+
+		return false;
+	}
 </script>
 
 <div class="space-y-4">
@@ -59,9 +77,15 @@
 				{#each filteredCommands as command}
 					{@const defaultShortcut =
 						defaultSettings[`shortcuts.${type}.${command.id}`]}
-					<Table.Row>
+					{@const disabled = isCommandDisabled(command.id)}
+					<Table.Row class={disabled ? 'opacity-40' : ''}>
 						<Table.Cell class="font-medium">
-							<span class="block truncate pr-2">{command.title}</span>
+							<span class="block truncate pr-2">
+								{command.title}
+								{#if disabled}
+									<span class="ml-2 text-xs text-muted-foreground">(Disabled in current mode)</span>
+								{/if}
+							</span>
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							{#if type === 'local'}
@@ -71,6 +95,7 @@
 										? `Default: ${defaultShortcut}`
 										: 'Set shortcut'}
 									{pressedKeys}
+									{disabled}
 								/>
 							{:else}
 								<GlobalKeyboardShortcutRecorder
@@ -79,6 +104,7 @@
 										? `Default: ${defaultShortcut}`
 										: 'Set shortcut'}
 									{pressedKeys}
+									{disabled}
 								/>
 							{/if}
 						</Table.Cell>

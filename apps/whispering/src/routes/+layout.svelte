@@ -9,6 +9,7 @@
 	// import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
 
 	import AppShell from './+layout/AppShell.svelte';
+	import SignupRequiredDialog from '$lib/components/auth/SignupRequiredDialog.svelte';
 
 	let { children } = $props();
 
@@ -68,6 +69,7 @@
 	<AppShell>
 		{@render children()}
 	</AppShell>
+	<SignupRequiredDialog />
 </QueryClientProvider>
 
 <!-- <SvelteQueryDevtools client={queryClient} buttonPosition="bottom-left" /> -->
