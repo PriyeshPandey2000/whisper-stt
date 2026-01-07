@@ -83,22 +83,70 @@ export const commandCallbacks = commands.reduce<CommandCallbacks>(
 	{} as CommandCallbacks,
 );
 
+// Track local state for instant feedback without backend roundtrip
+let isRecordingOrStarting = false;
+// Track pending start operation to ensure we don't try to stop before start finishes
+let pendingStartPromise: Promise<any> | null = null;
+
 // Global shortcut callbacks - these pass 'global-shortcut' as the initiation method
 export const globalCommandCallbacks: CommandCallbacks = {
 	pushToTalk: async () => {
-		// Check if currently recording
-		const { data: currentRecordingId } = await rpc.recorder.getCurrentRecordingId.fetch();
+		if (isRecordingOrStarting) {
+			// --- STOP LOGIC (Release) ---
+			// Immediately update local state so subsequent calls know we're stopping
+			isRecordingOrStarting = false;
 
-		if (currentRecordingId) {
-			// Currently recording → stop on release
+			// SAFETY: If we are still starting (e.g. quick tap), wait for start to finish first
+			// This prevents the "stop before start" race condition
+			if (pendingStartPromise) {
+				try {
+					await pendingStartPromise;
+				} catch (error) {
+					// If start failed, we can't stop a non-existent recording
+					console.error('Start failed, cannot stop:', error);
+					pendingStartPromise = null;
+					return;
+				}
+				pendingStartPromise = null;
+			}
+
+			// Now safely stop the recording
 			await rpc.commands.stopManualRecording.execute(undefined);
 		} else {
-			// Not recording → start on press
-			await rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' });
+			// --- START LOGIC (Press) ---
+			// Immediately mark as active so next call (Release) knows to stop
+			isRecordingOrStarting = true;
+
+			// Store the promise so the stop logic can wait for it if needed
+			pendingStartPromise = rpc.commands.startManualRecording.execute({
+				initiatedVia: 'global-shortcut',
+			});
+
+			try {
+				await pendingStartPromise;
+			} catch (error) {
+				// If start fails, revert our local state since we aren't actually recording
+				console.error('Start manual recording failed:', error);
+				isRecordingOrStarting = false;
+			} finally {
+				// Clear promise ref if we finished without a stop call intercepting it
+				// (The stop logic might have already set this to null, which is fine)
+				if (isRecordingOrStarting) {
+					pendingStartPromise = null;
+				}
+			}
 		}
 	},
-	toggleManualRecording: () => rpc.commands.toggleManualRecording.execute({ initiatedVia: 'global-shortcut' }),
-	cancelManualRecording: () => rpc.commands.cancelManualRecording.execute({ initiatedVia: 'global-shortcut' }),
-	// startManualRecording: () => rpc.commands.startManualRecording.execute({ initiatedVia: 'global-shortcut' }),
-	// stopManualRecording: () => rpc.commands.stopManualRecording.execute(undefined),
+	toggleManualRecording: () =>
+		rpc.commands.toggleManualRecording.execute({
+			initiatedVia: 'global-shortcut',
+		}),
+	cancelManualRecording: () => {
+		// Reset local state when cancelling
+		isRecordingOrStarting = false;
+		pendingStartPromise = null;
+		return rpc.commands.cancelManualRecording.execute({
+			initiatedVia: 'global-shortcut',
+		});
+	},
 };

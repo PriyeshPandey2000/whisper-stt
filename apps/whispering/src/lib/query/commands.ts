@@ -507,6 +507,7 @@ export const commands = {
 				await recorder.cancelRecording.execute({ toastId });
 			if (cancelRecordingError) {
 				notify.error.execute({ id: toastId, ...cancelRecordingError });
+				await hideRecordingOverlay();
 				return Err(cancelRecordingError);
 			}
 			switch (cancelRecordingResult.status) {
@@ -522,6 +523,8 @@ export const commands = {
 					});
 					sound.playSoundIfEnabled.execute('manual-cancel');
 					console.info('Recording cancelled');
+					// Ensure overlay is hidden when cancelled
+					await hideRecordingOverlay();
 					break;
 				}
 				case 'no-recording': {
@@ -530,6 +533,8 @@ export const commands = {
 						description: 'There is no recording in progress to cancel.',
 						id: toastId,
 					});
+					// Ensure overlay is hidden if stuck
+					await hideRecordingOverlay();
 					break;
 				}
 			}

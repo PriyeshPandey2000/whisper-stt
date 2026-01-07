@@ -38,6 +38,7 @@ export const recorder = {
 				});
 			}
 
+			await invalidateRecorderState();
 			return Ok(cancelResult);
 		},
 	}),
@@ -119,6 +120,7 @@ export const recorder = {
 					action: { error: startRecordingError, type: 'more-details' },
 				});
 			}
+			await invalidateRecorderState();
 			return Ok(deviceAcquisitionOutcome);
 		},
 	}),
@@ -140,6 +142,7 @@ export const recorder = {
 				});
 			}
 
+			await invalidateRecorderState();
 			return Ok(blob);
 		},
 	}),
