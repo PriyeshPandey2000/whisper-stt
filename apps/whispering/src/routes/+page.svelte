@@ -33,7 +33,7 @@
 	import * as ToggleGroup from '$lib/ui/toggle-group';
 	import { createBlobUrlManager } from '$lib/utils/blobUrlManager';
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
-	import { InfoIcon, Loader2Icon, CopyIcon, AudioLines } from '@lucide/svelte';
+	import { CircleHelpIcon, Loader2Icon, CopyIcon, AudioLines } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -423,7 +423,7 @@
 									onmouseenter={() => isHelpPopoverOpen = true}
 									onmouseleave={() => isHelpPopoverOpen = false}
 								>
-									<InfoIcon class="size-4" />
+									<CircleHelpIcon class="size-4" />
 								</Button>
 							</Popover.Trigger>
 							<Popover.Content

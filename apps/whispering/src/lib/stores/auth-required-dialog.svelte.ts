@@ -1,19 +1,21 @@
-export const authRequiredDialog = (() => {
-	let isOpen = $state(false);
+/**
+ * Store for managing the auth required dialog state
+ * Dialog is always non-dismissible - if auth is required, user must authenticate
+ */
 
-	return {
-		get isOpen() {
-			return isOpen;
-		},
-		set isOpen(value: boolean) {
-			isOpen = value;
-		},
-		open: () => {
-			isOpen = true;
-		},
-		close: () => {
-			isOpen = false;
-		}
-	};
-})();
+let isOpen = $state(false);
+
+export const authRequiredDialog = {
+	get isOpen() {
+		return isOpen;
+	},
+
+	open() {
+		isOpen = true;
+	},
+
+	close() {
+		isOpen = false;
+	},
+};
 

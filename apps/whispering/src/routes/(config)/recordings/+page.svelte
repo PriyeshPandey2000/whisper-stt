@@ -52,6 +52,16 @@
 	import { RecordingRowActions } from './row-actions';
 	import TranscribedTextDialog from './TranscribedTextDialog.svelte';
 
+	function formatLocalTime(isoString: string) {
+		return new Date(isoString).toLocaleString(undefined, {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+			hour: 'numeric',
+			minute: '2-digit',
+		});
+	}
+
 	const getAllRecordingsQuery = createQuery(
 		rpc.recordings.getAllRecordings.options,
 	);
@@ -122,6 +132,7 @@
 		},
 		{
 			accessorKey: 'timestamp',
+			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
 			header: ({ column }) =>
 				renderComponent(SortableTableHeader, {
 					column,
@@ -131,6 +142,7 @@
 		},
 		{
 			accessorKey: 'createdAt',
+			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
 			header: ({ column }) =>
 				renderComponent(SortableTableHeader, {
 					column,
@@ -140,6 +152,7 @@
 		},
 		{
 			accessorKey: 'updatedAt',
+			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
 			header: ({ column }) =>
 				renderComponent(SortableTableHeader, {
 					column,

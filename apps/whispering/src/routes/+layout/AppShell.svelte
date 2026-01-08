@@ -8,7 +8,6 @@
 	import UsageLimitDialog from '$lib/components/UsageLimitDialog.svelte';
 	import { usageLimitDialog } from '$lib/stores/usage-limit-dialog.svelte';
 	import AuthRequiredDialog from '$lib/components/AuthRequiredDialog.svelte';
-	import { authRequiredDialog } from '$lib/stores/auth-required-dialog.svelte';
 	import OnboardingFlow from '$lib/components/onboarding/OnboardingFlow.svelte';
 	import { rpc } from '$lib/query';
 	import * as services from '$lib/services';
@@ -39,6 +38,25 @@
 	const getVadStateQuery = createQuery(rpc.vadRecorder.getVadState.options);
 
 	onMount(async () => {
+		// Validate and clear stale auth state on startup
+		try {
+			const { supabase } = await import('$lib/services/auth/supabase-client');
+			const { data: { session } } = await supabase.auth.getSession();
+			
+			if (session) {
+				// Check if session is expired
+				const expiresAt = session.expires_at;
+				const now = Math.floor(Date.now() / 1000);
+				
+				if (expiresAt && expiresAt < now) {
+					console.log('[Startup] Session expired, clearing stale auth state');
+					await supabase.auth.signOut();
+				}
+			}
+		} catch (error) {
+			console.error('[Startup] Failed to validate auth state:', error);
+		}
+
 		window.commands = commandCallbacks;
 		window.goto = goto;
 		// Commenting out local shortcuts - using global shortcuts only
@@ -145,7 +163,7 @@
 	totalMinutes={usageLimitDialog.totalMinutes}
 	limitMinutes={usageLimitDialog.limitMinutes}
 />
-<AuthRequiredDialog bind:open={authRequiredDialog.isOpen} />
+<AuthRequiredDialog />
 <OnboardingFlow />
 
 <style>
