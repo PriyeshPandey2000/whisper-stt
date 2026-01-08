@@ -56,8 +56,8 @@
 			{
 				"resizable": true,
 				"title": "NoteFlux",
-				"width": 800,
-				"height": 600,
+				"width": 1000,
+				"height": 700,
 				"minHeight": 84,
 				"minWidth": 72,
 				"transparent": true

@@ -6,7 +6,6 @@
 	import AuthSection from '$lib/components/auth/AuthSection.svelte';
 	import CopyToClipboardButton from '$lib/components/copyable/CopyToClipboardButton.svelte';
 	import { ClipboardIcon } from '$lib/components/icons';
-	import NavItems from '$lib/components/NavItems.svelte';
 	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		DeviceSelector,
@@ -34,7 +33,7 @@
 	import * as ToggleGroup from '$lib/ui/toggle-group';
 	import { createBlobUrlManager } from '$lib/utils/blobUrlManager';
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
-	import { InfoIcon, Loader2Icon } from '@lucide/svelte';
+	import { CircleHelpIcon, Loader2Icon, CopyIcon, AudioLines } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -219,7 +218,7 @@
 	<title>NoteFlux</title>
 </svelte:head>
 
-<main class="flex flex-1 flex-col items-center justify-center gap-4 relative">
+<main class="flex flex-1 flex-col items-center justify-start pt-12 gap-4 relative">
 	<!-- Sign Out - When authenticated - Extreme top-right corner -->
 	<!-- {#if auth.isAuthenticated}
 		<div class="absolute top-4 right-4 z-10">
@@ -230,12 +229,24 @@
 	<!-- Container wrapper for consistent max-width -->
 	<div class="w-full max-w-4xl px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden flex-col items-center gap-4">
-			<h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
+			<!-- <h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
 				NoteFlux
-			</h1>
-			<p class="text-muted-foreground text-center">
-				Press shortcut → speak → get error-free , formatted text.
-			</p>
+			</h1> -->
+			{#if window.__TAURI_INTERNALS__}
+				{#if settings.value['shortcuts.recordingMode'] === 'hold'}
+					<p class="text-muted-foreground dark:text-white text-center">
+						Place cursor, hold <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.pushToTalk'] || 'Not set'}</kbd> to dictate, release to paste in any app.
+					</p>
+				{:else}
+					<p class="text-muted-foreground dark:text-white text-center">
+						Place cursor, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-sm font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> to record, press again to paste in any app.
+					</p>
+				{/if}
+			{:else}
+				<p class="text-muted-foreground dark:text-white text-center">
+					Press shortcut → speak → get error-free, formatted text.
+				</p>
+			{/if}
 		</div>
 
 		<!-- Authentication Section - Show first -->
@@ -290,13 +301,17 @@
 								: 'Stop recording'}
 							onclick={commandCallbacks.toggleManualRecording}
 							variant="ghost"
-							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out"
+							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out cursor-pointer"
 						>
 							<span
 								style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
 								class="text-2xl leading-none"
 							>
-								{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
+								{#if (getRecorderStateQuery.data ?? 'IDLE') === 'IDLE'}
+									<AudioLines class="size-6" />
+								{:else}
+									{recorderStateToIcons[getRecorderStateQuery.data ?? 'IDLE']}
+								{/if}
 							</span>
 						</NoteFluxButton>
 						{#if getRecorderStateQuery.data === 'RECORDING'}
@@ -305,6 +320,7 @@
 								onclick={commandCallbacks.cancelManualRecording}
 								variant="ghost"
 								size="icon"
+								class="cursor-pointer"
 								style="view-transition-name: cancel-icon;"
 							>
 								🚫
@@ -317,13 +333,17 @@
 								: 'Stop voice activated session'}
 							onclick={commandCallbacks.toggleVadRecording}
 							variant="ghost"
-							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out"
+							class="shrink-0 size-12 transform items-center justify-center duration-300 ease-in-out cursor-pointer"
 						>
 							<span
 								style="filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); view-transition-name: microphone-icon;"
 								class="text-2xl leading-none"
 							>
-								{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
+								{#if (getVadStateQuery.data ?? 'IDLE') === 'IDLE'}
+									<AudioLines class="size-6" />
+								{:else}
+									{vadStateToIcons[getVadStateQuery.data ?? 'IDLE']}
+								{/if}
 							</span>
 						</NoteFluxButton>
 					{/if}
@@ -338,12 +358,13 @@
 						}) : undefined}
 						size="icon"
 						variant="ghost"
+						class="cursor-pointer"
 						disabled={latestRecording.transcriptionStatus === 'TRANSCRIBING'}
 					>
 						{#if latestRecording.transcriptionStatus === 'TRANSCRIBING'}
 							<Loader2Icon class="size-4 animate-spin" />
 						{:else}
-							<ClipboardIcon class="size-4" />
+							<CopyIcon class="size-4" />
 						{/if}
 					</CopyToClipboardButton>
 				</div>
@@ -363,8 +384,6 @@
 			</div>
 		</div>
 
-
-		<NavItems class="xs:flex -mb-2.5 -mt-1 hidden" />
 
 		<div class="xs:flex hidden flex-col items-center gap-3 mt-8">
 			<!-- <p class="text-foreground/75 text-center text-sm">
@@ -404,7 +423,7 @@
 									onmouseenter={() => isHelpPopoverOpen = true}
 									onmouseleave={() => isHelpPopoverOpen = false}
 								>
-									<InfoIcon class="size-4" />
+									<CircleHelpIcon class="size-4" />
 								</Button>
 							</Popover.Trigger>
 							<Popover.Content
@@ -413,17 +432,26 @@
 								onmouseleave={() => isHelpPopoverOpen = false}
 							>
 								<div class="space-y-3">
-									<p class="text-sm">
-										Start recording with <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd>. After you finish talking, press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> again, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">Cmd+V</kbd>.
-									</p>
-									<p class="text-sm">
-										💡 For direct paste: place cursor first, press shortcut, speak, press shortcut again.
-									</p>
-									<p class="text-sm">
+									{#if settings.value['shortcuts.recordingMode'] === 'hold'}
+										<p class="text-sm font-medium">
+											Hold <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.pushToTalk'] || 'Not set'}</kbd> and speak. Release when done.
+										</p>
+										<p class="text-sm text-muted-foreground">
+											💡 Tip: Place cursor first, then hold shortcut to paste directly.
+										</p>
+									{:else}
+										<p class="text-sm font-medium">
+											Press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> to start recording. Press <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.toggleManualRecording'] || 'Not set'}</kbd> again when done, then use <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">Cmd+V</kbd> to paste.
+										</p>
+										<p class="text-sm text-muted-foreground">
+											💡 Tip: Place cursor first for direct paste after second press.
+										</p>
+									{/if}
+									<p class="text-sm text-muted-foreground">
 										To cancel: <kbd class="bg-muted relative rounded px-[0.3rem] py-[0.15rem] font-mono text-xs font-semibold">{settings.value['shortcuts.global.cancelManualRecording'] || 'Not set'}</kbd>
 									</p>
-									<p class="text-sm">
-										✨ <strong>Tip:</strong> For even faster results, you can disable text formatting by clicking the filter icon and unchecking transformations. This gives you raw transcripts immediately.
+									<p class="text-sm text-muted-foreground">
+										✨ <strong>Faster results:</strong> Disable text formatting by clicking the filter icon and unchecking transformations.
 									</p>
 								</div>
 							</Popover.Content>

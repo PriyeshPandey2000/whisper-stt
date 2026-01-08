@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ClipboardIcon } from '$lib/components/icons';
+	import { CopyIcon } from '@lucide/svelte';
 	import { rpc } from '$lib/query';
 	import { Button } from '$lib/ui/button';
 	import * as Card from '$lib/ui/card';
@@ -109,7 +109,7 @@
 					);
 				}}
 			>
-				<ClipboardIcon class="size-4" />
+				<CopyIcon class="size-4" />
 				Copy Text
 			</Button>
 		</Dialog.Footer>

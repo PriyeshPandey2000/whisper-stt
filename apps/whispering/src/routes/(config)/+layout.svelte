@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { commandCallbacks } from '$lib/commands';
-	import NavItems from '$lib/components/NavItems.svelte';
 	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import {
 		DeviceSelector,
@@ -15,7 +14,6 @@
 	import { settings } from '$lib/stores/settings.svelte';
 	import { cn } from '$lib/ui/utils';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { MediaQuery } from 'svelte/reactivity';
 
 	const getRecorderStateQuery = createQuery(
 		rpc.recorder.getRecorderState.options,
@@ -23,8 +21,6 @@
 	const getVadStateQuery = createQuery(rpc.vadRecorder.getVadState.options);
 
 	let { children } = $props();
-
-	const isMobile = new MediaQuery('(max-width: 640px)');
 </script>
 
 <header
@@ -34,7 +30,7 @@
 	)}
 	style="view-transition-name: header"
 >
-	<div class="mr-auto flex gap-2">
+	<div class="mr-auto flex gap-2 md:hidden">
 		<NoteFluxButton
 			tooltipContent="Go home"
 			href="/"
@@ -106,7 +102,6 @@
 		</NoteFluxButton>
 	{/if}
 
-	<NavItems class="-mr-4" collapsed={isMobile.current} />
 </header>
 
 {@render children()}
