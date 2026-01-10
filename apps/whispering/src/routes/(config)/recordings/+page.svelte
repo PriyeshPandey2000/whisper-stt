@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Recording } from '$lib/services/db';
 	import type {
-		ColumnDef,
 		ColumnFiltersState,
 		PaginationState,
 	} from '@tanstack/table-core';
@@ -11,17 +10,12 @@
 	import NoteFluxButton from '$lib/components/NoteFluxButton.svelte';
 	import { rpc } from '$lib/query';
 	import { createPersistedState } from '$lib/svelte-utils';
-	import { Badge } from '$lib/ui/badge';
 	import { Button, buttonVariants } from '$lib/ui/button';
 	import { Card } from '$lib/ui/card';
-	import { Checkbox } from '$lib/ui/checkbox';
 	import * as Dialog from '$lib/ui/dialog';
 	import * as DropdownMenu from '$lib/ui/dropdown-menu';
 	import { Input } from '$lib/ui/input';
 	import { Label } from '$lib/ui/label';
-	import { Skeleton } from '$lib/ui/skeleton';
-	import { SelectAllPopover, SortableTableHeader } from '$lib/ui/table';
-	import * as Table from '$lib/ui/table';
 	import { Textarea } from '$lib/ui/textarea';
 	import { cn } from '$lib/ui/utils';
 	import {
@@ -34,8 +28,6 @@
 	import { createMutation, createQuery } from '@tanstack/svelte-query';
 	import {
 		createTable as createSvelteTable,
-		FlexRender,
-		renderComponent,
 	} from '@tanstack/svelte-table';
 	import {
 		getCoreRowModel,
@@ -44,23 +36,10 @@
 		getSortedRowModel,
 	} from '@tanstack/table-core';
 	import { nanoid } from 'nanoid/non-secure';
-	import { createRawSnippet } from 'svelte';
 	import { z } from 'zod';
 
-	import LatestTransformationRunOutputByRecordingId from './LatestTransformationRunOutputByRecordingId.svelte';
-	import RenderAudioUrl from './RenderAudioUrl.svelte';
-	import { RecordingRowActions } from './row-actions';
-	import TranscribedTextDialog from './TranscribedTextDialog.svelte';
-
-	function formatLocalTime(isoString: string) {
-		return new Date(isoString).toLocaleString(undefined, {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: '2-digit',
-		});
-	}
+	import RecordingsTable from './RecordingsTable.svelte';
+	import { recordingsPageColumns as columns } from './recordingsTableColumns';
 
 	const getAllRecordingsQuery = createQuery(
 		rpc.recordings.getAllRecordings.options,
@@ -72,155 +51,6 @@
 		rpc.recordings.deleteRecordings.options,
 	);
 	const copyToClipboard = createMutation(rpc.clipboard.copyToClipboard.options);
-
-	const columns: ColumnDef<Recording>[] = [
-		{
-			cell: ({ row }) =>
-				renderComponent(Checkbox, {
-					'aria-label': 'Select row',
-					checked: row.getIsSelected(),
-					onCheckedChange: (value) => row.toggleSelected(!!value),
-				}),
-			enableHiding: false,
-			enableSorting: false,
-			filterFn: (row, _columnId, filterValue) => {
-				const title = String(row.getValue('title'));
-				const subtitle = String(row.getValue('subtitle'));
-				const transcribedText = String(row.getValue('transcribedText'));
-				return (
-					title.toLowerCase().includes(filterValue.toLowerCase()) ||
-					subtitle.toLowerCase().includes(filterValue.toLowerCase()) ||
-					transcribedText.toLowerCase().includes(filterValue.toLowerCase())
-				);
-			},
-			header: ({ table }) =>
-				renderComponent(SelectAllPopover<Recording>, { table }),
-			id: 'select',
-		},
-		{
-			accessorKey: 'id',
-			cell: ({ getValue }) => {
-				const id = getValue<string>();
-				return renderComponent(Badge, {
-					children: createRawSnippet(() => ({
-						render: () => id,
-					})),
-					variant: 'id',
-				});
-			},
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, { column, headerText: 'ID' }),
-			id: 'ID',
-		},
-		{
-			accessorKey: 'title',
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Title',
-				}),
-			id: 'Title',
-		},
-		{
-			accessorKey: 'subtitle',
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Subtitle',
-				}),
-			id: 'Subtitle',
-		},
-		{
-			accessorKey: 'timestamp',
-			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Timestamp',
-				}),
-			id: 'Timestamp',
-		},
-		{
-			accessorKey: 'createdAt',
-			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Created At',
-				}),
-			id: 'Created At',
-		},
-		{
-			accessorKey: 'updatedAt',
-			cell: ({ getValue }) => formatLocalTime(getValue<string>()),
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Updated At',
-				}),
-			id: 'Updated At',
-		},
-		{
-			accessorKey: 'transcribedText',
-			cell: ({ getValue, row }) => {
-				const transcribedText = getValue<string>();
-				if (!transcribedText) return;
-				return renderComponent(TranscribedTextDialog, {
-					recordingId: row.id,
-					transcribedText,
-				});
-			},
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Transcribed Text',
-				}),
-			id: 'Transcribed Text',
-		},
-		{
-			accessorFn: ({ id }) => id,
-			cell: ({ getValue }) => {
-				const recordingId = getValue<string>();
-				return renderComponent(LatestTransformationRunOutputByRecordingId, {
-					recordingId,
-				});
-			},
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Latest Transformation Run Output',
-				}),
-			id: 'Latest Transformation Run Output',
-		},
-		{
-			accessorFn: ({ blob, id }) => ({ blob, id }),
-			cell: ({ getValue }) => {
-				const { blob, id } = getValue<Pick<Recording, 'blob' | 'id'>>();
-				return renderComponent(RenderAudioUrl, { blob, id });
-			},
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Audio',
-				}),
-			id: 'Audio',
-		},
-		{
-			accessorFn: (recording) => recording,
-			cell: ({ getValue }) => {
-				const recording = getValue<Recording>();
-				return renderComponent(RecordingRowActions, {
-					recordingId: recording.id,
-				});
-			},
-			header: ({ column }) =>
-				renderComponent(SortableTableHeader, {
-					column,
-					headerText: 'Actions',
-				}),
-			id: 'Actions',
-		},
-	];
 
 	let sorting = createPersistedState({
 		key: 'noteflux-recordings-data-table-sorting',
@@ -580,63 +410,11 @@
 			</div>
 		</div>
 
-		<div class="rounded-md border">
-			<Table.Root>
-				<Table.Header>
-					{#each table.getHeaderGroups() as headerGroup}
-						<Table.Row>
-							{#each headerGroup.headers as header}
-								<Table.Head colspan={header.colSpan}>
-									{#if !header.isPlaceholder}
-										<FlexRender
-											content={header.column.columnDef.header}
-											context={header.getContext()}
-										/>
-									{/if}
-								</Table.Head>
-							{/each}
-						</Table.Row>
-					{/each}
-				</Table.Header>
-				<Table.Body>
-					{#if getAllRecordingsQuery.isPending}
-						{#each { length: 5 }}
-							<Table.Row>
-								<Table.Cell>
-									<Skeleton class="size-4" />
-								</Table.Cell>
-								<Table.Cell colspan={columns.length - 1}>
-									<Skeleton class="h-4 w-full" />
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					{:else if table.getRowModel().rows?.length}
-						{#each table.getRowModel().rows as row (row.id)}
-							<Table.Row>
-								{#each row.getVisibleCells() as cell}
-									<Table.Cell>
-										<FlexRender
-											content={cell.column.columnDef.cell}
-											context={cell.getContext()}
-										/>
-									</Table.Cell>
-								{/each}
-							</Table.Row>
-						{/each}
-					{:else}
-						<Table.Row>
-							<Table.Cell colspan={columns.length} class="h-24 text-center">
-								{#if globalFilter}
-									No recordings found.
-								{:else}
-									No recordings yet. Start recording to add one.
-								{/if}
-							</Table.Cell>
-						</Table.Row>
-					{/if}
-				</Table.Body>
-			</Table.Root>
-		</div>
+		<RecordingsTable
+			{table}
+			isLoading={getAllRecordingsQuery.isPending}
+			emptyText={globalFilter ? 'No recordings found.' : undefined}
+		/>
 
 		<div class="flex items-center justify-between">
 			<div class="text-muted-foreground text-sm">
