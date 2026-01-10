@@ -35,9 +35,15 @@
 	import { getRecordingTransitionId } from '$lib/utils/getRecordingTransitionId';
 	import { CircleHelpIcon, Loader2Icon, CopyIcon, AudioLines } from '@lucide/svelte';
 	import { createQuery } from '@tanstack/svelte-query';
+	import {
+		createTable as createSvelteTable,
+	} from '@tanstack/svelte-table';
 	import { onDestroy, onMount } from 'svelte';
+	import { getCoreRowModel } from '@tanstack/table-core';
 
 	import TranscribedTextDialog from './(config)/recordings/TranscribedTextDialog.svelte';
+	import RecordingsTable from './(config)/recordings/RecordingsTable.svelte';
+	import { homepageRecentRecordingsColumns } from './(config)/recordings/recordingsTableColumns';
 
 	let isHelpPopoverOpen = $state(false);
 
@@ -47,6 +53,9 @@
 	const getVadStateQuery = createQuery(rpc.vadRecorder.getVadState.options);
 	const latestRecordingQuery = createQuery(
 		rpc.recordings.getLatestRecording.options,
+	);
+	const getAllRecordingsQuery = createQuery(
+		rpc.recordings.getAllRecordings.options,
 	);
 
 	const latestRecording = $derived<Recording>(
@@ -68,6 +77,25 @@
 	const blobUrl = $derived.by(() => {
 		if (!latestRecording.blob) return undefined;
 		return blobUrlManager.createUrl(latestRecording.blob);
+	});
+
+	const recentRecordings = $derived.by(() => {
+		const all = getAllRecordingsQuery.data ?? [];
+		return all
+			.toSorted(
+				(a, b) =>
+					new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+			)
+			.slice(0, 5);
+	});
+
+	const recentRecordingsTable = createSvelteTable({
+		columns: homepageRecentRecordingsColumns,
+		get data() {
+			return recentRecordings;
+		},
+		getCoreRowModel: getCoreRowModel(),
+		getRowId: (originalRow) => originalRow.id,
 	});
 
 	const availableModes = $derived(
@@ -227,8 +255,8 @@
 	{/if} -->
 	
 	<!-- Container wrapper for consistent max-width -->
-	<div class="w-full max-w-4xl px-4 flex flex-col items-center gap-4">
-		<div class="xs:flex hidden flex-col items-center gap-4">
+	<div class="w-full max-w-4xl min-w-0 px-4 flex flex-col items-center gap-4">
+		<div class="xs:flex hidden w-full max-w-[500px] flex-col items-center gap-4">
 			<!-- <h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
 				NoteFlux
 			</h1> -->
@@ -278,7 +306,7 @@
 		</ToggleGroup.Root> -->
 
 		<!-- Main Content Area: Large text display with recording controls -->
-		<div class="w-full flex flex-col gap-4">
+		<div class="w-full max-w-[450px] mx-auto flex flex-col gap-2">
 			<!-- Large Text Display Area -->
 			<div class="w-full">
 				<TranscribedTextDialog
@@ -384,6 +412,15 @@
 			</div>
 		</div>
 
+		<div class="w-full max-w-3xl mx-auto min-w-0 mt-2 text-[7px] opacity-95 [&_[data-slot=table-container]]:max-h-64 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table]]:min-w-[900px] [&_[data-slot=table-cell]]:px-2 [&_[data-slot=table-cell]]:py-0.5">
+			<RecordingsTable
+				table={recentRecordingsTable}
+				isLoading={getAllRecordingsQuery.isPending}
+				showHeader={false}
+				emptyText="No recordings yet. Start recording to add one."
+				skeletonRowCount={3}
+			/>
+		</div>
 
 		<div class="xs:flex hidden flex-col items-center gap-3 mt-8">
 			<!-- <p class="text-foreground/75 text-center text-sm">

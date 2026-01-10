@@ -74,7 +74,7 @@
 <aside
 	class={cn(
 		'bg-[#f5f3ff] dark:bg-[#0c0a09] border-r border-purple-100/50 dark:border-stone-800 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 transition-all duration-300 relative group',
-		isCollapsed ? 'w-[70px]' : 'w-[220px]',
+		isCollapsed ? 'w-[70px]' : 'w-[180px]',
 		className
 	)}
 >

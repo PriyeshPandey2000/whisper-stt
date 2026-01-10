@@ -23,7 +23,8 @@
 	let { children } = $props();
 </script>
 
-<header
+<!-- Commented out: Recording controls moved to homepage only since we now have sidebar navigation -->
+<!-- <header
 	class={cn(
 		'border-border/40 bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 border-b shadow-xs backdrop-blur-sm ',
 		'flex h-14 w-full items-center px-4 sm:px-8 gap-1.5',
@@ -102,6 +103,6 @@
 		</NoteFluxButton>
 	{/if}
 
-</header>
+</header> -->
 
 {@render children()}
