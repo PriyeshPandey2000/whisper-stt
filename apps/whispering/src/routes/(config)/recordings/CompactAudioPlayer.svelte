@@ -33,7 +33,7 @@
 </script>
 
 {#if blobUrl}
-	<div class="flex items-center gap-2">
+	<div class="flex items-center gap-1">
 		<audio
 			bind:this={audioEl}
 			src={blobUrl}
@@ -56,7 +56,7 @@
 		<NoteFluxButton
 			variant="ghost"
 			size="icon"
-			class="size-7"
+			class="size-6"
 			tooltipContent={isPlaying ? 'Pause' : 'Play'}
 			onclick={() => {
 				if (!audioEl) return;
@@ -68,13 +68,13 @@
 			}}
 		>
 			{#if isPlaying}
-				<PauseIcon class="size-4" />
+				<PauseIcon class="size-3" />
 			{:else}
-				<PlayIcon class="size-4" />
+				<PlayIcon class="size-3" />
 			{/if}
 		</NoteFluxButton>
 
-		<span class="tabular-nums text-muted-foreground">{formatDuration(durationSeconds)}</span>
+		<span class="tabular-nums text-xs text-muted-foreground">{formatDuration(durationSeconds)}</span>
 	</div>
 {/if}
 

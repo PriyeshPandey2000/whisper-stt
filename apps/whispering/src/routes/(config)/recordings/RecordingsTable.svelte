@@ -59,7 +59,7 @@
 				{#each table.getRowModel().rows as row (row.id)}
 					<Table.Row>
 						{#each row.getVisibleCells() as cell}
-							<Table.Cell>
+							<Table.Cell class={cell.column.columnDef.meta?.cellClassName}>
 								<FlexRender
 									content={cell.column.columnDef.cell}
 									context={cell.getContext()}
