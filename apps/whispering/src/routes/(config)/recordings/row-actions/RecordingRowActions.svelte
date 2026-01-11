@@ -54,13 +54,13 @@
 	const recording = $derived(recordingQuery.data);
 </script>
 
-<div class="flex items-center gap-1">
+<div class="flex items-center gap-0.5">
 	{#if !recording}
-		<Skeleton class="size-8" />
-		<Skeleton class="size-8" />
-		<Skeleton class="size-8" />
-		<Skeleton class="size-8" />
-		<Skeleton class="size-8" />
+		<Skeleton class="size-6" />
+		<Skeleton class="size-6" />
+		<Skeleton class="size-6" />
+		<Skeleton class="size-6" />
+		<Skeleton class="size-6" />
 	{:else}
 		<NoteFluxButton
 			tooltipContent={recording.transcriptionStatus === 'UNPROCESSED'
@@ -102,11 +102,12 @@
 			}}
 			variant="ghost"
 			size="icon"
+			class="size-6"
 		>
 			{#if recording.transcriptionStatus === 'UNPROCESSED'}
-				<PlayIcon class="size-4" />
+				<PlayIcon class="size-3" />
 			{:else if recording.transcriptionStatus === 'TRANSCRIBING'}
-				<EllipsisIcon class="size-4" />
+				<EllipsisIcon class="size-3" />
 			{:else if recording.transcriptionStatus === 'DONE'}
 				<RepeatIcon class="size-4 text-green-500" />
 			{:else if recording.transcriptionStatus === 'FAILED'}
@@ -162,11 +163,11 @@
 				recordingId,
 			})}
 		>
-			<ClipboardIcon class="size-4" />
+			<ClipboardIcon class="size-3" />
 		</CopyToClipboardButton>
 
 		{#if latestTransformationRunByRecordingIdQuery.isPending}
-			<Loader2Icon class="size-4 animate-spin" />
+			<Loader2Icon class="size-3 animate-spin" />
 		{:else if latestTransformationRunByRecordingIdQuery.isError}
 			<NoteFluxTooltip
 				id={getRecordingTransitionId({
@@ -194,7 +195,7 @@
 					recordingId,
 				})}
 			>
-				<FileStackIcon class="size-4" />
+				<FileStackIcon class="size-3" />
 			</CopyToClipboardButton>
 		{/if}
 
@@ -224,11 +225,12 @@
 				})}
 			variant="ghost"
 			size="icon"
+			class="size-6"
 		>
 			{#if downloadRecording.isPending}
-				<Loader2Icon class="size-4 animate-spin" />
+				<Loader2Icon class="size-3 animate-spin" />
 			{:else}
-				<DownloadIcon class="size-4" />
+				<DownloadIcon class="size-3" />
 			{/if}
 		</NoteFluxButton>
 
@@ -259,8 +261,9 @@
 			}}
 			variant="ghost"
 			size="icon"
+			class="size-6"
 		>
-			<TrashIcon class="size-4" />
+			<TrashIcon class="size-3" />
 		</NoteFluxButton>
 	{/if}
 </div>

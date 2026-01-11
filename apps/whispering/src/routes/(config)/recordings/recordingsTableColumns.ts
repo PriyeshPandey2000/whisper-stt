@@ -91,6 +91,9 @@ const timestampColumn: ColumnDef<Recording> = {
 			headerText: 'Timestamp',
 		}),
 	id: 'Timestamp',
+	meta: {
+		cellClassName: 'pl-2 pr-4',
+	},
 };
 
 const createdAtColumn: ColumnDef<Recording> = {
@@ -131,6 +134,9 @@ const transcribedTextColumn: ColumnDef<Recording> = {
 			headerText: 'Transcribed Text',
 		}),
 	id: 'Transcribed Text',
+	meta: {
+		cellClassName: 'min-w-[280px]',
+	},
 };
 
 const latestTransformationRunOutputColumn: ColumnDef<Recording> = {
@@ -195,15 +201,10 @@ const actionsColumn: ColumnDef<Recording> = {
 
 export const recordingsPageColumns: ColumnDef<Recording>[] = [
 	selectColumn,
-	idColumn,
-	titleColumn,
-	subtitleColumn,
 	timestampColumn,
-	createdAtColumn,
-	updatedAtColumn,
 	transcribedTextColumn,
 	latestTransformationRunOutputColumn,
-	audioColumn,
+	compactAudioColumn,
 	actionsColumn,
 ];
 

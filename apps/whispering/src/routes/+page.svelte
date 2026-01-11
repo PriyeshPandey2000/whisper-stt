@@ -255,7 +255,7 @@
 	{/if} -->
 	
 	<!-- Container wrapper for consistent max-width -->
-	<div class="w-full max-w-4xl min-w-0 px-4 flex flex-col items-center gap-4">
+	<div class="w-full max-w-6xl min-w-0 px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden w-full max-w-[500px] flex-col items-center gap-4">
 			<!-- <h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
 				NoteFlux
@@ -412,7 +412,7 @@
 			</div>
 		</div>
 
-		<div class="w-full max-w-3xl mx-auto min-w-0 mt-2 text-[7px] opacity-95 [&_[data-slot=table-container]]:max-h-64 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table]]:min-w-[900px] [&_[data-slot=table-cell]]:px-2 [&_[data-slot=table-cell]]:py-0.5">
+		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2 opacity-95 [&_[data-slot=table-container]]:h-72 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-0.5">
 			<RecordingsTable
 				table={recentRecordingsTable}
 				isLoading={getAllRecordingsQuery.isPending}

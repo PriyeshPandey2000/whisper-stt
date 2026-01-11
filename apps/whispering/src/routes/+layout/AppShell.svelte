@@ -133,7 +133,7 @@
 	<!-- Main Content Area -->
 	<div class="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
 		<main class="flex-1 overflow-y-auto w-full">
-			<div class="flex flex-col items-center gap-2 p-4 min-h-full w-full max-w-5xl mx-auto">
+			<div class="flex flex-col items-center gap-2 p-4 min-h-full w-full mx-auto">
 				{@render children()}
 			</div>
 		</main>
