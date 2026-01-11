@@ -412,7 +412,7 @@
 			</div>
 		</div>
 
-		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2 opacity-95 [&_[data-slot=table-container]]:h-72 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-0.5">
+		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2 opacity-95 [&_[data-slot=table-container]]:h-72 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-1.5">
 			<RecordingsTable
 				table={recentRecordingsTable}
 				isLoading={getAllRecordingsQuery.isPending}
