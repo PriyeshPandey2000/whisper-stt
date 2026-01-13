@@ -54,8 +54,8 @@
 	const latestRecordingQuery = createQuery(
 		rpc.recordings.getLatestRecording.options,
 	);
-	const getAllRecordingsQuery = createQuery(
-		rpc.recordings.getAllRecordings.options,
+	const getRecentRecordingsQuery = createQuery(
+		rpc.recordings.getRecentRecordings(() => 5).options,
 	);
 
 	const latestRecording = $derived<Recording>(
@@ -79,15 +79,7 @@
 		return blobUrlManager.createUrl(latestRecording.blob);
 	});
 
-	const recentRecordings = $derived.by(() => {
-		const all = getAllRecordingsQuery.data ?? [];
-		return all
-			.toSorted(
-				(a, b) =>
-					new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-			)
-			.slice(0, 5);
-	});
+	const recentRecordings = $derived(getRecentRecordingsQuery.data ?? []);
 
 	const recentRecordingsTable = createSvelteTable({
 		columns: homepageRecentRecordingsColumns,
@@ -253,7 +245,7 @@
 			<AuthSection />
 		</div>
 	{/if} -->
-	
+
 	<!-- Container wrapper for consistent max-width -->
 	<div class="w-full max-w-6xl min-w-0 px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden w-full max-w-[500px] flex-col items-center gap-4">
@@ -415,7 +407,7 @@
 		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2 opacity-95 [&_[data-slot=table-container]]:h-72 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-1.5">
 			<RecordingsTable
 				table={recentRecordingsTable}
-				isLoading={getAllRecordingsQuery.isPending}
+				isLoading={getRecentRecordingsQuery.isPending}
 				showHeader={false}
 				emptyText="No recordings yet. Start recording to add one."
 				skeletonRowCount={3}

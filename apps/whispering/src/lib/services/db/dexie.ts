@@ -765,6 +765,28 @@ export function createDbServiceDexie({
 			});
 		},
 
+		async getRecentRecordings(limit: number): Promise<Result<Recording[], DbServiceError>> {
+			return tryAsync({
+				mapErr: (error) =>
+					DbServiceErr({
+						cause: error,
+						message: 'Error getting recent recordings from Dexie',
+					}),
+				try: async () => {
+					const recordings = await db.recordings
+						.orderBy('timestamp')
+						.reverse()
+						.limit(limit)
+						.toArray();
+					return Dexie.waitFor(
+						Promise.all(
+							recordings.map(recordingWithSerializedAudioToRecording),
+						),
+					);
+				},
+			});
+		},
+
 		async getRecordingById(
 			id: string,
 		): Promise<Result<null | Recording, DbServiceError>> {

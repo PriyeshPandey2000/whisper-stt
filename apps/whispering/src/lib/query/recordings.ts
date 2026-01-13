@@ -10,6 +10,7 @@ const recordingKeys = {
 	all: ['recordings'] as const,
 	byId: (id: Accessor<string>) => [...recordingKeys.all, id()] as const,
 	latest: ['recordings', 'latest'] as const,
+	recent: (limit: Accessor<number>) => [...recordingKeys.all, 'recent', limit()] as const,
 };
 
 export const recordings = {
@@ -29,6 +30,9 @@ export const recordings = {
 			);
 			queryClient.invalidateQueries({
 				queryKey: recordingKeys.latest,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['recordings', 'recent'],
 			});
 
 			return Ok(data);
@@ -50,6 +54,9 @@ export const recordings = {
 			});
 			queryClient.invalidateQueries({
 				queryKey: recordingKeys.latest,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['recordings', 'recent'],
 			});
 
 			return Ok(undefined);
@@ -74,6 +81,9 @@ export const recordings = {
 			}
 			queryClient.invalidateQueries({
 				queryKey: recordingKeys.latest,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['recordings', 'recent'],
 			});
 
 			return Ok(undefined);
@@ -111,6 +121,22 @@ export const recordings = {
 			resultQueryFn: () => services.db.getRecordingById(id()),
 		}),
 
+	getRecentRecordings: (limit: Accessor<number>) =>
+		defineQuery({
+			initialData: () =>
+				queryClient
+					.getQueryData<Recording[]>(recordingKeys.all)
+					?.toSorted(
+						(a, b) =>
+							new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+					)
+					.slice(0, limit()) ?? [],
+			initialDataUpdatedAt: () =>
+				queryClient.getQueryState(recordingKeys.all)?.dataUpdatedAt,
+			queryKey: recordingKeys.recent(limit),
+			resultQueryFn: () => services.db.getRecentRecordings(limit()),
+		}),
+
 	updateRecording: defineMutation({
 		mutationKey: ['recordings', 'updateRecording'] as const,
 		resultMutationFn: async (recording: Recording) => {
@@ -129,6 +155,9 @@ export const recordings = {
 			);
 			queryClient.invalidateQueries({
 				queryKey: recordingKeys.latest,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['recordings', 'recent'],
 			});
 
 			return Ok(data);

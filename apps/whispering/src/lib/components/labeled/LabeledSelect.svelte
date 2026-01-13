@@ -56,7 +56,6 @@
 	</Label>
 	<Select.Root
 		type="single"
-		{items}
 		value={selected}
 		onValueChange={(selected) => {
 			const selectedValue = selected as T;
