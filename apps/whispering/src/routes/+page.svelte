@@ -21,7 +21,9 @@
 	import { rpc } from '$lib/query';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { onboardingStore } from '$lib/stores/onboarding.svelte';
+	import { initializationStore } from '$lib/stores/initialization.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
+	import InitializationScreen from '$lib/components/InitializationScreen.svelte';
 	import { Button } from '$lib/ui/button';
 	import {
 		ACCEPT_AUDIO,
@@ -239,15 +241,18 @@
 </svelte:head>
 
 <main class="flex flex-1 flex-col items-center justify-start pt-12 gap-4 relative">
-	<!-- Sign Out - When authenticated - Extreme top-right corner -->
-	<!-- {#if auth.isAuthenticated}
-		<div class="absolute top-4 right-4 z-10">
-			<AuthSection />
-		</div>
-	{/if} -->
+	{#if !initializationStore.isComplete}
+		<InitializationScreen />
+	{:else}
+		<!-- Sign Out - When authenticated - Extreme top-right corner -->
+		<!-- {#if auth.isAuthenticated}
+			<div class="absolute top-4 right-4 z-10">
+				<AuthSection />
+			</div>
+		{/if} -->
 
-	<!-- Container wrapper for consistent max-width -->
-	<div class="w-full max-w-6xl min-w-0 px-4 flex flex-col items-center gap-4">
+		<!-- Container wrapper for consistent max-width -->
+		<div class="w-full max-w-6xl min-w-0 px-4 flex flex-col items-center gap-4">
 		<div class="xs:flex hidden w-full max-w-[500px] flex-col items-center gap-4">
 			<!-- <h1 class="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
 				NoteFlux
@@ -490,5 +495,6 @@
 			{/if}
 		</div>
 		{/if}
-	</div>
+		</div>
+	{/if}
 </main>

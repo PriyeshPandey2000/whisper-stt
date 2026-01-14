@@ -4,6 +4,7 @@
 	import { rpc } from '$lib/query';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { onboardingStore } from '$lib/stores/onboarding.svelte';
+	import { initializationStore } from '$lib/stores/initialization.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { analytics } from '$lib/services/posthog';
 	import { Button } from '$lib/ui/button';
@@ -168,6 +169,9 @@
 			// Track onboarding started
 			analytics.trackOnboardingStarted();
 		}
+
+		// Signal that initialization checks are complete
+		initializationStore.complete();
 	});
 
 	// Force hide recording overlay when component is destroyed
