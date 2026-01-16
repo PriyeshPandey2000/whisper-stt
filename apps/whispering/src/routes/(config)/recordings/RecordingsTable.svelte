@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Skeleton } from '$lib/ui/skeleton';
 	import * as Table from '$lib/ui/table';
 	import { FlexRender } from '@tanstack/svelte-table';
 	import type { Table as TanstackTable } from '@tanstack/table-core';
+
+	import RecordingsTableSkeletonRow from './RecordingsTableSkeletonRow.svelte';
 
 	let {
 		table,
@@ -49,11 +50,7 @@
 		<Table.Body>
 			{#if isLoading}
 				{#each { length: skeletonRowCount }}
-					<Table.Row>
-						<Table.Cell colspan={visibleColumnCount}>
-							<Skeleton class="h-4 w-full" />
-						</Table.Cell>
-					</Table.Row>
+					<RecordingsTableSkeletonRow />
 				{/each}
 			{:else if table.getRowModel().rows?.length}
 				{#each table.getRowModel().rows as row (row.id)}

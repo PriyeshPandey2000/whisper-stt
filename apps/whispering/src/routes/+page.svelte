@@ -409,14 +409,16 @@
 			</div>
 		</div>
 
-		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2 opacity-95 [&_[data-slot=table-container]]:h-72 [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-1.5">
-			<RecordingsTable
-				table={recentRecordingsTable}
-				isLoading={getRecentRecordingsQuery.isPending}
-				showHeader={false}
-				emptyText="No recordings yet. Start recording to add one."
-				skeletonRowCount={3}
-			/>
+		<div class="w-full max-w-6xl mx-auto min-w-0 mt-2">
+			<div class="h-72 overflow-y-auto opacity-95 [&_[data-slot=table]]:text-xs [&_[data-slot=table-cell]]:py-1.5">
+				<RecordingsTable
+					table={recentRecordingsTable}
+					isLoading={getRecentRecordingsQuery.isFetching}
+					showHeader={false}
+					emptyText="No recordings yet. Start recording to add one."
+					skeletonRowCount={5}
+				/>
+			</div>
 		</div>
 
 		<div class="xs:flex hidden flex-col items-center gap-3 mt-8">
