@@ -81,7 +81,7 @@ export function generateDefaultTransformationStep(): TransformationStep {
 		'prompt_transform.inference.provider.OpenAI.model': 'gpt-4o',
 
 		'prompt_transform.systemPromptTemplate': '',
-		'prompt_transform.userPromptTemplate': '',
+		'prompt_transform.userPromptTemplate': 'Fix the grammar in this text:\n\n{{input}}',
 		type: 'prompt_transform',
 	};
 }

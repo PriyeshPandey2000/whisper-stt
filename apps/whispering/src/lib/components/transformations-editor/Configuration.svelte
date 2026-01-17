@@ -177,13 +177,6 @@
 								</NoteFluxButton>
 							</div>
 						</div>
-						{#if step.type === 'prompt_transform'}
-							<Card.Description>
-								{index === 0
-									? `Use '{{input}}' to refer to the original text`
-									: `Use '{{input}}' to refer to the text from step ${index}`}
-							</Card.Description>
-						{/if}
 					</Card.Header>
 					<Card.Content>
 						{#if step.type === 'find_replace'}
@@ -289,7 +282,7 @@
 
 								<LabeledTextarea
 									id="prompt_transform.systemPromptTemplate"
-									label="System Prompt Template"
+									label="The AI's Role"
 									value={step['prompt_transform.systemPromptTemplate']}
 									oninput={(e) => {
 										transformation = {
@@ -305,11 +298,12 @@
 											),
 										};
 									}}
-									placeholder="Define the AI's role and expertise, e.g., 'You are an expert at formatting meeting notes. Structure the text into clear sections with bullet points.'"
+									placeholder="You are a professional editor. Be clear and concise."
+									description="Who is the AI pretending to be? (e.g., A friendly editor, a strict lawyer)"
 								/>
 								<LabeledTextarea
 									id="prompt_transform.userPromptTemplate"
-									label="User Prompt Template"
+									label="What to do with your text"
 									value={step['prompt_transform.userPromptTemplate']}
 									oninput={(e) => {
 										transformation = {
@@ -325,11 +319,15 @@
 											),
 										};
 									}}
-									placeholder="Tell the AI what to do with your text. Use {'{{input}}'} where you want your text to appear, e.g., 'Format this transcript into clear sections: {'{{input}}'}'"
 								>
 									{#snippet description()}
+										<p class="text-sm text-muted-foreground">
+											Edit the prompt below according to your use case. Don't remove
+											the {'{{input}}'} part - it is the actual transcript you
+											record {index > 0 ? 'or output from the previous step' : ''}.
+										</p>
 										{#if step['prompt_transform.userPromptTemplate'] && !step['prompt_transform.userPromptTemplate'].includes('{{input}}')}
-											<p class="text-amber-500 text-sm font-semibold">
+											<p class="text-amber-500 text-sm font-semibold mt-1">
 												Remember to include {'{{input}}'} in your prompt - this is
 												where your text will be inserted!
 											</p>

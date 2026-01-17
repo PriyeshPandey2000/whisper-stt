@@ -187,7 +187,10 @@ export function createPermissionMonitor() {
 				reinitializeInProgress = false;
 			}
 
-			if (previousStatus !== 'granted' && currentStatus === 'granted') {
+			// Only reinitialize if permission was explicitly changed from denied -> granted
+			// Don't reinitialize on unknown -> granted (app startup with existing permission)
+			// as the manager is already initialized during app startup
+			if (previousStatus === 'denied' && currentStatus === 'granted') {
 				// console.log(
 				// 	'[PermissionMonitor] 🎉 Accessibility permission just granted! Reinitializing Fn manager...',
 				// );
