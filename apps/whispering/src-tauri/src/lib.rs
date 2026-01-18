@@ -620,34 +620,14 @@ fn write_text(text: String, app_handle: tauri::AppHandle, keep_window_visible: O
     let mut enigo = enigo.ok_or(last_error)?;
     
     // Removed delay for maximum speed
-    
+
     // Use clipboard + paste approach instead of character simulation
     // This works better with terminal applications and avoids duplication issues
-    
-    // First, copy text to clipboard using pbcopy on macOS
-    #[cfg(target_os = "macos")]
-    {
-        use std::process::{Command, Stdio};
-        use std::io::Write;
-        
-        let mut child = Command::new("pbcopy")
-            .stdin(Stdio::piped())
-            .spawn()
-            .map_err(|e| format!("Failed to spawn pbcopy: {}", e))?;
-        
-        if let Some(stdin) = child.stdin.as_mut() {
-            stdin.write_all(text.as_bytes())
-                .map_err(|e| format!("Failed to write to pbcopy: {}", e))?;
-        }
-        
-        child.wait()
-            .map_err(|e| format!("Failed to wait for pbcopy: {}", e))?;
-    }
-    
-    #[cfg(not(target_os = "macos"))]
-    {
-        return Err("Clipboard paste approach not implemented for non-macOS yet".to_string());
-    }
+
+    // First, copy text to clipboard using Tauri's clipboard manager (handles UTF-8 properly)
+    use tauri_plugin_clipboard_manager::ClipboardExt;
+    app_handle.clipboard().write_text(text.clone())
+        .map_err(|e| format!("Failed to write to clipboard: {}", e))?;
     
     // When pasting into the app itself (onboarding), refocus the window
     if should_refocus {
