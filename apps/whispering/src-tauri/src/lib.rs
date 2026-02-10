@@ -192,7 +192,7 @@ fn create_recording_overlay_at_startup(app: &tauri::App) -> Result<(), String> {
     let screen_height = monitor.as_ref().map(|m| m.size().height as f64 / m.scale_factor()).unwrap_or(900.0);
 
     let x = (screen_width - 45.0) / 2.0;   // Horizontally centered
-    let y = screen_height - 100.0;          // 100px from bottom
+    let y = screen_height - 200.0;          // 200px from bottom
 
     let overlay_window = WebviewWindowBuilder::new(
         app,
